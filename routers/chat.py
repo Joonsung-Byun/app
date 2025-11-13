@@ -53,7 +53,7 @@ async def chat(request: ChatRequest):
             if last_results and len(last_results) > 0:
                 logger.info(f"저장된 검색 결과 사용: {len(last_results)}개")
                 
-                # 지도 응답 생성 (content 비움)
+                # 지도 응답 생성
                 markers = [
                     MarkerData(
                         name=f["name"],
@@ -72,22 +72,19 @@ async def chat(request: ChatRequest):
                     markers=markers
                 )
                 
-                # 첫 번째 장소의 카카오맵 링크
                 kakao_link = f"https://map.kakao.com/link/to/{markers[0].name},{markers[0].lat},{markers[0].lng}"
                 
-                # AI 응답 저장 (지도 전송)
                 add_message(conversation_id, "ai", "[지도 데이터 전송]")
                 
                 return ChatResponse(
                     role="ai",
-                    content="",  # 비움
+                    content="",
                     type="map",
                     link=kakao_link,
                     data=map_data,
-                    conversation_id=conversation_id  # 반환
+                    conversation_id=conversation_id
                 )
             else:
-                # 저장된 결과 없음
                 logger.warning("저장된 검색 결과 없음")
                 
                 ai_response = "아직 장소를 검색하지 않았어요. 먼저 원하시는 지역과 활동을 말씀해주세요!"
@@ -97,14 +94,15 @@ async def chat(request: ChatRequest):
                     role="ai",
                     content=ai_response,
                     type="text",
-                    conversation_id=conversation_id  # 반환
+                    conversation_id=conversation_id
                 )
         
-        # 일반 요청 - Agent 실행
+        # 일반 요청 - Agent 실행 (original_query 전달)
         result = agent_executor.invoke({
             "input": user_message,
             "chat_history": chat_history,
-            "child_age": request.child_age
+            "child_age": request.child_age,
+            "original_query": user_message  # ← 추가
         })
         
         output = result["output"]
@@ -119,7 +117,6 @@ async def chat(request: ChatRequest):
                     if search_result.get("success"):
                         facilities_data = search_result.get("facilities", [])
                         
-                        # 검색 결과 저장 (다음 턴에 사용)
                         if facilities_data:
                             save_search_results(conversation_id, facilities_data)
                 except:
@@ -133,7 +130,7 @@ async def chat(request: ChatRequest):
             role="ai",
             content=output,
             type="text",
-            conversation_id=conversation_id  # 반환
+            conversation_id=conversation_id
         )
     
     except Exception as e:
@@ -141,3 +138,28 @@ async def chat(request: ChatRequest):
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+    
+    ## 동작 예시
+
+    ### 입력: "부산 자전거 타기 좋은 곳"
+    # ```
+    # 1. chat.py
+    # → original_query = "부산 자전거 타기 좋은 곳"
+    
+    # 2. Agent 실행
+    # → extract_user_intent("부산 자전거 타기 좋은 곳")
+    # → {"location": "부산", "needs_weather_check": true}
+    
+    # 3. get_weather_forecast("부산", "today")
+    # → {"is_indoor": false}
+    
+    # 4. search_facilities(
+    #         region="부산",
+    #         is_indoor=False,
+    #         original_query="부산 자전거 타기 좋은 곳"  ← 핵심!
+    #     )
+    
+    # 5. rag_tool.py
+    # → query_text = "부산 실외 부산 자전거 타기 좋은 곳"
+    # → 임베딩 검색으로 자전거 관련 시설 우선 반환!
+    # ```

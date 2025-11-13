@@ -56,11 +56,60 @@ print(f"📋 사용될 메타데이터 컬럼: {meta_cols}")
 # ============================================
 def build_doc(row):
     parts = []
-    if row.get("Name"): parts.append(f"시설명: {row['Name']}")
-    if row.get("Category1"): parts.append(f"분류: {row['Category1']} / {row.get('Category2','')} / {row.get('Category3','')}")
-    if row.get("CTPRVN_NM"): parts.append(f"지역: {row['CTPRVN_NM']} {row.get('SIGNGU_NM','')}")
-    if row.get("Address"): parts.append(f"주소: {row['Address']}")
-    if row.get("Age"): parts.append(f"연령: {row['Age']}")
+
+    # 시설명
+    if row.get("Name"):
+        parts.append(f"시설명: {row['Name']}")
+
+    # 분류
+    cat1 = row.get("Category1", "")
+    cat2 = row.get("Category2", "")
+    cat3 = row.get("Category3", "")
+    if cat1 or cat2 or cat3:
+        parts.append(f"분류: {cat1} / {cat2} / {cat3}")
+
+    # 지역
+    sido = row.get("CTPRVN_NM", "")
+    sigungu = row.get("SIGNGU_NM", "")
+    if sido or sigungu:
+        parts.append(f"지역: {sido} {sigungu}")
+
+    # 주소
+    if row.get("Address"):
+        parts.append(f"주소: {row['Address']}")
+
+    # 운영시간
+    if row.get("Time"):
+        parts.append(f"운영시간: {row['Time']}")
+
+    # 운영요일
+    if row.get("Day"):
+        parts.append(f"운영요일: {row['Day']}")
+
+    # 비용
+    if row.get("Cost"):
+        parts.append(f"이용요금: {row['Cost']}")
+
+    # 실내/실외
+    if row.get("in_out"):
+        parts.append(f"시설 형태: {row['in_out']}")
+
+    # Age (텍스트 기반)
+    if row.get("Age"):
+        parts.append(f"권장연령: {row['Age']}")
+
+    # 세부 연령 범위
+    age_min = row.get("age_min")
+    age_max = row.get("age_max")
+    if age_min or age_max:
+        parts.append(f"연령범위: {age_min}~{age_max}세")
+    else:
+        parts.append("연령범위: 제한 없음")  # 👈 추천
+
+    # Note
+    if row.get("Note"):
+        parts.append(f"추가정보: {row['Note']}")
+
     return ". ".join([p for p in parts if p])
 
 print("\n📝 문서 생성 중...")

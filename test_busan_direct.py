@@ -2,13 +2,13 @@ from tools.rag_tool import search_facilities
 import json
 
 print("="*60)
-print("부산 실외 시설 검색 테스트")
+print("경기도 실외 시설 검색 테스트")
 print("="*60)
 
 # 테스트 실행
 result = search_facilities.invoke({
-    "region": "부산",
-    "is_indoor": False,
+    "region": "인천",
+    "is_indoor": True,
     "child_age": None,
     "k": 3
 })
