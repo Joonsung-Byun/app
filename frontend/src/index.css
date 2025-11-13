@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/* Optional: custom base styles */
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  /* Always reserve vertical scrollbar space on the viewport to avoid width shift on Windows */
+  html {
+    overflow-y: scroll;
+    scrollbar-gutter: stable both-edges;
+  }
+}
+
+/* Optional: custom components or utilities can go here */
