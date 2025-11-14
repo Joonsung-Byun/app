@@ -2,12 +2,11 @@ from langchain.tools import tool
 import chromadb
 from chromadb.config import Settings as ChromaSettings
 from config import settings
+from models.pca_embeddings import pca_embeddings
 from typing import Optional
 import json
 import logging
-import random
 
-# 로거 설정
 logger = logging.getLogger(__name__)
 
 # ChromaDB 클라이언트 초기화
@@ -21,10 +20,11 @@ try:
     )
     
     collection = chroma_client.get_collection(
-        name=settings.CHROMA_COLLECTION
+        name="kid_program_collection"
     )
+
     
-    logger.info(f"✅ ChromaDB 연결 성공: {settings.CHROMA_COLLECTION}")
+    logger.info(f"✅ ChromaDB 연결 성공: {collection.name}")
     logger.info(f"컬렉션 항목 수: {collection.count()}")
     
 except Exception as e:
@@ -33,26 +33,22 @@ except Exception as e:
 
 @tool
 def search_facilities(
-    region: str,
-    is_indoor: bool,
-    child_age: Optional[int] = None,
-    k: int = 3
+    original_query: str,
+    k: int = 10
 ) -> str:
     """
-    조건에 맞는 시설을 검색합니다.
+    사용자 질문과 가장 유사한 시설을 검색합니다.
     
     Args:
-        region: 지역명 (예: "부산", "서울", "창원")
-        is_indoor: 실내 여부 (True=실내, False=실외)
-        child_age: 아이 나이 (선택, None이면 무시)
-        k: 결과 개수
+        original_query: 사용자의 원본 질문 (예: "부산 자전거 타기 좋은 곳", "서울 실내 놀이터")
+        k: 반환할 결과 개수 (기본값: 10)
     
     Returns:
-        시설 정보 JSON
+        시설 정보 JSON (유사도 높은 순으로 정렬)
     """
     logger.info(f"\n{'='*50}")
     logger.info(f"시설 검색 시작")
-    logger.info(f"region: {region}, is_indoor: {is_indoor}, child_age: {child_age}, k: {k}")
+    logger.info(f"original_query: {original_query}, k: {k}")
     logger.info(f"{'='*50}")
     
     if collection is None:
@@ -63,86 +59,46 @@ def search_facilities(
             "facilities": []
         }, ensure_ascii=False)
     
-    target_condition = "실내" if is_indoor else "실외"
+    # 쿼리 텍스트는 사용자 질문 그대로 사용
+    query_text = original_query
+    
+    print(f"쿼리 텍스트: {query_text}")
     
     try:
-        # 전체 데이터 가져오기 (벡터 검색 없이)
-        logger.info("ChromaDB에서 전체 데이터 가져오는 중...")
+        # 임베딩 생성
+        print("임베딩 생성 중...")
+        query_embedding = pca_embeddings.embed_query(query_text)
+        print(f"✅ 임베딩 완료: {len(query_embedding)}차원")
         
-        # get()으로 전체 가져오기
-        all_data = collection.get(
-            limit=10000,  # 충분히 많이
-            include=["metadatas", "documents"]
+        # 벡터 검색
+        print("ChromaDB 벡터 검색 중...")
+        print(f"✅ 임베딩 완료: {len(query_embedding)}차원")
+        
+        # 벡터 검색
+        print("ChromaDB 벡터 검색 중...")
+        
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=k,
+            include=["metadatas", "documents", "distances"]
         )
+
+        print(f"results: {results}")
         
-        logger.info(f"✅ 전체 데이터: {len(all_data['ids'])}개")
+        logger.info(f"✅ 벡터 검색 완료: {len(results['ids'][0])}개")
         
         facilities = []
         
-        if all_data and all_data['ids']:
-            metadatas = all_data['metadatas']
-            documents = all_data['documents']
+        if results and results['ids'] and len(results['ids'][0]) > 0:
+            metadatas = results['metadatas'][0]
+            documents = results['documents'][0]
+            distances = results['distances'][0]
             
-            # 필터링된 항목 수집
-            filtered_items = []
-            
+            # 유사도 높은 순으로 상위 k개 반환
             for i, metadata in enumerate(metadatas):
-                signgu = metadata.get("SIGNGU_NM", "")
-                ctprvn = metadata.get("CTPRVN_NM", "")
                 name = metadata.get("Name", metadata.get("name", "이름없음"))
-                in_out = metadata.get("in_out", "")
                 
-                # 1. 지역 필터링
-                region_match = region in signgu or region in ctprvn
-                
-                if not region_match:
-                    continue
-                
-                # 2. 실내/실외 필터링
-                if in_out != target_condition:
-                    continue
-                
-                # 3. 연령 필터링 (child_age가 None이면 무시)
-                if child_age is not None:
-                    age_min = metadata.get("age_min", "")
-                    age_max = metadata.get("age_max", "")
-                    
-                    if age_min and age_max:
-                        try:
-                            age_min = int(age_min)
-                            age_max = int(age_max)
-                            
-                            if not (age_min <= child_age <= age_max):
-                                continue
-                        except (ValueError, TypeError):
-                            pass
-                
-                # 필터링 통과
-                filtered_items.append({
-                    "metadata": metadata,
-                    "document": documents[i] if i < len(documents) else "",
-                    "name": name,
-                    "in_out": in_out
-                })
-            
-            logger.info(f"필터링 후 남은 항목: {len(filtered_items)}개")
-            
-            if len(filtered_items) == 0:
-                logger.warning(f"⚠️  {region} {target_condition} 시설을 찾을 수 없음")
-                return json.dumps({
-                    "success": True,
-                    "facilities": []
-                }, ensure_ascii=False)
-            
-            # 랜덤으로 섞기 (다양성 확보)
-            random.shuffle(filtered_items)
-            
-            # 상위 k개 선택
-            for idx, item in enumerate(filtered_items[:k]):
-                metadata = item["metadata"]
-                name = item["name"]
-                
-                logger.info(f"  ✅ [{idx+1}] {name}")
+                logger.info(f"  ✅ [{i+1}] {name} (distance: {distances[i]:.4f})")
                 
                 # 좌표
                 lat = metadata.get("LAT", "37.5665")
@@ -161,8 +117,8 @@ def search_facilities(
                 category3 = metadata.get("Category3", "")
                 
                 desc = ""
-                if item["document"]:
-                    desc = item["document"][:100]
+                if i < len(documents) and documents[i]:
+                    desc = documents[i][:100]
                 elif address:
                     desc = address[:100]
                 elif category3:
@@ -172,8 +128,10 @@ def search_facilities(
                     "name": name,
                     "lat": lat,
                     "lng": lon,
+                    "note": metadata.get("Note", ""),
                     "category": category3 or category1 or "시설",
-                    "desc": desc
+                    "desc": desc,
+                    "distance": distances[i]
                 })
         
         else:

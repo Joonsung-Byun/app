@@ -2,6 +2,9 @@ from pydantic_settings import BaseSettings
 import torch
 
 class Settings(BaseSettings):
+    # Generation 모델
+    GENERATION_MODEL: str = "Qwen/Qwen2.5-7B-Instruct"
+    EMBEDDING_MODEL: str = "Alibaba-NLP/gte-Qwen2-7B-instruct"
     # API Keys
     OPENWEATHER_API_KEY: str = "72923a37d28c75e1c4c642947cfdab4b"
     KAKAO_API_KEY: str
@@ -10,10 +13,7 @@ class Settings(BaseSettings):
     # ChromaDB
     CHROMA_HOST: str = "localhost"
     CHROMA_PORT: int = 8000
-    CHROMA_COLLECTION: str = "kid_program_collection_pca"
-    
-    # PCA Model
-    PCA_MODEL_PATH: str = "./model_files/pca_model.joblib"
+    CHROMA_COLLECTION: str = "kid_program_collection"
     
     # GPU & LLM
     USE_GPU: bool = torch.cuda.is_available()
