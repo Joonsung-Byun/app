@@ -1,34 +1,69 @@
+# ==========================================
+# Backend
+# ==========================================
+
 # Data files
-chroma_data/
-chroma_data/*
-.env
-embeddings_pca_512.npy
-pca_model.joblib    
-rag_data_integrated_final.csv
+backend/chroma_data/
+backend/chroma_data/*
+backend/.env
+backend/embeddings_pca_512.npy
+backend/pca_model.joblib
+backend/rag_data_integrated_final.csv
+backend/rag_data_integrated_final_rev_loc.csv
 
 # Model files
-model_files/
-model_files/*
-
-# Frontend build artifacts
-frontend/node_modules/
-frontend/node_modules/*
-frontend/build/
-frontend/build/*
+backend/model_files/
+backend/model_files/*
 
 # Python virtual environments
-venv/
-venv/*
-venv_*/
-.venv/
-.venv/*
-env/
-env/*
+backend/venv/
+backend/venv/*
+backend/venv_*/
+backend/.venv/
+backend/.venv/*
+backend/env/
+backend/env/*
 
 # Python cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-*.so
+backend/__pycache__/
+backend/**/__pycache__/
+backend/*.pyc
+backend/*.pyo
+backend/*.pyd
+backend/.Python
+backend/*.so
+
+# ==========================================
+# Frontend
+# ==========================================
+
+# Dependencies
+frontend/node_modules/
+frontend/node_modules/*
+
+# Build
+frontend/build/
+frontend/build/*
+frontend/dist/
+
+# Environment
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+
+# Logs
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+
+# ==========================================
+# IDE & OS
+# ==========================================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

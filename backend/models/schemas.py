@@ -1,0 +1,25 @@
+from pydantic import BaseModel, Field
+from typing import Optional, Dict, Any, List
+
+class ChatRequest(BaseModel):
+    message: str = Field(..., description="사용자 메시지")
+    conversation_id: Optional[str] = Field(None, description="대화 ID (없으면 서버가 생성)")  # Optional로 변경
+    child_age: Optional[int] = Field(None, description="아이 나이 (선택)")
+
+class MarkerData(BaseModel):
+    name: str
+    lat: float
+    lng: float
+    desc: Optional[str] = None
+
+class MapData(BaseModel):
+    center: Dict[str, float]  # {lat, lng}
+    markers: List[MarkerData]
+
+class ChatResponse(BaseModel):
+    role: str = Field(..., description="메시지 역할 (user/ai)")
+    content: str = Field(..., description="메시지 내용")
+    type: str = Field(default="text", description="응답 타입 (text/map)")
+    link: Optional[str] = Field(None, description="카카오맵 링크")
+    data: Optional[MapData] = Field(None, description="지도 데이터")
+    conversation_id: str = Field(..., description="대화 ID")  # 항상 반환
