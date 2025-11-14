@@ -1,4 +1,4 @@
-# Kids Chatbot - 가족 나들이 추천 챗봇
+# Kids Chatbot - 가족 나들이 추천 챗봇 - v2입니다
 
 Monorepo 구조로 Backend(FastAPI)와 Frontend(React)를 관리합니다.
 
