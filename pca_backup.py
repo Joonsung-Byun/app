@@ -50,7 +50,7 @@ meta_cols = [
     "Name", "Category1", "Category2", "Category3",
     "Address", "CTPRVN_NM", "SIGNGU_NM",
     "LAT", "LON", "in_out",
-    "Age", "age_min", "age_max"
+    "Age", "age_min", "age_max", "Note"
 ]
 meta_cols = [col for col in meta_cols if col in df.columns]
 print(f"📋 메타데이터 컬럼: {meta_cols}")

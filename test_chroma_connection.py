@@ -43,4 +43,26 @@
 #     traceback.print_exc()
 import chromadb
 client = chromadb.HttpClient(host="localhost", port=8000)
-print([c.name for c in client.list_collections()])
+### kid_program_collection_pca" 이라는 컬렉션에서 샘플 메타데이터 3개를 출력하는 코드
+collection = client.get_collection("kid_program_collection_pca")
+sample = collection.get(limit=500, include=["metadatas"])
+
+### 이 컬렉션에 어떤 메타데이터가 있는지 확인 ###
+
+# print("\n🔍 샘플 메타데이터 확인:")
+# for i, meta in enumerate(sample["metadatas"]):
+#     print(f"[{i+1}] {meta}")
+
+#     name = meta.get('Name', '이름없음')
+
+
+# for i, meta in enumerate(sample["metadatas"]):
+#     name = meta.get('Name', '이름없음')
+#     region = meta.get('CTPRVN_NM', '')
+#     in_out = meta.get('in_out', '')
+#     age = meta.get('Age', '')
+#     note = meta.get('Note', age)
+#     print(f"[{i+1}] {name} ({region}, {in_out}, 연령: {note})")
+
+
+
