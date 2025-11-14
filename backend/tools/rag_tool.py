@@ -18,11 +18,12 @@ try:
             anonymized_telemetry=False
         )
     )
-    
+    print(settings.CHROMA_PORT,"chroma_port")
+    print(settings.CHROMA_HOST,"chroma_host")
     collection = chroma_client.get_collection(
         name="kid_program_collection"
     )
-
+    print(collection)
     
     logger.info(f"✅ ChromaDB 연결 성공: {collection.name}")
     logger.info(f"컬렉션 항목 수: {collection.count()}")
