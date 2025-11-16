@@ -3,13 +3,15 @@ import type { Message } from "../types";
 import MessageBubble from "./MessageBubble";
 import KakaoMapView from "./KakaoMapView";
 import ExamplePrompts from "./ExamplePrompts";
+import TypingIndicator from "./TypingIndicator";
 
 interface Props {
   messages: Message[];
   onPromptClick: (prompt: string) => void;
+  isLoading: boolean;
 }
 
-const ChatWindow: React.FC<Props> = ({ messages, onPromptClick }) => {
+const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
@@ -17,7 +19,7 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick }) => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, isLoading]);
 
   return (
     <div 
@@ -29,24 +31,35 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick }) => {
           <ExamplePrompts onPromptClick={onPromptClick} />
         </div>
       ) : (
-        messages.map((msg, i) => (
-          <div key={i}>
-            {msg.type === "map" ? (
-              <>
-                {/* map 타입: 텍스트 + 지도 보기 버튼 + 지도 */}
-                <MessageBubble 
-                  role={msg.role} 
-                  content={msg.content} 
-                  link={msg.link} // 👈 link prop 전달
-                />
-                {msg.data && <KakaoMapView data={msg.data} />}
-              </>
-            ) : (
-              /* text 타입: 텍스트만 */
-              <MessageBubble role={msg.role} content={msg.content} />
-            )}
-          </div>
-        ))
+        <>
+          {messages.map((msg, i) => (
+            <div key={i}>
+              {msg.type === "map" ? (
+                <>
+                  {/* map 타입: 텍스트 + 지도 보기 버튼 + 지도 */}
+                  <MessageBubble 
+                    role={msg.role} 
+                    content={msg.content} 
+                    link={msg.link} // 👈 link prop 전달
+                  />
+                  {msg.data && <KakaoMapView data={msg.data} />}
+                </>
+              ) : (
+                /* text 타입: 텍스트만 */
+                <MessageBubble role={msg.role} content={msg.content} />
+              )}
+            </div>
+          ))}
+          
+          {/* 로딩 중일 때 TypingIndicator 표시 */}
+          {isLoading && (
+            <div className="flex justify-start">
+              <div className="max-w-[80%] p-3 rounded-2xl bg-gray-100 border border-gray-200 rounded-bl-none shadow-sm">
+                <TypingIndicator />
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

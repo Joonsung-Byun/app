@@ -1,4 +1,5 @@
 import React, {useEffect} from "react";
+import { marked } from "marked";
 import type { MessageRole } from "../types";
 
 interface Props {
@@ -12,7 +13,12 @@ const MessageBubble: React.FC<Props> = ({ role, content, link }) => {
     if (link)
     console.log("MessageBubble rendered with link:", link);
   }, [link]);
+  
   const isUser = role === "user";
+  
+  // 마크다운을 HTML로 변환
+  const htmlContent = marked(content);
+  
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
@@ -24,7 +30,11 @@ const MessageBubble: React.FC<Props> = ({ role, content, link }) => {
             : "bg-gray-100 text-gray-700 border border-gray-200 rounded-bl-none shadow-sm"
         }`}
       >
-        {content}
+        {/* 마크다운 HTML 렌더링 */}
+        <div 
+          className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5"
+          dangerouslySetInnerHTML={{ __html: htmlContent }}
+        />
         
         {/* link가 있으면 "지도 보기" 버튼 표시 */}
         {link && (

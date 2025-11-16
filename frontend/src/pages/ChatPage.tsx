@@ -19,6 +19,7 @@ const ChatPage: React.FC = () => {
   const { messages, addMessage, clearMessages } = useChatStorage();
   const [message, setMessage] = useState("");
   const [started, setStarted] = useState(messages.length > 0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handlePromptClick = (prompt: string) => {
     setMessage(prompt);
@@ -29,13 +30,14 @@ const ChatPage: React.FC = () => {
 
     const userMsg: Message = { role: "user", content: userMessage, type: "text" };
     addMessage(userMsg);
+    setIsLoading(true);
 
     try {
       // conversation_id 가져오기 (없으면 빈 문자열)
       const conversationId = localStorage.getItem("conversation_id") || "";
 
       // API 호출
-      const response = await fetch("http://127.0.0.1:8080/api/chat", {
+      const response = await fetch("http://localhost:8080/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,6 +89,8 @@ const ChatPage: React.FC = () => {
         content: "죄송해요, 일시적인 오류가 발생했어요. 다시 시도해주세요. 😢",
       };
       addMessage(errorMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -151,7 +155,11 @@ const ChatPage: React.FC = () => {
           {started && (
             <>
               <div className="mb-4 min-w-0">
-                <ChatWindow messages={messages} onPromptClick={handlePromptClick} />
+                <ChatWindow 
+                  messages={messages} 
+                  onPromptClick={handlePromptClick}
+                  isLoading={isLoading}
+                />
               </div>
 
               <InputBox
