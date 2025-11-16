@@ -34,8 +34,8 @@ def extract_user_intent(user_message: str) -> str:
    - 없으면 null
 
 2. **weather_mentioned (날씨 언급 여부)**:
-   - "비", "맑은", "흐린", "날씨" 키워드 있으면 true
-   - 없으면 false
+   - "비", "맑은", "흐린" 등 날씨 관련 키워드 있으면 true
+   - 없거나 유저가 날씨 확인 해달라고 하면 false
 
 3. **weather_condition (날씨 상태)**:
    - "비", "맑음", "흐림", "눈" 등

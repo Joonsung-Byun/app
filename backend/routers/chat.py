@@ -16,11 +16,6 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 agent_executor = create_agent()
 
-def is_map_request(message: str) -> bool:
-    """지도 요청인지 판단"""
-    map_keywords = ["지도", "위치", "어디", "map", "show me", "보여줘", "보여주", "지도보여"]
-    return any(keyword in message.lower() for keyword in map_keywords)
-
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     """채팅 엔드포인트"""
@@ -43,93 +38,98 @@ async def chat(request: ChatRequest):
         # 사용자 메시지 추가
         add_message(conversation_id, "user", user_message)
         
-        # 지도 요청인지 확인
-        if is_map_request(user_message):
-            logger.info("지도 요청 감지")
-            
-            # 이전 검색 결과 가져오기
-            last_results = get_last_search_results(conversation_id)
-            
-            if last_results and len(last_results) > 0:
-                logger.info(f"저장된 검색 결과 사용: {len(last_results)}개")
-                
-                # 지도 응답 생성
-                markers = [
-                    MarkerData(
-                        name=f["name"],
-                        lat=f["lat"],
-                        lng=f["lng"],
-                        desc=f.get("desc", "")
-                    )
-                    for f in last_results
-                ]
-                
-                center_lat = sum(m.lat for m in markers) / len(markers)
-                center_lng = sum(m.lng for m in markers) / len(markers)
-                
-                map_data = MapData(
-                    center={"lat": center_lat, "lng": center_lng},
-                    markers=markers
-                )
-                
-                kakao_link = f"https://map.kakao.com/link/to/{markers[0].name},{markers[0].lat},{markers[0].lng}"
-                
-                add_message(conversation_id, "ai", "[지도 데이터 전송]")
-                
-                return ChatResponse(
-                    role="ai",
-                    content="",
-                    type="map",
-                    link=kakao_link,
-                    data=map_data,
-                    conversation_id=conversation_id
-                )
-            else:
-                logger.warning("저장된 검색 결과 없음")
-                
-                ai_response = "아직 장소를 검색하지 않았어요. 먼저 원하시는 지역과 활동을 말씀해주세요!"
-                add_message(conversation_id, "ai", ai_response)
-                
-                return ChatResponse(
-                    role="ai",
-                    content=ai_response,
-                    type="text",
-                    conversation_id=conversation_id
-                )
+        # 대화 히스토리를 문자열로 변환 (Agent에 전달용)
+        history_str = "\n".join([
+            f"{msg.type}: {msg.content}" 
+            for msg in chat_history
+        ])
         
-        # 일반 요청 - Agent 실행 (original_query 전달)
+        # Agent 실행 (모든 요청 처리)
         result = agent_executor.invoke({
             "input": user_message,
             "chat_history": chat_history,
+            "conversation_history": history_str,  # show_map_for_facilities용
             "child_age": request.child_age,
-            "original_query": user_message  # ← 추가
+            "original_query": user_message
         })
         
         output = result["output"]
         intermediate_steps = result.get("intermediate_steps", [])
         
-        # facilities 추출
-        facilities_data = None
+        # search_facilities 결과 저장
         for step in intermediate_steps:
             if step[0].tool == "search_facilities":
                 try:
                     search_result = json.loads(step[1])
                     if search_result.get("success"):
                         facilities_data = search_result.get("facilities", [])
-                        
                         if facilities_data:
                             save_search_results(conversation_id, facilities_data)
-                except:
-                    pass
+                            logger.info(f"✅ 검색 결과 저장: {len(facilities_data)}개 시설")
+                except Exception as e:
+                    logger.error(f"검색 결과 저장 실패: {e}")
+        
+        # show_map_for_facilities 결과 처리
+        map_data = None
+        kakao_link = None
+        response_type = "text"
+        
+        for step in intermediate_steps:
+            if step[0].tool == "show_map_for_facilities":
+                try:
+                    map_result = json.loads(step[1])
+                    if map_result.get("success"):
+                        facilities = map_result.get("facilities", [])
+                        selected_indices = map_result.get("selected_indices", [0, 1, 2])
+                        
+                        if facilities and len(facilities) > 0:
+                            logger.info(f"✅ 지도 데이터 생성: {len(facilities)}개 시설 (인덱스: {selected_indices})")
+                            
+                            # MarkerData 생성 (필터링된 시설만)
+                            markers = [
+                                MarkerData(
+                                    name=f["name"],
+                                    lat=f["lat"],
+                                    lng=f["lng"],
+                                    desc=f.get("desc", "")
+                                )
+                                for f in facilities
+                            ]
+                            
+                            # 필터링된 첫 번째 시설을 중심으로
+                            # (예: 인덱스 [1,2] 선택 시 → 두 번째 시설이 중심)
+                            center_lat = markers[0].lat
+                            center_lng = markers[0].lng
+                            
+                            map_data = MapData(
+                                center={"lat": center_lat, "lng": center_lng},
+                                markers=markers
+                            )
+                            
+                            # 카카오맵 링크도 필터링된 첫 번째 시설
+                            kakao_link = f"https://map.kakao.com/link/to/{markers[0].name},{markers[0].lat},{markers[0].lng}"
+                            
+                            response_type = "map"
+                            
+                            # 지도 응답 메시지
+                            if len(facilities) == 1:
+                                output = f"{markers[0].name}의 지도를 표시합니다."
+                            else:
+                                output = f"{len(facilities)}개 시설의 지도를 표시합니다."
+                            
+                except Exception as e:
+                    logger.error(f"지도 데이터 처리 실패: {e}")
         
         # AI 응답 저장
         add_message(conversation_id, "ai", output)
         
-        # 응답 생성 (항상 type: text)
+        # 응답 생성
         return ChatResponse(
             role="ai",
             content=output,
-            type="text",
+            type=response_type,
+            link=kakao_link,
+            data=map_data,
             conversation_id=conversation_id
         )
     
@@ -138,28 +138,3 @@ async def chat(request: ChatRequest):
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
-    
-    ## 동작 예시
-
-    ### 입력: "부산 자전거 타기 좋은 곳"
-    # ```
-    # 1. chat.py
-    # → original_query = "부산 자전거 타기 좋은 곳"
-    
-    # 2. Agent 실행
-    # → extract_user_intent("부산 자전거 타기 좋은 곳")
-    # → {"location": "부산", "needs_weather_check": true}
-    
-    # 3. get_weather_forecast("부산", "today")
-    # → {"is_indoor": false}
-    
-    # 4. search_facilities(
-    #         region="부산",
-    #         is_indoor=False,
-    #         original_query="부산 자전거 타기 좋은 곳"  ← 핵심!
-    #     )
-    
-    # 5. rag_tool.py
-    # → query_text = "부산 실외 부산 자전거 타기 좋은 곳"
-    # → 임베딩 검색으로 자전거 관련 시설 우선 반환!
-    # ```

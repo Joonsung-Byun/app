@@ -5,7 +5,8 @@ from tools import (
     extract_user_intent,
     get_weather_forecast,
     search_facilities,
-    generate_kakao_map_link
+    # generate_kakao_map_link,
+    show_map_for_facilities
 )
 from agent.prompts import SYSTEM_PROMPT
 
@@ -17,7 +18,8 @@ def create_agent():
         extract_user_intent,
         get_weather_forecast,
         search_facilities,
-        generate_kakao_map_link
+        # generate_kakao_map_link,
+        show_map_for_facilities
     ]
     
     # chat_history placeholder 추가

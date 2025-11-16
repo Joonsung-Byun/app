@@ -35,7 +35,7 @@ except Exception as e:
 @tool
 def search_facilities(
     original_query: str,
-    k: int = 10
+    k: int = 5
 ) -> str:
     """
     사용자 질문과 가장 유사한 시설을 검색합니다.
@@ -139,6 +139,7 @@ def search_facilities(
             logger.warning("⚠️  ChromaDB 결과가 비어있음")
         
         logger.info(f"최종 반환: {len(facilities)}개 시설")
+        facilities = facilities[:3]
         
         return json.dumps({
             "success": True,

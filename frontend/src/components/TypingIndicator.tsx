@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 
 const MESSAGES = [
-  '공공 장소를 찾는중..',
-  '날씨 정보를 얻어오는 중..',
+  '장소 정보를 찾는 중..',
+  '해당 장소 특이사항 분석 중..',
   '응답을 생성하는 중..',
 ];
 

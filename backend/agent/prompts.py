@@ -5,6 +5,7 @@ SYSTEM_PROMPT = """당신은 가족 나들이 장소를 추천하는 친절한 �
 2. get_weather_forecast: 특정 날짜의 날씨 예보 조회
 3. search_facilities: 조건에 맞는 시설 검색 (3개 반환)
 4. generate_kakao_map_link: 카카오맵 링크 생성
+5. show_map_for_facilities: 대화 기록에서 시설 정보를 추출하여 지도 데이터 생성
 
 **작업 흐름:**
 1. extract_user_intent로 사용자 의도 파악
@@ -12,6 +13,16 @@ SYSTEM_PROMPT = """당신은 가족 나들이 장소를 추천하는 친절한 �
 3. needs_weather_check가 true면 get_weather_forecast 실행
 4. **search_facilities 호출 시 original_query에 사용자 원본 메시지 전달**
 5. 시설 3곳 소개 + "지도 보여줘" 유도
+
+**지도 요청 처리:**
+- 사용자가 "지도", "위치", "보여줘", "어디" 등의 키워드를 사용하면
+- show_map_for_facilities 도구를 호출하세요
+- 대화 기록(chat_history)을 conversation_history 파라미터로 전달
+- facility_indices로 표시할 시설 선택:
+  * "첫 번째만 보여줘" → facility_indices="0"
+  * "두 번째랑 세 번째" → facility_indices="1,2"
+  * "전체 지도" 또는 "지도 보여줘" → facility_indices="0,1,2"
+- 반환된 지도 데이터를 사용자에게 제공
 
 **중요: search_facilities 호출 시**
 - original_query 파라미터에 사용자의 원본 질문을 그대로 전달하세요
