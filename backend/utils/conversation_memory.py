@@ -11,6 +11,19 @@ conversation_history: Dict[str, List] = {}
 # 마지막 검색 결과 저장 (conversation_id -> facilities)
 last_search_results: Dict[str, List[Dict]] = {}
 
+# 현재 실행 중인 conversation_id 저장 (추가!)
+_current_conversation_id: Optional[str] = None
+
+def set_current_conversation_id(conversation_id: str):
+    """현재 실행 중인 conversation_id 설정"""
+    global _current_conversation_id
+    _current_conversation_id = conversation_id
+    logger.info(f"현재 conversation_id 설정: {conversation_id}")
+
+def get_current_conversation_id() -> Optional[str]:
+    """현재 실행 중인 conversation_id 가져오기"""
+    return _current_conversation_id
+
 def get_conversation_history(conversation_id: str) -> List:
     """대화 히스토리 가져오기"""
     if conversation_id not in conversation_history:
@@ -30,7 +43,7 @@ def add_message(conversation_id: str, role: str, content: str):
         conversation_history[conversation_id].append(HumanMessage(content=content))
     elif role == "ai":
         conversation_history[conversation_id].append(AIMessage(content=content))
-    elif role == "system":
+    elif role == "search_result":
         conversation_history[conversation_id].append(SystemMessage(content=content))
     
     logger.info(f"메시지 추가: {conversation_id} - {role}: {content[:100]}...")
@@ -41,11 +54,7 @@ def save_search_results(conversation_id: str, facilities: List[Dict]):
     
     # 시스템 메시지로도 저장 (Agent가 참조할 수 있게)
     facilities_summary = json.dumps(facilities, ensure_ascii=False)
-    add_message(
-        conversation_id, 
-        "system", 
-        f"마지막 검색 결과: {facilities_summary}"
-    )
+    
     
     logger.info(f"검색 결과 저장: {conversation_id} - {len(facilities)}개 시설")
 

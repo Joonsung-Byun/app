@@ -1,17 +1,17 @@
 from langchain.tools import tool
 from models.chat_models import get_llm
+from utils.conversation_memory import get_conversation_history, get_current_conversation_id  # 추가!
 import json
 import logging
 
 logger = logging.getLogger(__name__)
 
 @tool
-def show_map_for_facilities(conversation_history: str, facility_indices: str = "0,1,2") -> str:
+def show_map_for_facilities(facility_indices: str = "0,1,2") -> str:
     """
     대화 기록에서 추천된 시설들의 지도 데이터를 생성합니다.
     
     Args:
-        conversation_history: 대화 기록 (문자열)
         facility_indices: 표시할 시설 인덱스 (쉼표로 구분)
                          예: "0" = 첫 번째만
                              "1,2" = 두 번째와 세 번째
@@ -20,7 +20,18 @@ def show_map_for_facilities(conversation_history: str, facility_indices: str = "
     Returns:
         지도 데이터 JSON (name, lat, lng, desc 포함)
     """
-    logger.info(f"지도 생성 도구 호출: indices={facility_indices}")
+    # 현재 conversation_id 가져오기
+    conversation_id = get_current_conversation_id()
+    
+    if not conversation_id:
+        logger.error("❌ conversation_id를 찾을 수 없음")
+        return json.dumps({
+            "success": False,
+            "message": "대화 세션을 찾을 수 없습니다",
+            "facilities": []
+        }, ensure_ascii=False)
+    
+    logger.info(f"지도 생성 도구 호출: conversation_id={conversation_id}, indices={facility_indices}")
     
     # 인덱스 파싱
     try:
@@ -30,23 +41,38 @@ def show_map_for_facilities(conversation_history: str, facility_indices: str = "
         indices = [0, 1, 2]  # 기본값
         logger.warning(f"인덱스 파싱 실패, 기본값 사용: {indices}")
     
+    # conversation_id로 직접 히스토리 가져오기
+    chat_history = get_conversation_history(conversation_id)
+    
+    # 문자열로 변환
+    history_str = "\n\n".join([
+        f"[{msg.type.upper()}]\n{msg.content}" 
+        for msg in chat_history
+    ])
+    
+    print("show_map에서 보는 conversation_id:", conversation_id)
+    print("show_map에서 보는 chat_history 메시지 수:", len(chat_history))
+    
     llm = get_llm()
     
     prompt = f"""
-당신은 대화 기록에서 추천된 시설 정보를 정확하게 추출하는 전문가입니다.
+당신은 대화 기록에서 **가장 최근에** 추천된 시설 정보를 정확하게 추출하는 전문가입니다.
 
 **대화 기록:**
-{conversation_history}
+{history_str}
 
 **작업:**
-위 대화에서 AI가 추천한 시설들의 정보를 추출하세요.
-모든 추천된 시설을 추출합니다 (최대 10개).
+1. 위 대화를 **시간 순서대로** 읽으세요 (위에서 아래로)
+2. **가장 마지막에 등장한** "마지막 검색 결과:"를 찾으세요
+3. 그 검색 결과의 JSON list에서 **정확히** 시설 정보를 추출하세요
+4. **이전 검색 결과는 무시**하고, 오직 가장 최근 것만 사용하세요
 
-**중요:**
+**중요 규칙:**
+- "마지막 검색 결과:"가 여러 번 나온다면, **가장 아래(최신)의 것만** 사용
+- lat/lng는 **반드시** JSON list에서 그대로 복사
 - 시설명(name), 위도(lat), 경도(lng)를 정확히 추출
-- 설명(desc)은 간단히 요약 (주소나 특징)
+- 설명(desc)은 간단히 요약
 - 추천 순서대로 정렬 (첫 번째 추천 = index 0)
-- 대화에서 "첫 번째", "1번", "두 번째", "2번" 등으로 언급된 순서 유지
 
 **응답 형식 (JSON만):**
 {{
@@ -61,7 +87,7 @@ def show_map_for_facilities(conversation_history: str, facility_indices: str = "
   ]
 }}
 
-**대화에 추천된 시설이 없으면:**
+**검색 결과가 없으면:**
 {{
   "success": false,
   "facilities": []

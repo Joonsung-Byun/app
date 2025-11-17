@@ -97,7 +97,9 @@ const ChatPage: React.FC = () => {
   // 페이지 떠날 때 메시지만 삭제 (conversation_id는 유지)
   window.addEventListener("beforeunload", () => {
     localStorage.removeItem("chatMessages");
-    // conversation_id는 유지!
+    // conversation_id 삭제 후 새로 생성
+    const uuid = crypto.randomUUID();
+    localStorage.setItem("conversation_id", uuid);
   });
 
   return (

@@ -5,7 +5,8 @@ from utils.conversation_memory import (
     get_conversation_history,
     add_message,
     save_search_results,
-    get_last_search_results
+    get_last_search_results,
+    set_current_conversation_id 
 )
 import json
 import logging
@@ -22,25 +23,24 @@ async def chat(request: ChatRequest):
     
     # conversation_id 없으면 생성
     conversation_id = request.conversation_id
+    
     if not conversation_id or conversation_id.strip() == "":
         conversation_id = str(uuid.uuid4())
-        logger.info(f"새 conversation_id 생성: {conversation_id}")
     
     user_message = request.message
-    
-    logger.info(f"=== 채팅 요청: {conversation_id} ===")
-    logger.info(f"메시지: {user_message}")
+
     
     try:
         # 대화 히스토리 가져오기
+        set_current_conversation_id(conversation_id)
         chat_history = get_conversation_history(conversation_id)
         
         # 사용자 메시지 추가
         add_message(conversation_id, "user", user_message)
         
-        # 대화 히스토리를 문자열로 변환 (Agent에 전달용)
-        history_str = "\n".join([
-            f"{msg.type}: {msg.content}" 
+        # role에 상관없는 모든 대화 기록 문자열 생성
+        history_str = "\n\n".join([
+            f"[{msg.type.upper()}]\n{msg.content}" 
             for msg in chat_history
         ])
         
@@ -65,6 +65,11 @@ async def chat(request: ChatRequest):
                         facilities_data = search_result.get("facilities", [])
                         if facilities_data:
                             save_search_results(conversation_id, facilities_data)
+                            add_message(
+                            conversation_id, 
+                            "search_result", 
+                            f"마지막 검색 결과: {facilities_data}"
+                        )
                             logger.info(f"✅ 검색 결과 저장: {len(facilities_data)}개 시설")
                 except Exception as e:
                     logger.error(f"검색 결과 저장 실패: {e}")
@@ -122,6 +127,7 @@ async def chat(request: ChatRequest):
         
         # AI 응답 저장
         add_message(conversation_id, "ai", output)
+        print("최종 chat_history:", get_conversation_history(conversation_id))
         
         # 응답 생성
         return ChatResponse(

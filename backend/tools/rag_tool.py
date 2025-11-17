@@ -83,8 +83,6 @@ def search_facilities(
             n_results=k,
             include=["metadatas", "documents", "distances"]
         )
-
-        print(f"results: {results}")
         
         logger.info(f"✅ 벡터 검색 완료: {len(results['ids'][0])}개")
         
