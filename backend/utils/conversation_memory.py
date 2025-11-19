@@ -13,19 +13,6 @@ shown_facilities_history: Dict[str, set] = {}
 # 마지막 검색 결과 저장 (conversation_id -> facilities)
 last_search_results: Dict[str, List[Dict]] = {}
 
-# 현재 실행 중인 conversation_id 저장 (추가!)
-_current_conversation_id: Optional[str] = None
-
-def set_current_conversation_id(conversation_id: str):
-    """현재 실행 중인 conversation_id 설정"""
-    global _current_conversation_id
-    _current_conversation_id = conversation_id
-    logger.info(f"현재 conversation_id 설정: {conversation_id}")
-
-def get_current_conversation_id() -> Optional[str]:
-    """현재 실행 중인 conversation_id 가져오기"""
-    return _current_conversation_id
-
 def get_conversation_history(conversation_id: str) -> List:
     """대화 히스토리 가져오기"""
     if conversation_id not in conversation_history:

@@ -24,6 +24,7 @@ def create_agent():
     # chat_history placeholder 추가
     prompt = ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT),
+        ("system", "현재 대화 ID: {conversation_id}"),
         MessagesPlaceholder(variable_name="chat_history", optional=True),  # 대화 히스토리
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),

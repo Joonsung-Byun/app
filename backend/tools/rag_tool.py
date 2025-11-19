@@ -6,10 +6,7 @@ from models.pca_embeddings import pca_embeddings
 from typing import Optional
 import json
 import logging
-from utils.conversation_memory import (
-get_current_conversation_id,
-get_shown_facility_names
-)
+from utils.conversation_memory import get_shown_facility_names
 
 logger = logging.getLogger(__name__)
 
@@ -33,6 +30,7 @@ except Exception as e:
 @tool
 def search_facilities(
     original_query: str,
+    conversation_id: str,
     k: int = 3  # 기본값을 3으로 설정 (유저가 개수 말 안 하면 3개)
 ) -> str:
     """
@@ -40,6 +38,7 @@ def search_facilities(
     
     Args:
         original_query: 사용자의 원본 질문 (예: "부산 자전거 타기 좋은 곳")
+        conversation_id: 현재 대화 ID
         k: 반환할 결과 개수. 사용자가 구체적인 개수(예: '2군데', '하나만')를 언급하면 그 숫자를 입력하세요. 언급이 없으면 기본값 3을 사용합니다.
     
     Returns:
@@ -50,10 +49,13 @@ def search_facilities(
     logger.info(f"original_query: {original_query}, k: {k}")
     logger.info(f"{'='*50}")
 
-    conversation_id = get_current_conversation_id()
-
-    print(f"rag_tool.py에서 conversation_id : {conversation_id}")
-
+    if not conversation_id:
+        logger.error("conversation_id가 전달되지 않았습니다.")
+        return json.dumps({
+            "success": False,
+            "message": "대화 ID가 없어 검색을 진행할 수 없습니다.",
+            "facilities": []
+        }, ensure_ascii=False)
     
     if collection is None:
         logger.error("ChromaDB 컬렉션이 없음")

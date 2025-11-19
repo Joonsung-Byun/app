@@ -30,6 +30,7 @@ def test_search_facilities():
             # search_facilities 호출 (위치 인자로 전달!)
             result_json = search_facilities.invoke({
                 "original_query": query,
+                "conversation_id": f"test-{query}",
                 "k": 5
             })
             result = json.loads(result_json)

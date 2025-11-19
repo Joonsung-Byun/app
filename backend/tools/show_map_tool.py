@@ -1,17 +1,21 @@
 from langchain.tools import tool
 from models.chat_models import get_llm
-from utils.conversation_memory import get_conversation_history, get_current_conversation_id  # 추가!
+from utils.conversation_memory import get_conversation_history
 import json
 import logging
 
 logger = logging.getLogger(__name__)
 
 @tool
-def show_map_for_facilities(facility_indices: str = "0,1,2") -> str:
+def show_map_for_facilities(
+    conversation_id: str,
+    facility_indices: str = "0,1,2"
+) -> str:
     """
     대화 기록에서 추천된 시설들의 지도 데이터를 생성합니다.
     
     Args:
+        conversation_id: 현재 대화 ID
         facility_indices: 표시할 시설 인덱스 (쉼표로 구분)
                          예: "0" = 첫 번째만
                              "1,2" = 두 번째와 세 번째
@@ -20,9 +24,6 @@ def show_map_for_facilities(facility_indices: str = "0,1,2") -> str:
     Returns:
         지도 데이터 JSON (name, lat, lng, desc 포함)
     """
-    # 현재 conversation_id 가져오기
-    conversation_id = get_current_conversation_id()
-    
     if not conversation_id:
         logger.error("❌ conversation_id를 찾을 수 없음")
         return json.dumps({
