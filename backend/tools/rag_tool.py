@@ -9,6 +9,10 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# 유사도 커트라인
+# 테스트해보면서 1.0 ~ 1.5 사이로 조절 필요. 숫자가 작을수록 엄격함.
+SIMILARITY_THRESHOLD = 1.3 
+
 # ChromaDB 클라이언트 초기화
 try:
     chroma_client = chromadb.HttpClient(
@@ -18,12 +22,12 @@ try:
             anonymized_telemetry=False
         )
     )
-    print(settings.CHROMA_PORT,"chroma_port")
-    print(settings.CHROMA_HOST,"chroma_host")
+    # print(settings.CHROMA_PORT,"chroma_port") # 로그 너무 많으면 주석 처리해도 됨
+    # print(settings.CHROMA_HOST,"chroma_host")
     collection = chroma_client.get_collection(
         name="kid_program_collection"
     )
-    print(collection)
+    # print(collection)
     
     logger.info(f"✅ ChromaDB 연결 성공: {collection.name}")
     logger.info(f"컬렉션 항목 수: {collection.count()}")
@@ -39,13 +43,7 @@ def search_facilities(
 ) -> str:
     """
     사용자 질문과 가장 유사한 시설을 검색합니다.
-    
-    Args:
-        original_query: 사용자의 원본 질문 (예: "부산 자전거 타기 좋은 곳", "서울 실내 놀이터")
-        k: 반환할 결과 개수 (기본값: 10)
-    
-    Returns:
-        시설 정보 JSON (유사도 높은 순으로 정렬)
+    유사도가 낮으면 결과가 없을 수 있습니다.
     """
     logger.info(f"\n{'='*50}")
     logger.info(f"시설 검색 시작")
@@ -60,23 +58,17 @@ def search_facilities(
             "facilities": []
         }, ensure_ascii=False)
     
-    # 쿼리 텍스트는 사용자 질문 그대로 사용
     query_text = original_query
-    
-    print(f"쿼리 텍스트: {query_text}")
+    # print(f"쿼리 텍스트: {query_text}")
     
     try:
         # 임베딩 생성
-        print("임베딩 생성 중...")
+        # print("임베딩 생성 중...")
         query_embedding = pca_embeddings.embed_query(query_text)
-        print(f"✅ 임베딩 완료: {len(query_embedding)}차원")
+        # print(f"✅ 임베딩 완료: {len(query_embedding)}차원")
         
         # 벡터 검색
-        print("ChromaDB 벡터 검색 중...")
-        print(f"✅ 임베딩 완료: {len(query_embedding)}차원")
-        
-        # 벡터 검색
-        print("ChromaDB 벡터 검색 중...")
+        # print("ChromaDB 벡터 검색 중...")
         
         results = collection.query(
             query_embeddings=[query_embedding],
@@ -84,7 +76,7 @@ def search_facilities(
             include=["metadatas", "documents", "distances"]
         )
         
-        logger.info(f"✅ 벡터 검색 완료: {len(results['ids'][0])}개")
+        logger.info(f"✅ 벡터 검색 완료: {len(results['ids'][0])}개 후보")
         
         facilities = []
         
@@ -93,11 +85,19 @@ def search_facilities(
             documents = results['documents'][0]
             distances = results['distances'][0]
             
-            # 유사도 높은 순으로 상위 k개 반환
+            # 유사도 높은 순으로 상위 k개 검사
             for i, metadata in enumerate(metadatas):
                 name = metadata.get("Name", metadata.get("name", "이름없음"))
+                current_dist = distances[i]
+
+                # 유사도 점수 검사
+                # 거리가 너무 멀면(숫자가 크면) 리스트에 담지 않고 넘어감
+                if current_dist > SIMILARITY_THRESHOLD:
+                    logger.warning(f"  ❌ [탈락] {name} (distance: {current_dist:.4f} > {SIMILARITY_THRESHOLD})")
+                    continue # 다음 반복으로 건너뛰기
                 
-                logger.info(f"  ✅ [{i+1}] {name} (distance: {distances[i]:.4f})")
+                logger.info(f"  ✅ [통과] {name} (distance: {current_dist:.4f})")
+                
                 
                 # 좌표
                 lat = metadata.get("LAT", "37.5665")
@@ -130,17 +130,21 @@ def search_facilities(
                     "note": metadata.get("Note", ""),
                     "category": category3 or category1 or "시설",
                     "desc": desc,
-                    "distance": distances[i]
+                    "distance": current_dist
                 })
         
         else:
             logger.warning("⚠️  ChromaDB 결과가 비어있음")
         
-        logger.info(f"최종 반환: {len(facilities)}개 시설")
+        # 필터링 후 남은 개수 확인
+        logger.info(f"최종 반환(필터링 후): {len(facilities)}개 시설")
+        
+        # 최대 3개까지만 자름
         facilities = facilities[:3]
         
         return json.dumps({
             "success": True,
+            "count": len(facilities), # Agent가 개수를 알 수 있게 추가해주면 좋음
             "facilities": facilities
         }, ensure_ascii=False)
         
