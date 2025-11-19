@@ -4,9 +4,7 @@ from agent import create_agent
 from utils.conversation_memory import (
     get_conversation_history,
     add_message,
-    save_search_results,
-    get_last_search_results,
-    set_current_conversation_id 
+    save_search_results
 )
 import json
 import logging
@@ -32,7 +30,6 @@ async def chat(request: ChatRequest):
     
     try:
         # 대화 히스토리 가져오기
-        set_current_conversation_id(conversation_id)
         chat_history = get_conversation_history(conversation_id)
         
         # 사용자 메시지 추가
@@ -50,7 +47,8 @@ async def chat(request: ChatRequest):
             "chat_history": chat_history,
             "conversation_history": history_str,  # show_map_for_facilities용
             "child_age": request.child_age,
-            "original_query": user_message
+            "original_query": user_message,
+            "conversation_id": conversation_id
         })
         
         output = result["output"]
@@ -127,7 +125,6 @@ async def chat(request: ChatRequest):
         
         # AI 응답 저장
         add_message(conversation_id, "ai", output)
-        print("최종 chat_history:", get_conversation_history(conversation_id))
         
         # 응답 생성
         return ChatResponse(
