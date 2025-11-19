@@ -6,7 +6,8 @@ from utils.conversation_memory import (
     add_message,
     save_search_results,
     get_last_search_results,
-    set_current_conversation_id 
+    set_current_conversation_id,
+    get_shown_facility_names
 )
 import json
 import logging
@@ -127,7 +128,6 @@ async def chat(request: ChatRequest):
         
         # AI 응답 저장
         add_message(conversation_id, "ai", output)
-        print("최종 chat_history:", get_conversation_history(conversation_id))
         
         # 응답 생성
         return ChatResponse(
