@@ -61,13 +61,25 @@ const ChatPage: React.FC = () => {
 
       // 응답 타입에 따라 처리
       if (data.type === "map") {
-        // 지도 응답
+        // 🟢 [수정] 데이터가 배열인지 확인하고, 단일 객체(지오코딩 결과)라면 배열로 감싸주기
+        // RAG 검색 결과는 배열([...])로 오고, 지오코딩 결과는 단일 객체({...})로 올 수 있음
+        let mapData = data.data;
+        
+        if (!Array.isArray(mapData)) {
+            // 지오코딩 툴 결과가 address 필드를 가지고 있다면 desc로 매핑 (지도 UI 호환성)
+            if (mapData.address && !mapData.desc) {
+                mapData.desc = mapData.address;
+            }
+            mapData = [mapData]; // 배열로 변환
+        }
+
+        // 지도 응답 메시지 생성
         const mapMsg: Message = {
           role: "ai",
           type: "map",
-          content: "",
+          content: data.content || "위치를 지도에 표시해 드려요! 📍", // 내용이 비어있을 경우 기본 멘트
           link: data.link,
-          data: data.data,
+          data: mapData, // 항상 배열 형태로 저장됨
         };
         addMessage(mapMsg);
       } else {
