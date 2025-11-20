@@ -7,9 +7,10 @@ class Settings(BaseSettings):
     EMBEDDING_MODEL: str = "Alibaba-NLP/gte-Qwen2-7B-instruct"
     # API Keys
     OPENWEATHER_API_KEY: str = "72923a37d28c75e1c4c642947cfdab4b"
-    KAKAO_API_KEY: str
+    KAKAO_API_KEY: str = ""
     OPENAI_API_KEY: str
-    
+    NAVER_CLIENT_ID: str = ""      
+    NAVER_CLIENT_SECRET: str = ""
     # ChromaDB
     CHROMA_HOST: str = "localhost"
     CHROMA_PORT: int = 8000

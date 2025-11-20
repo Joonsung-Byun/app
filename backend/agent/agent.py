@@ -7,7 +7,8 @@ from tools import (
     search_facilities,
     #generate_kakao_map_link,
     show_map_for_facilities,
-    naver_web_search
+    naver_web_search,
+    search_map_by_address
 )
 from agent.prompts import SYSTEM_PROMPT
 
@@ -21,7 +22,8 @@ def create_agent():
         search_facilities,
         #generate_kakao_map_link,
         show_map_for_facilities,
-        naver_web_search
+        naver_web_search,
+        search_map_by_address
     ]
     
     # chat_history placeholder 추가

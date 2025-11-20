@@ -32,7 +32,7 @@ const MessageBubble: React.FC<Props> = ({ role, content, link }) => {
       >
         {/* 마크다운 HTML 렌더링 */}
         <div 
-          className="prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5"
+          className="ai_answer prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1 prose-ol:my-1 prose-li:my-0.5"
           dangerouslySetInnerHTML={{ __html: htmlContent }}
         />
         
