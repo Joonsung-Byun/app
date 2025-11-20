@@ -10,6 +10,10 @@ from utils.conversation_memory import get_shown_facility_names
 
 logger = logging.getLogger(__name__)
 
+# 유사도 커트라인
+# 테스트해보면서 1.0 ~ 1.5 사이로 조절 필요. 숫자가 작을수록 엄격함.
+SIMILARITY_THRESHOLD = 1.3 
+
 # ChromaDB 클라이언트 초기화
 try:
     chroma_client = chromadb.HttpClient(
@@ -19,9 +23,13 @@ try:
             anonymized_telemetry=False
         )
     )
+    
     collection = chroma_client.get_collection(
         name="kid_program_collection"
     )
+    
+    logger.info(f"✅ ChromaDB 연결 성공: {collection.name}")
+    logger.info(f"컬렉션 항목 수: {collection.count()}")
     
 except Exception as e:
     logger.error(f"❌ ChromaDB 연결 실패: {e}")
@@ -31,22 +39,20 @@ except Exception as e:
 def search_facilities(
     original_query: str,
     conversation_id: str,
-    k: int = 3  # 기본값을 3으로 설정 (유저가 개수 말 안 하면 3개)
+    location: str = "",  # 🟢 [추가] 지역 필터링을 위한 파라미터
+    k: int = 3 
 ) -> str:
     """
     사용자 질문과 가장 유사한 시설을 검색합니다.
     
     Args:
         original_query: 사용자의 원본 질문 (예: "부산 자전거 타기 좋은 곳")
-        conversation_id: 현재 대화 ID
-        k: 반환할 결과 개수. 사용자가 구체적인 개수(예: '2군데', '하나만')를 언급하면 그 숫자를 입력하세요. 언급이 없으면 기본값 3을 사용합니다.
-    
-    Returns:
-        시설 정보 JSON (유사도 높은 순으로 정렬)
+        conversation_id: 현재 대화 ID (중복 추천 방지용)
+        location: 사용자가 언급한 지역명 (예: "부산", "송파"). 없으면 빈 문자열.
+        k: 반환할 결과 개수.
     """
     logger.info(f"\n{'='*50}")
-    logger.info(f"시설 검색 시작")
-    logger.info(f"original_query: {original_query}, k: {k}")
+    logger.info(f"시설 검색 시작 | Query: {original_query} | Loc: {location}")
     logger.info(f"{'='*50}")
 
     if not conversation_id:
@@ -65,37 +71,32 @@ def search_facilities(
             "facilities": []
         }, ensure_ascii=False)
     
-    # 쿼리 텍스트는 사용자 질문 그대로 사용
-    query_text = original_query
-    
-    print(f"쿼리 텍스트: {query_text}")
-    
     try:
-        query_embedding = pca_embeddings.embed_query(query_text)
+        # 임베딩 생성
+        query_embedding = pca_embeddings.embed_query(original_query)
         
-        # 벡터 검색
-        print("ChromaDB 벡터 검색 중...")
-        
+        # 중복 방지 (이미 보여준 시설 이름 가져오기)
         facilities_names_already_shown = get_shown_facility_names(conversation_id) if conversation_id else []
-        print(f"지금까지 보여준 시설들: {facilities_names_already_shown}")
+        logger.info(f"제외할 시설들(중복): {facilities_names_already_shown}")
 
+        # 쿼리 실행 (중복 제외 로직 포함)
         if facilities_names_already_shown == []:
             results = collection.query(
                 query_embeddings=[query_embedding],
-                n_results=5,
+                n_results=10, # 넉넉하게 가져와서 필터링함
                 include=["metadatas", "documents", "distances"]
             )
         else:
             results = collection.query(
                 query_embeddings=[query_embedding],
-                n_results=5,
+                n_results=10, # 넉넉하게 가져와서 필터링함
                 where={
                     "Name": {"$nin": facilities_names_already_shown}
                 },
                 include=["metadatas", "documents", "distances"]
             )
         
-        logger.info(f"✅ 벡터 검색 완료: {len(results['ids'][0])}개")
+        logger.info(f"✅ 벡터 검색 완료: {len(results['ids'][0])}개 후보")
         
         facilities = []
         
@@ -103,19 +104,30 @@ def search_facilities(
             metadatas = results['metadatas'][0]
             documents = results['documents'][0]
             distances = results['distances'][0]
-
-            # 지역, 연령대
             
-            # 유사도 높은 순으로 상위 k개 반환
             for i, metadata in enumerate(metadatas):
                 name = metadata.get("Name", metadata.get("name", "이름없음"))
+                current_dist = distances[i]
                 
-                logger.info(f"  ✅ [{i+1}] {name} (distance: {distances[i]:.4f})")
+                # 🟡 [위치 이동] 주소를 필터링에 써야 해서 미리 가져옴
+                address = metadata.get("Address", "")
+
+                # 1. 유사도 점수 필터링
+                if current_dist > SIMILARITY_THRESHOLD:
+                    logger.warning(f"  ❌ [점수미달] {name} ({current_dist:.4f})")
+                    continue 
                 
-                # 좌표
+                # 2. 🟢 [추가] 지역명 강제 필터링 (핵심!)
+                # 사용자가 '부산'이라고 했는데 주소에 '부산'이 없으면 탈락시킴
+                if location and location not in address:
+                    logger.warning(f"  ❌ [지역불일치] {name} (요청: {location} != 주소: {address})")
+                    continue
+
+                logger.info(f"  ✅ [통과] {name} ({current_dist:.4f})")
+                
+                # 좌표 변환
                 lat = metadata.get("LAT", "37.5665")
                 lon = metadata.get("LON", "126.9780")
-                
                 try:
                     lat = float(lat)
                     lon = float(lon)
@@ -123,8 +135,7 @@ def search_facilities(
                     lat = 37.5665
                     lon = 126.9780
                 
-                # 설명
-                address = metadata.get("Address", "")
+                # 설명 생성
                 category1 = metadata.get("Category1", "")
                 category3 = metadata.get("Category3", "")
                 
@@ -143,25 +154,27 @@ def search_facilities(
                     "note": metadata.get("Note", ""),
                     "category": category3 or category1 or "시설",
                     "desc": desc,
-                    "distance": distances[i]
+                    "distance": current_dist
                 })
         
         else:
             logger.warning("⚠️  ChromaDB 결과가 비어있음")
         
-        logger.info(f"최종 반환: {len(facilities)}개 시설")
-        facilities = facilities[:k]  # 상위 k개
+        logger.info(f"최종 유효 결과: {len(facilities)}개")
+        
+        # 요청한 개수(k)만큼 자르기
+        facilities = facilities[:k]
         
         return json.dumps({
             "success": True,
+            "count": len(facilities),
             "facilities": facilities
         }, ensure_ascii=False)
         
     except Exception as e:
-        logger.error(f"❌ 검색 중 오류: {type(e).__name__}")
-        logger.error(f"오류 메시지: {str(e)}")
+        logger.error(f"❌ 검색 중 오류: {str(e)}")
         import traceback
-        logger.error(f"스택 트레이스:\n{traceback.format_exc()}")
+        logger.error(traceback.format_exc())
         
         return json.dumps({
             "success": False,
