@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     LLM_BACKEND: str = "auto"  # "auto" | "openai" | "vllm"
     VLLM_ENDPOINT: str = "http://localhost:8090/v1"
     VLLM_MODEL_NAME: str = "Qwen/Qwen3-8B-AWQ"  # AWQ로 변경
+
+    SUPABASE_URL: str = ""
+    SUPABASE_KEY: str = ""
     
     # Server
     HOST: str = "0.0.0.0"
