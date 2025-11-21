@@ -14,6 +14,9 @@ services:
        - CHROMA_COLLECTION=kid_program_collection
        - OPENWEATHER_API_KEY=${OPENWEATHER_API_KEY:-72923a37d28c75e1c4c642947cfdab4b}
        - KAKAO_API_KEY=${KAKAO_API_KEY}
+       - LLM_BACKEND=${LLM_BACKEND:-auto}
+       - VLLM_ENDPOINT=http://host.docker.internal:8090/v1
+       - VLLM_MODEL_NAME=${VLLM_MODEL_NAME:-Qwen/Qwen3-8B-AWQ}
        - OPENAI_API_KEY=${OPENAI_API_KEY}
        - NAVER_CLIENT_ID=${NAVER_CLIENT_ID}         
        - NAVER_CLIENT_SECRET=${NAVER_CLIENT_SECRET}
