@@ -1,46 +1,49 @@
-from langchain.agents import create_openai_functions_agent, AgentExecutor
+from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+
 from models.chat_models import get_llm
 from tools import (
     extract_user_intent,
     get_weather_forecast,
     search_facilities,
-    #generate_kakao_map_link,
     show_map_for_facilities,
     naver_web_search,
-    search_map_by_address
+    create_search_map_tool,  
 )
 from agent.prompts import SYSTEM_PROMPT
+
 
 def create_agent():
     """LangChain Agent 생성"""
     llm = get_llm()
-    
+
+    # 모든 도구들을 하나의 리스트로 구성
     tools = [
         extract_user_intent,
         get_weather_forecast,
         search_facilities,
-        #generate_kakao_map_link,
         show_map_for_facilities,
         naver_web_search,
-        search_map_by_address
+        create_search_map_tool(),  
     ]
-    
-    # chat_history placeholder 추가
+
+    # 프롬프트 정의
     prompt = ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT),
         ("system", "현재 대화 ID: {conversation_id}"),
-        MessagesPlaceholder(variable_name="chat_history", optional=True),  # 대화 히스토리
+        MessagesPlaceholder(variable_name="chat_history", optional=True),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
-    
-    agent = create_openai_functions_agent(llm, tools, prompt)
-    
+
+    # Function Agent 생성
+    agent = create_tool_calling_agent(llm, tools, prompt)
+
+    # AgentExecutor 래핑
     return AgentExecutor(
         agent=agent,
         tools=tools,
         verbose=True,
         max_iterations=5,
-        return_intermediate_steps=True
+        return_intermediate_steps=True,
     )

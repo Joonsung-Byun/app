@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str
     NAVER_CLIENT_ID: str = ""      
     NAVER_CLIENT_SECRET: str = ""
+    KAKAO_REST_API_KEY: str = ""
     # ChromaDB
     CHROMA_HOST: str = "localhost"
     CHROMA_PORT: int = 8000
@@ -26,5 +27,6 @@ class Settings(BaseSettings):
     
     class Config:
         env_file = ".env"
+        extra = "ignore"
 
 settings = Settings()
