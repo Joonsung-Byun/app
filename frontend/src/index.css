@@ -8,8 +8,11 @@
   /* Always reserve vertical scrollbar space on the viewport to avoid width shift on Windows */
   html {
     overflow-y: scroll;
-    scrollbar-gutter: stable both-edges;
+    /* scrollbar-gutter: stable both-edges; */
   }
 }
-
+.ai_answer a {
+  color: #2563eb;
+  text-decoration: underline;
+}
 /* Optional: custom components or utilities can go here */
