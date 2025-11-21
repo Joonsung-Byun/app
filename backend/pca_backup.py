@@ -16,7 +16,7 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # ============================================
 # 설정
 # ============================================
-CHROMA_HOST = "localhost"
+CHROMA_HOST = "kids-chatbot-chromadb"
 CHROMA_PORT = 8000
 COLLECTION_NAME = "kid_program_collection"
 
