@@ -2,6 +2,7 @@ from typing import Dict, List, Optional
 from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
 import logging
 import json
+from models.map_models import MapResponse
 
 logger = logging.getLogger(__name__)
 
@@ -23,19 +24,45 @@ def get_conversation_history(conversation_id: str) -> List:
     
     return conversation_history[conversation_id]
 
-def add_message(conversation_id: str, role: str, content: str):
-    """메시지 추가"""
+def add_message(conversation_id: str, role: str, content):
+    """메시지 추가 (MapResponse 같은 객체도 안전하게 처리)"""
     if conversation_id not in conversation_history:
         conversation_history[conversation_id] = []
-    
+
+    # 🔹 MapResponse처럼 객체가 들어온 경우 → 히스토리에는 문자열로만 저장
+    if isinstance(content, MapResponse):
+        try:
+            marker_name = (
+                content.data.markers[0].name
+                if content.data and content.data.markers
+                else "지도 응답"
+            )
+            safe_content = f"[지도 응답] {marker_name}"
+        except Exception:
+            safe_content = "[지도 응답]"
+    else:
+        # 나머지는 전부 문자열로 캐스팅 (dict, list, 기타 객체 포함)
+        if not isinstance(content, str):
+            safe_content = str(content)
+        else:
+            safe_content = content
+
     if role == "user":
-        conversation_history[conversation_id].append(HumanMessage(content=content))
+        conversation_history[conversation_id].append(
+            HumanMessage(content=safe_content)
+        )
     elif role == "ai":
-        conversation_history[conversation_id].append(AIMessage(content=content))
+        conversation_history[conversation_id].append(
+            AIMessage(content=safe_content)
+        )
     elif role == "search_result":
-        conversation_history[conversation_id].append(SystemMessage(content=content))
-    
-    logger.info(f"메시지 추가: {conversation_id} - {role}: {content[:100]}...")
+        conversation_history[conversation_id].append(
+            SystemMessage(content=safe_content)
+        )
+
+    logger.info(
+        f"메시지 추가: {conversation_id} - {role}: {safe_content[:100]}..."
+    )
 
 def save_search_results(conversation_id: str, facilities: List[Dict]):
     """검색 결과 저장"""
