@@ -1,4 +1,4 @@
-from langchain.agents import create_openai_functions_agent, AgentExecutor
+from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from models.chat_models import get_llm
 from tools import (
@@ -35,7 +35,7 @@ def create_agent():
         MessagesPlaceholder(variable_name="agent_scratchpad"),
     ])
     
-    agent = create_openai_functions_agent(llm, tools, prompt)
+    agent = create_tool_calling_agent(llm, tools, prompt)
     
     return AgentExecutor(
         agent=agent,
