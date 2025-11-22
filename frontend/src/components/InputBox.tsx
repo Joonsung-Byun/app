@@ -35,7 +35,7 @@ const InputBox: React.FC<Props> = ({ message, setMessage, onSend, variant = "cha
       />
       <button
         type="submit"
-        className="bg-[#e79f85] text-white font-medium px-5 rounded-lg hover:bg-[#d58769] transition"
+        className="bg-[#e79f85] text-white font-medium px-5 rounded-lg hover:bg-[#d58769] transition hover:cursor-pointer"
       >
         보내기
       </button>

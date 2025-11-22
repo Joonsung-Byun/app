@@ -1,13 +1,18 @@
-// libs/fetchFacilities.ts
+export async function fetchFacilities(category2?: string, bounds?: any) {
+  if (!bounds) return [];
 
-export async function fetchFacilities(category2?: string) {
-  const url = category2
-    ? `http://localhost:8080/facilities?category2=${category2}`
-    : `http://localhost:8080/facilities`;
+  const { minLat, maxLat, minLon, maxLon } = bounds;
+
+  let url = `http://localhost:8080/facilities?minLat=${minLat}&maxLat=${maxLat}&minLon=${minLon}&maxLon=${maxLon}`;
+
+  if (category2) {
+    url += `&category2=${encodeURIComponent(category2)}`;
+  }
+
+  console.log("Fetching:", url);
 
   const res = await fetch(url);
   const json = await res.json();
 
-  console.log("Fetched data:", json);
-  return json.items; // Supabase REST 형태일 때 items 사용
+  return json; // FastAPI returns array directly
 }
