@@ -4,6 +4,7 @@ from routers import chat_router  # 수정
 import requests
 from config import settings
 from routers.facilities_router import router as facilities_router
+from routers.programs_router import router as programs_router
 
 app = FastAPI(title="Kids Guide Chatbot API")
 
@@ -17,6 +18,7 @@ app.add_middleware(
 
 app.include_router(chat_router, prefix="/api", tags=["chat"])
 app.include_router(facilities_router, tags=["facilities"])
+app.include_router(programs_router, tags=["programs"])
 
 
 @app.get("/health")

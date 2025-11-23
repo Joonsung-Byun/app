@@ -73,7 +73,7 @@ const ChatPage: React.FC = () => {
        const mapMsg: Message = {
           role: "ai",
           type: "map",
-          content: data.content || "위치를 지도에 표시해 드려요! 📍",
+          content: "",
           link: data.link,
           data: data.data, // 이제 여기가 무조건 배열임. 안심하고 넣으세요.
         };

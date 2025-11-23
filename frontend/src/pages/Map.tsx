@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
-import FacilityCard from "../components/FacilityCard";
+import FacilityModal from "../components/FacilityModal";
 import { fetchFacilities } from "../libs/fetchFacilities";
+import { fetchPrograms } from "../libs/fetchPrograms";
 
 declare global {
   interface Window {
@@ -28,6 +29,10 @@ export default function MapPage() {
     document.head.appendChild(script);
   }, []);
 
+  useEffect(() => {
+    console.log(selected);
+  }, [selected]);
+
   // ---------- Map initialization ----------
   useEffect(() => {
     if (!kakaoLoaded || !mapRef.current) return;
@@ -35,9 +40,13 @@ export default function MapPage() {
     const savedLat = localStorage.getItem("map_center_lat");
     const savedLon = localStorage.getItem("map_center_lon");
 
-    const center = savedLat && savedLon
-      ? new window.kakao.maps.LatLng(parseFloat(savedLat), parseFloat(savedLon))
-      : new window.kakao.maps.LatLng(37.4979, 127.0276);
+    const center =
+      savedLat && savedLon
+        ? new window.kakao.maps.LatLng(
+            parseFloat(savedLat),
+            parseFloat(savedLon)
+          )
+        : new window.kakao.maps.LatLng(37.4979, 127.0276);
 
     const map = new window.kakao.maps.Map(mapRef.current, {
       center,
@@ -47,7 +56,7 @@ export default function MapPage() {
     mapObjRef.current = map;
   }, [kakaoLoaded]);
 
-  // ---------- Save map center on movement ----------
+  // ---------- Save map center ----------
   useEffect(() => {
     if (!kakaoLoaded) return;
 
@@ -61,7 +70,7 @@ export default function MapPage() {
     });
   }, [kakaoLoaded]);
 
-  // ---------- Get map bounds ----------
+  // ---------- Calculate map bounds ----------
   const getMapBounds = () => {
     const map = mapObjRef.current;
     if (!map) return null;
@@ -79,30 +88,38 @@ export default function MapPage() {
   };
 
   // ---------- Render markers ----------
-  const renderMarkers = (items: any[]) => {
-    const map = mapObjRef.current;
+const renderMarkers = (items: any[]) => {
+  const map = mapObjRef.current;
 
-    // remove previous markers
-    markersRef.current.forEach((m) => m.setMap(null));
-    markersRef.current = [];
+  markersRef.current.forEach((m) => m.setMap(null));
+  markersRef.current = [];
 
-    items.forEach((f: any) => {
-      const marker = new window.kakao.maps.Marker({
-        position: new window.kakao.maps.LatLng(f.lat, f.lon),
-        map,
-      });
-
-      markersRef.current.push(marker);
-
-      window.kakao.maps.event.addListener(marker, "click", () => {
-        setSelected(f);
-      });
+  items.forEach((f: any) => {
+    const marker = new window.kakao.maps.Marker({
+      position: new window.kakao.maps.LatLng(f.lat, f.lon),
+      map,
     });
 
-    console.log("Markers rendered:", markersRef.current.length);
-  };
+    markersRef.current.push(marker);
 
-  // ---------- Category button click ----------
+    window.kakao.maps.event.addListener(marker, "click", async () => {
+      // 1) 선택한 시설 먼저 표시
+      let fullData = { ...f, programs: [] };
+      setSelected(fullData);
+
+      // 2) 프로그램 fetch
+      const programs = await fetchPrograms(f.id);
+
+      // 3) 병합 후 다시 업데이트
+      setSelected({
+        ...f,
+        programs: programs || []
+      });
+    });
+  });
+};
+
+  // ---------- Category click ----------
   async function handleCategorySelect(category: string) {
     const bounds = getMapBounds();
     const items = await fetchFacilities(category, bounds);
@@ -110,27 +127,34 @@ export default function MapPage() {
   }
 
   return (
-    <div className="relative w-full h-screen flex items-center justify-center">
-      <div className="relative w-4/5 h-4/5 border rounded-xl shadow-xl overflow-hidden">
+    <div className="relative w-full h-screen flex flex-col items-center justify-center gap-4">
+      {/* Header */}
+      <div className="flex justify-center items-center gap-5">
+        <img
+          src="/logo2_copy.webp"
+          alt=""
+          className="w-36 md:w-52 h-auto block"
+        />
+        <h1 className="text-xl font-bold">키즈 액티비티 지도 🗺️</h1>
+      </div>
 
+      <div className="relative w-4/5 h-4/5 border rounded-xl shadow-xl overflow-hidden">
         {/* Category buttons */}
-        <div className="absolute top-4 left-4 bg-white p-3 shadow-lg rounded-lg z-50 flex gap-2">
+        <div className="absolute top-4 left-4 bg-white p-3 shadow-lg rounded-lg z-10 flex gap-2">
           <button
-            className="px-3 py-1 bg-blue-500 text-white rounded hover:cursor-pointer"
+            className="px-3 py-1 bg-blue-500 text-white rounded"
             onClick={() => handleCategorySelect("생활체육관")}
           >
             생활체육관
           </button>
-
           <button
-            className="px-3 py-1 bg-green-500 text-white rounded hover:cursor-pointer"
+            className="px-3 py-1 bg-green-500 text-white rounded"
             onClick={() => handleCategorySelect("전시/기념관")}
           >
             전시
           </button>
-
           <button
-            className="px-3 py-1 bg-purple-500 text-white rounded hover:cursor-pointer"
+            className="px-3 py-1 bg-purple-500 text-white rounded"
             onClick={() => handleCategorySelect("관광지")}
           >
             관광지
@@ -139,14 +163,14 @@ export default function MapPage() {
 
         {/* MAP */}
         <div ref={mapRef} className="w-full h-full" />
-      </div>
 
-      {selected && (
-        <FacilityCard
-          facility={selected}
-          onClose={() => setSelected(null)}
-        />
-      )}
+        {selected && (
+          <FacilityModal
+            facility={selected}
+            onClose={() => setSelected(null)}
+          />
+        )}
+      </div>
     </div>
   );
 }

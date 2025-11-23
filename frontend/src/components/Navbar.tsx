@@ -61,7 +61,7 @@ export default function Navbar() {
       {/* 모바일용 오른쪽 상단 햄버거 버튼 */}
       <button
         aria-label="메뉴 열기"
-        className="fixed right-4 top-4 z-40 flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-xl border border-green-100 bg-white text-[#c5572f] shadow-sm transition hover:border-green-200 hover:shadow md:hidden"
+        className="fixed hover:cursor-pointer right-4 top-4 z-40 flex h-10 w-10 flex-col items-center justify-center gap-1 rounded-xl border border-green-100 bg-white text-[#c5572f] shadow-sm transition hover:border-green-200 hover:shadow md:hidden"
         onClick={() => setOpen((prev) => !prev)}
       >
         <span
