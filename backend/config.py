@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     CHROMA_COLLECTION: str = "kid_program_collection"
     
     # 새로운 LLM 백엔드 설정
-    LLM_BACKEND: str = "openai"  # "auto" | "openai" | "vllm"
+    LLM_BACKEND: str = "auto"  # "auto" | "openai" | "vllm"
     VLLM_ENDPOINT: str = "http://localhost:8090/v1"
     VLLM_MODEL_NAME: str = "Qwen/Qwen3-8B-AWQ"  # AWQ로 변경
 
