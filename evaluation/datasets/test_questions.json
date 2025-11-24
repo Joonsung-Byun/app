@@ -243,362 +243,362 @@
     {
       "id": 26,
       "category": "places",
-      "question": "서울에 실내놀이시설 있어?",
+      "question": "서울 마포구에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "실내놀이시설", "location": "서울"},
-      "ground_truth": "서울의 실내놀이시설 목록",
-      "relevant_doc_ids": ["2001아울렛 구로 어린이 소극장", "3D블랙아트", "4차산업혁명체험센터"]
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "마포구"},
+      "ground_truth": "마포구의 실외놀이시설 목록",
+      "relevant_doc_ids": ["개나리어린이공원", "난지천공원 유아숲체험원", "뒤뜰어린이공원", "매봉산 유아숲체험원", "복사꽃어린이공원", "상암근린공원(유아숲체험장 실외놀이시설) 놀이터", "쌍둥이어린이공원", "와우어린이공원", "월드컵공원(노을공원) 자연물놀이터", "월드컵공원(평화의공원) 모험놀이터"]
     },
     {
       "id": 27,
       "category": "places",
-      "question": "경기도 수원에 아이랑 갈만한 놀이터 있어?",
+      "question": "서울 송파구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "놀이터", "location": "수원"},
-      "ground_truth": "수원의 어린이 놀이시설 정보",
-      "relevant_doc_ids": ["(구)영통스파렉스-실내놀이시설", "(주)이키즈랜드 코코몽 키즈랜드 동수원점", "(주)플레이영 천천지점"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "송파구"},
+      "ground_truth": "송파구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["마미랜드 3층", "블루디밸롭(골든블루키즈빌리지)", "세라젬 웰파크 잠실롯데월드점", "잠실 하하호호실내놀이터", "챔피언 더 블랙벨트 롯데타워 잠실점", "캘리클럽X태그액션 더익스트림 홈플러스 잠실", "키즈앤룸 송파개롱역점", "킹스키즈", "플레이놀이방"]
     },
     {
       "id": 28,
       "category": "places",
-      "question": "서울 도봉구에 어린이놀이터 있어?",
+      "question": "서울 강서구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "어린이놀이터", "location": "도봉구"},
-      "ground_truth": "도봉구 어린이놀이터 정보",
-      "relevant_doc_ids": ["(다람쥐 어린이공원) 창의적 어린이놀이터"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "강서구"},
+      "ground_truth": "강서구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["꿀잼키즈룸 마곡점", "꿀잼키즈룸 방화점", "몬스터파크 가양점", "무키무키 폐쇄형 놀이기구", "선데이키즈클럽", "챔피언 강서홈플러스점", "토랑이네 워터룸", "토랑이네 키즈룸", "프라이빗키즈파티룸 쉼표 內  실내놀이시설"]
     },
     {
       "id": 29,
       "category": "places",
-      "question": "부산에 키즈랜드 있어?",
+      "question": "서울 은평구에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "키즈랜드", "location": "부산"},
-      "ground_truth": "부산의 키즈랜드 정보",
-      "relevant_doc_ids": ["(주)아이조아키즈랜드"]
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "은평구"},
+      "ground_truth": "은평구의 영화/공연장 목록",
+      "relevant_doc_ids": ["괜찮은홀", "국립한국문학관(2026년예정)", "리틀채플린", "박석어린이공원", "신사어린이도서관", "신한카드아름인도서관", "아이띠네", "증산정보도서관", "징검다리도서관"]
     },
     {
       "id": 30,
       "category": "places",
-      "question": "전남 순천에 코코몽 있어?",
+      "question": "서울 동작구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "코코몽", "location": "순천"},
-      "ground_truth": "순천 코코몽 정보",
-      "relevant_doc_ids": ["(주) 이키즈랜드 코코몽 순천점"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "동작구"},
+      "ground_truth": "동작구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["까망돌도서관 실내놀이시설", "닥터방방", "도깨비방망이 실내 놀이터", "동작실내놀이터 상도3동점", "삼성농아원 실내놀이터", "원불교 한강본원 내 실내놀이시설", "키득키득라운지 실내놀이시설"]
     },
     {
       "id": 31,
       "category": "places",
-      "question": "서울에 419기념관 어디야?",
+      "question": "서울 강북구에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "419기념관", "location": "서울"},
-      "ground_truth": "419기념관 위치 정보",
-      "relevant_doc_ids": ["419기념관", "419혁명기념회관"]
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "강북구"},
+      "ground_truth": "강북구의 실외놀이시설 목록",
+      "relevant_doc_ids": ["북서울꿈의숲 유아숲체험원", "삼양체육과학공원놀이터(북한산근린공원) 놀이터", "색동어린이공원", "솔샘어린이공원", "송월어린이공원", "오패산 유아숲체험원(오동근린공원) 놀이터", "하늘어린이공원"]
     },
     {
       "id": 32,
       "category": "places",
-      "question": "경기도에 3D체험관 있어?",
+      "question": "서울 강동구에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "3D체험관", "location": "경기도"},
-      "ground_truth": "경기도 3D체험관 정보",
-      "relevant_doc_ids": ["3D공룡체험박물관"]
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "강동구"},
+      "ground_truth": "강동구의 실외놀이시설 목록",
+      "relevant_doc_ids": ["달님어린이공원", "말우물어린이공원", "무궁화어린이공원", "선사어린이공원", "성심어린이공원", "성안어린이공원", "어린이공원"]
     },
     {
       "id": 33,
       "category": "places",
-      "question": "경남 양산에 과학체험관 있어?",
+      "question": "서울 강남구에 관광지 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "과학체험관", "location": "양산"},
-      "ground_truth": "양산 과학체험관 정보",
-      "relevant_doc_ids": ["3D과학체험관"]
+      "expected_tool_params": {"original_query": "관광지", "location": "강남구"},
+      "ground_truth": "강남구의 관광지 목록",
+      "relevant_doc_ids": ["313아트프로젝트", "도곡정보문화도서관", "동영아트홀", "스페이스두루", "이봄씨어터", "코엑스아트홀", "플레툰쿤스트할레"]
     },
     {
       "id": 34,
       "category": "places",
-      "question": "서울에 63빌딩 미술관 있어?",
+      "question": "서울 서초구에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "63빌딩 미술관", "location": "서울"},
-      "ground_truth": "63빌딩 미술관 정보",
-      "relevant_doc_ids": ["63빌딩63스카이아트미술관", "63스퀘어63왁스뮤지엄"]
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "서초구"},
+      "ground_truth": "서초구의 실외놀이시설 목록",
+      "relevant_doc_ids": ["느티나무어린이공원", "당골어린이공원", "도구머리 숲 놀이터", "문화예술공원 유아숲체험장 놀이터", "반원어린이공원", "시민의 숲 공원 놀이터", "예술어린이공원"]
     },
     {
       "id": 35,
       "category": "places",
-      "question": "대구에 엘리몽 놀이시설 있어?",
+      "question": "서울 송파구에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "엘리몽", "location": "대구"},
-      "ground_truth": "대구 엘리몽 정보",
-      "relevant_doc_ids": ["(주)유성씨앤에프 엘리몽", "(주)이키즈랜드 코코몽 대구수성점"]
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "송파구"},
+      "ground_truth": "송파구의 영화/공연장 목록",
+      "relevant_doc_ids": ["가든파이브아트홀", "석촌호수아트갤러리", "송파장난감도서관", "예인작은도서관", "올림픽공원인형극장", "큐브온블럭", "큰솔어린이공원", "한국광고문화회관"]
     },
     {
       "id": 36,
       "category": "places",
-      "question": "강원도 고성에 켄싱턴리조트 키즈월드 있어?",
+      "question": "경기도 군포시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "켄싱턴리조트 키즈월드", "location": "고성"},
-      "ground_truth": "켄싱턴리조트 키즈월드 정보",
-      "relevant_doc_ids": ["(주)켄싱턴리조트 키즈월드(설악비치점)"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "군포시"},
+      "ground_truth": "군포시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["꿀잼키즈룸 군포송정점", "라온제나 키즈룸", "별숲(무인키즈)", "브리앙뜨워터키즈룸 군포송정점", "스토리방방", "아우어 테디", "아이퍼니 키즈룸 송정점", "아이퍼니(I-FUNNY)", "챔피온 롯데몰 산본점", "포포누리 실내종합놀이터"]
     },
     {
       "id": 37,
       "category": "places",
-      "question": "경기도 하남에 실내놀이터 있어?",
+      "question": "경기도 안성시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "실내놀이터", "location": "하남"},
-      "ground_truth": "하남 실내놀이터 정보",
-      "relevant_doc_ids": ["(주)프렌즈", "29아트"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "안성시"},
+      "ground_truth": "안성시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["노리파크 공도점", "라성관광농원 실내 어린이놀이터", "맬맬키즈룸", "무인공도점", "스타필드 안성 별마당놀이터", "아이포레 안성공도점", "안성팜랜드 어린이놀이터", "천안문 실내놀이시설", "키즈팡팡", "희망놀이터"]
     },
     {
       "id": 38,
       "category": "places",
-      "question": "경남 진주에 히어로플레이파크 있어?",
+      "question": "경기도 평택시에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "히어로플레이파크", "location": "진주"},
-      "ground_truth": "진주 히어로플레이파크 정보",
-      "relevant_doc_ids": ["(주)히어로플레이파크 진주"]
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "평택시"},
+      "ground_truth": "평택시의 영화/공연장 목록",
+      "relevant_doc_ids": ["기지촌여성인권역사관", "배다리도서관", "북부문화예술회관", "빅점프빅", "삽다리길어린이공원", "서정작은도서관", "점핑클럽", "청북도서관", "평택호자동차극장", "포승작은도서관"]
     },
     {
       "id": 39,
       "category": "places",
-      "question": "경기도 화성에 물놀이장 있어?",
+      "question": "경기도 파주시에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "물놀이장", "location": "화성"},
-      "ground_truth": "화성 물놀이장 정보",
-      "relevant_doc_ids": ["[5권역] 신리천 3-1공구 물놀이장 놀이터", "[동부]다람산근린공원 내 물놀이장 놀이터", "[시청직영]송방천공원 물놀이장 놀이터"]
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "파주시"},
+      "ground_truth": "파주시의 영화/공연장 목록",
+      "relevant_doc_ids": ["가람도서관", "교하도서관", "극장하다", "명필름", "문산거점도서관지하공영주차장(2025년1월예정)", "옛날물건박물관", "이마트문화센터", "키키카페"]
     },
     {
       "id": 40,
       "category": "places",
-      "question": "서울 종로에 공연장 있어?",
+      "question": "경기도 오산시에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "공연장", "location": "종로"},
-      "ground_truth": "종로 공연장 정보",
-      "relevant_doc_ids": ["001스테이지", "30스튜디오"]
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "오산시"},
+      "ground_truth": "오산시의 실외놀이시설 목록",
+      "relevant_doc_ids": ["궐동제3어린이공원", "맑음터 공원 물놀이장 놀이터", "문화스포츠센터 제2주차장 상부공원", "수청동제3어린이공원", "오산 유아모험놀이터", "오산 키즈맘 물놀이장 놀이터", "제2유아모험놀이터", "죽미체육공원 물놀이장 놀이터"]
     },
     {
       "id": 41,
       "category": "places",
-      "question": "서울 구로에 수영장 있어?",
+      "question": "경기도 광주시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "수영장", "location": "구로"},
-      "ground_truth": "구로 수영장 정보",
-      "relevant_doc_ids": ["50+남부캠퍼스수영장"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "광주시"},
+      "ground_truth": "광주시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["경기도 친환경농산물유통센터 놀이터", "꿀잼키즈룸 역동점", "육전무실내놀이방", "코코파파", "킹콩점프 정글짐", "팀업캠퍼스 1층 실내놀이시설", "파티타임"]
     },
     {
       "id": 42,
       "category": "places",
-      "question": "광주에 518기념문화센터 어디야?",
+      "question": "인천 연수구에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "518기념문화센터", "location": "광주"},
-      "ground_truth": "518기념문화센터 정보",
-      "relevant_doc_ids": ["518기념문화센터", "518기념문화회관민주홀", "518민주화운동기록관"]
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "연수구"},
+      "ground_truth": "연수구의 영화/공연장 목록",
+      "relevant_doc_ids": ["문화의집아트플러그", "선학별빛도서관", "송도국제기구도서관", "송도국제도시도서관(2025년3월예정)", "송도제10호어린이공원", "송도키즈랜드앤실내썰매장", "연수2동작은도서관", "연수구문화의집", "인천아트센터", "함박비류도서관"]
     },
     {
       "id": 43,
       "category": "places",
-      "question": "경기도 파주에 625전쟁납북자기념관 있어?",
+      "question": "인천 서구에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "625전쟁납북자기념관", "location": "파주"},
-      "ground_truth": "625전쟁납북자기념관 정보",
-      "relevant_doc_ids": ["625전쟁납북자기념관"]
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "서구"},
+      "ground_truth": "인천 서구의 실외놀이시설 목록",
+      "relevant_doc_ids": ["가원유아숲체험원", "가좌이음숲 유아숲체험원", "경서근린공원 유아숲체험원", "근린공원2호 숲속 놀이터", "불로2호어린이공원", "서인공원 숲속놀이터", "석남이음숲 유아숲체험원", "자연마당 실외 어린이 놀이시설", "청라노을공원 유아숲체험원", "한신 어린이공원 물놀이장 놀이터"]
     },
     {
       "id": 44,
       "category": "places",
-      "question": "경기도 파주 헤이리마을에 박물관 있어?",
+      "question": "인천 남동구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "헤이리마을 박물관", "location": "파주"},
-      "ground_truth": "헤이리마을 박물관 정보",
-      "relevant_doc_ids": ["05스튜디오", "93뮤지엄"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "남동구"},
+      "ground_truth": "남동구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["꿀잼키즈룸 서창지구점", "남동논현도서관 실내놀이시설", "노리파크 서창지구점", "돈키호테 유아 실내놀이터", "메리스포레스트 인천구월숲", "모어앤모어 키즈룸 서창점", "신대한 경희대 태권도 실내 어린이놀이시설", "크크크키즈 실내놀이시설", "퍼펙트 플레이", "홈플러스인천논현점상상노리"]
     },
     {
       "id": 45,
       "category": "places",
-      "question": "부산 해운대에 어린이공원 있어?",
+      "question": "인천 연수구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "어린이공원", "location": "해운대"},
-      "ground_truth": "해운대 어린이공원 정보",
-      "relevant_doc_ids": ["13호어린이공원"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "연수구"},
+      "ground_truth": "연수구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["더크림하우스", "리틀비틀 연수점", "미니특공대 송도점", "스퀘어원 야외", "아틀란티스 송도점", "엄마도 좀 쉬자", "인천광역시 여성의광장"]
     },
     {
       "id": 46,
       "category": "places",
-      "question": "경북 영주에 아트스퀘어 있어?",
+      "question": "인천 부평구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "아트스퀘어", "location": "영주"},
-      "ground_truth": "영주 아트스퀘어 정보",
-      "relevant_doc_ids": ["148아트스퀘어"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "부평구"},
+      "ground_truth": "부평구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["노리파크 산곡점", "라라 키즈 어드벤처 부평", "라라 키즈 어드벤처 삼산", "모다이노칩부평점", "부평깡시장고객쉼터 실내놀이시설", "이언교육 실내놀이터6층"]
     },
     {
       "id": 47,
       "category": "places",
-      "question": "경기도에 캠프장 있어?",
+      "question": "부산 금정구에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "캠프", "location": "경기도"},
-      "ground_truth": "경기도 캠프장 정보",
-      "relevant_doc_ids": ["153가족캠프"]
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "금정구"},
+      "ground_truth": "금정구의 영화/공연장 목록",
+      "relevant_doc_ids": ["금정문화회관금빛누리홀", "금정문화회관은빛샘홀", "금정북뱅크", "남삼문화원", "늘푸른도서관", "예마당소극장", "이마트문화센터", "줄넘기세상", "캠퍼스디", "팡팡노리터"]
     },
     {
       "id": 48,
       "category": "places",
-      "question": "경기도 성남에 도서관 있어?",
+      "question": "부산 강서구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "도서관", "location": "성남"},
-      "ground_truth": "성남 도서관 정보",
-      "relevant_doc_ids": ["1318도서관하랑", "1318하랑작은도서관"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "강서구"},
+      "ground_truth": "부산 강서구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["강서구육아종합지원센터 실내놀이시설", "나무늘보", "노리파크 지사점", "렛츠런파크 내 영국관 어린이놀이터", "명지오션퍼스트 실외어린이놀이시설", "몬스터파크 명지점", "히어로플레이파크 부산명지점"]
     },
     {
       "id": 49,
       "category": "places",
-      "question": "대구에 228민주운동기념회관 있어?",
+      "question": "대구 수성구에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "228민주운동기념회관", "location": "대구"},
-      "ground_truth": "228민주운동기념회관 정보",
-      "relevant_doc_ids": ["228민주운동기념회관"]
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "수성구"},
+      "ground_truth": "수성구의 영화/공연장 목록",
+      "relevant_doc_ids": ["대구가상스포츠체험관", "대구교육문화원", "대구스포츠기념관", "더제이댄스센터", "두산동공공도서관", "물망이도서관", "아트센터달", "책숲길도서관", "파동도서관"]
     },
     {
       "id": 50,
       "category": "places",
-      "question": "경남 김해에 가야랜드 있어?",
+      "question": "대구 동구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "가야랜드", "location": "김해"},
-      "ground_truth": "가야랜드 정보",
-      "relevant_doc_ids": ["가야랜드"]
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "동구"},
+      "ground_truth": "대구 동구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["대구신세계백화점 리틀란드", "동대구 화성파크드림 센텀 커뮤니티 키즈룸(실내)", "리틀팡팡", "블럭통 실내놀이터 내 유아놀이시설인 정글짐", "슈퍼몬스터-폐쇄형놀이기구", "초록우산 어린이재단 실내놀이시설", "토이빌리지-실내놀이시설", "현대시티아울렛 대구점", "홈플러스 동촌점 내 챔피언"]
     },
     {
       "id": 51,
       "category": "places",
-      "question": "인천에 어린이과학관 있어?",
+      "question": "대구 북구에 관광지 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "어린이과학관", "location": "인천"},
-      "ground_truth": "인천 어린이과학관 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "관광지", "location": "북구"},
+      "ground_truth": "대구 북구의 관광지 목록",
+      "relevant_doc_ids": ["대현도서관", "매직홀릭엔터테인먼트", "블럭버스", "아이띠네", "유후점핑클럽", "조이점핑클럽", "펀스방스", "하이키즈"]
     },
     {
       "id": 52,
       "category": "places",
-      "question": "대전에 아쿠아리움 있어?",
+      "question": "대전 서구에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "아쿠아리움", "location": "대전"},
-      "ground_truth": "대전 아쿠아리움 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "서구"},
+      "ground_truth": "대전 서구의 영화/공연장 목록",
+      "relevant_doc_ids": ["괴정새마을도서관", "대전시립연정국악원작은마당", "대전어린이장난감도서관", "소극장보다", "이마트문화센터", "중앙국악원", "키즈카페어린왕자", "평화어린이공원", "해뜰마을어린이도서관", "KT&G상상유니브"]
     },
     {
       "id": 53,
       "category": "places",
-      "question": "울산에 박물관 있어?",
+      "question": "대전 유성구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "박물관", "location": "울산"},
-      "ground_truth": "울산 박물관 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "유성구"},
+      "ground_truth": "유성구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["꿀잼키즈룸 대전노은점", "뉴키즈온어린이놀이시설", "대전과학체험관-실내키즈룸", "대전현대아울렛 내 어린이놀이시설", "방방플레이클럽", "우리끼리 달빛마을", "청양먹거리직매장 실내놀이방(정글짐)", "현대 프리미엄 아울렛 대전점 챔피언 1250", "NC유성점 챔피언더블랙벨트"]
     },
     {
       "id": 54,
       "category": "places",
-      "question": "세종시에 아이랑 갈만한 체험관 있어?",
+      "question": "광주 광산구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "체험관", "location": "세종"},
-      "ground_truth": "세종 체험관 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "광산구"},
+      "ground_truth": "광산구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["꿀잼 키즈룸 신창점", "무키무키 무인키즈룸", "아이즐링 실내놀이터", "요요플레이방", "점핑고플러스 실내놀이터", "정담 어린이 실내놀이방", "코코별", "플레이원-폐쇄형놀이기구", "홈플러스-하남점-챔피언"]
     },
     {
       "id": 55,
       "category": "places",
-      "question": "충북 청주에 키즈카페 있어?",
+      "question": "광주 서구에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "키즈카페", "location": "청주"},
-      "ground_truth": "청주 키즈카페 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "서구"},
+      "ground_truth": "광주 서구의 실외놀이시설 목록",
+      "relevant_doc_ids": ["강나루어린이공원", "공룡어린이공원", "믿음어린이공원", "백일어린이공원", "어린이생태공원 놀이터", "제1어린이공원", "제3어린이공원", "제7호어린이공원"]
     },
     {
       "id": 56,
       "category": "places",
-      "question": "전북 익산에 놀이공원 있어?",
+      "question": "울산 남구에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "놀이공원", "location": "익산"},
-      "ground_truth": "익산 놀이공원 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "남구"},
+      "ground_truth": "울산 남구의 실내놀이시설 목록",
+      "relevant_doc_ids": ["까궁키즈룸", "로보트태권브이 키즈테마파크", "무한수산 내 실내 놀이시설", "스타루루 울산점", "아이키즈 내 실내놀이시설", "울산가족문화센터", "현대백화점 울산점 챔피언 더 블랙벨트", "홈플러스울산남구 챔피언", "JSP 웰리키즈랜드"]
     },
     {
       "id": 57,
       "category": "places",
-      "question": "경북 포항에 어린이도서관 있어?",
+      "question": "경남 양산시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "어린이도서관", "location": "포항"},
-      "ground_truth": "포항 어린이도서관 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "양산시"},
+      "ground_truth": "양산시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["꼬마대통령 양산점", "꿀잼키즈룸 양산사송점", "꿀잼키즈룸 양산증산점", "아이랑", "양산 농산물센터 내 어린이놀이시설", "양산 에비뉴원 실내놀이시설", "양산하루애 실내놀이터", "어썸헤어 실내놀이시설", "파파키즈룸 내 실내놀이시설", "하이아르떼 실내놀이시설(공간대여업)"]
     },
     {
       "id": 58,
       "category": "places",
-      "question": "강원도 춘천에 동물원 있어?",
+      "question": "경남 진주시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "동물원", "location": "춘천"},
-      "ground_truth": "춘천 동물원 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "진주시"},
+      "ground_truth": "진주시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["(주)히어로플레이파크 진주", "매직월드", "무지개동산 장난감은행 실내놀이터", "사단법인 올리브나무 실내놀이시설", "차타타(진주 평거점)", "충무공동 장난감은행 실내놀이시설", "키즈랜드 정글어드벤쳐 놀이시설", "타요키즈까페"]
     },
     {
       "id": 59,
       "category": "places",
-      "question": "제주에 어린이테마파크 있어?",
+      "question": "충남 아산시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "테마파크", "location": "제주"},
-      "ground_truth": "제주 테마파크 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "아산시"},
+      "ground_truth": "아산시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["노라보리키즈룸", "리카 아산 배방점", "모아방방", "아산 육아종합지원센터 실내놀이터", "아산시육아종합지원센터 실내시설", "용화태권도 실내놀이터", "조이키즈룸", "챔피언 아산퍼스트빌리지점", "해링턴플레이스 스마트밸리 실내놀이시설(커뮤니티센터)"]
     },
     {
       "id": 60,
       "category": "places",
-      "question": "경기도 안양에 어린이대공원 있어?",
+      "question": "충남 서산시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "어린이대공원", "location": "안양"},
-      "ground_truth": "안양 어린이대공원 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "서산시"},
+      "ground_truth": "서산시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["노리파크 테크노벨리점", "무키무키 폐쇄형 놀이기구", "쁘띠몽드 서산점", "서산유아실내체육센터", "수석태권도 실내놀이시설", "와우그라운드", "우리끼리 캠핑마을", "조아키즈서산점(실내놀이시설)", "yiel(이엘) 실내놀이시설"]
     },
     {
       "id": 61,
       "category": "places",
-      "question": "부산 기장에 해양체험관 있어?",
+      "question": "전남 여수시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "해양체험관", "location": "기장"},
-      "ground_truth": "기장 해양체험관 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "여수시"},
+      "ground_truth": "여수시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["꿀잼키즈룸", "녹테마레 어린이놀이시설", "더옐로우여수 놀이시설", "베네치아호텔앤리조트 실내놀이시설", "여수 대성베르힐 - 실내키즈롬", "여수시 공공형 실내놀이터", "여수시 육아종합지원센터 실내놀이시설", "여천눈썰매장 에코힐즈 놀이터", "유키즈룸"]
     },
     {
       "id": 62,
       "category": "places",
-      "question": "경기도 고양에 어린이문화센터 있어?",
+      "question": "전북 군산시에 실내놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "어린이문화센터", "location": "고양"},
-      "ground_truth": "고양 어린이문화센터 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "군산시"},
+      "ground_truth": "군산시의 실내놀이시설 목록",
+      "relevant_doc_ids": ["군산공설시장 키드존", "마마아쁘(조촌점)", "무쏘무한리필 내 실내놀이시설", "복's 한가족 실내놀이시설", "아이드림", "유키즈존", "이마트 군산점 플레이타임", "키즈티끄", "플레이타임 챔피온 롯데몰 군산점"]
     },
     {
       "id": 63,
       "category": "places",
-      "question": "충남 아산에 온천 있어?",
+      "question": "강원 춘천시에 관광지 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "온천", "location": "아산"},
-      "ground_truth": "아산 온천 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "관광지", "location": "춘천시"},
+      "ground_truth": "춘천시의 관광지 목록",
+      "relevant_doc_ids": ["가족놀이터", "굴레소극장", "점핑팡팡", "조이점핑클럽", "춘천로봇상설전시체험관", "키즈카페어린왕자", "플레이타임"]
     },
     {
       "id": 64,
       "category": "places",
-      "question": "전남 여수에 아쿠아플라넷 있어?",
+      "question": "강원 원주시에 영화/공연장 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "아쿠아플라넷", "location": "여수"},
-      "ground_truth": "여수 아쿠아플라넷 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "영화/연극/공연", "location": "원주시"},
+      "ground_truth": "원주시의 영화/공연장 목록",
+      "relevant_doc_ids": ["동화산단어린이공원", "샘마루도서관", "원주문화의집", "원주허브팜식물박물관", "중천철학도서관", "한지문화원", "희망어린이공원"]
     },
     {
       "id": 65,
       "category": "places",
-      "question": "경남 통영에 케이블카 있어?",
+      "question": "서울 중랑구에 실외놀이시설 있어?",
       "expected_tools": ["search_facilities"],
-      "expected_tool_params": {"original_query": "케이블카", "location": "통영"},
-      "ground_truth": "통영 케이블카 정보",
-      "relevant_doc_ids": []
+      "expected_tool_params": {"original_query": "실외놀이시설", "location": "중랑구"},
+      "ground_truth": "중랑구의 실외놀이시설 목록",
+      "relevant_doc_ids": ["근린공원 2호 생태숲 놀이공원", "방죽공원", "본동어린이공원", "봉화산근린공원(봉수대공원 물놀이터) 놀이터", "봉화산근린공원(봉화원 숲속놀이터) 놀이터", "사가정공원 유아숲체험원"]
     },
     {
       "id": 66,
@@ -918,452 +918,452 @@
     {
       "id": 101,
       "category": "complex",
-      "question": "서울 날씨 좋으면 실내놀이시설 가고 싶어",
+      "question": "서울 마포구 날씨 좋으면 실외놀이시설 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "서울 날씨 확인 후 실내놀이시설 정보 제공",
-      "relevant_doc_ids": ["2001아울렛 구로 어린이 소극장", "3D블랙아트", "4차산업혁명체험센터"]
+      "ground_truth": "마포구 날씨 확인 후 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["개나리어린이공원", "난지천공원 유아숲체험원", "뒤뜰어린이공원", "매봉산 유아숲체험원", "복사꽃어린이공원", "상암근린공원(유아숲체험장 실외놀이시설) 놀이터", "쌍둥이어린이공원", "와우어린이공원", "월드컵공원(노을공원) 자연물놀이터", "월드컵공원(평화의공원) 모험놀이터"]
     },
     {
       "id": 102,
       "category": "complex",
-      "question": "부산 비 안 오면 해운대 어린이공원 가도 돼?",
+      "question": "서울 송파구 비 오면 실내놀이시설 가야겠다",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "부산 날씨 확인 후 해운대 어린이공원 정보 제공",
-      "relevant_doc_ids": ["13호어린이공원"]
+      "ground_truth": "송파구 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["마미랜드 3층", "블루디밸롭(골든블루키즈빌리지)", "세라젬 웰파크 잠실롯데월드점", "잠실 하하호호실내놀이터", "챔피언 더 블랙벨트 롯데타워 잠실점", "캘리클럽X태그액션 더익스트림 홈플러스 잠실", "키즈앤룸 송파개롱역점", "킹스키즈", "플레이놀이방"]
     },
     {
       "id": 103,
       "category": "complex",
-      "question": "경기도 수원 날씨랑 놀이터 알려줘",
+      "question": "서울 강서구 날씨랑 실내놀이시설 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "수원 날씨와 놀이터 정보 제공",
-      "relevant_doc_ids": ["(구)영통스파렉스-실내놀이시설", "(주)이키즈랜드 코코몽 키즈랜드 동수원점", "(주)플레이영 천천지점"]
+      "ground_truth": "강서구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸 마곡점", "꿀잼키즈룸 방화점", "몬스터파크 가양점", "무키무키 폐쇄형 놀이기구", "선데이키즈클럽", "챔피언 강서홈플러스점", "토랑이네 워터룸", "토랑이네 키즈룸", "프라이빗키즈파티룸 쉼표 內  실내놀이시설"]
     },
     {
       "id": 104,
       "category": "complex",
-      "question": "대구 날씨 괜찮으면 엘리몽 가려고",
+      "question": "서울 은평구 날씨 괜찮으면 공연장 가려고",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "대구 날씨 확인 후 엘리몽 정보 제공",
-      "relevant_doc_ids": ["(주)유성씨앤에프 엘리몽", "(주)이키즈랜드 코코몽 대구수성점"]
+      "ground_truth": "은평구 날씨 확인 후 공연장 정보 제공",
+      "relevant_doc_ids": ["괜찮은홀", "국립한국문학관(2026년예정)", "리틀채플린", "박석어린이공원", "신사어린이도서관", "신한카드아름인도서관", "아이띠네", "증산정보도서관", "징검다리도서관"]
     },
     {
       "id": 105,
       "category": "complex",
-      "question": "경남 김해 여행 가는데 날씨랑 가야랜드 알려줘",
+      "question": "서울 동작구 날씨 확인하고 실내놀이시설 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "김해 날씨와 가야랜드 정보 제공",
-      "relevant_doc_ids": ["가야랜드", "가야문화예술관", "가야박물관"]
+      "ground_truth": "동작구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["까망돌도서관 실내놀이시설", "닥터방방", "도깨비방망이 실내 놀이터", "동작실내놀이터 상도3동점", "삼성농아원 실내놀이터", "원불교 한강본원 내 실내놀이시설", "키득키득라운지 실내놀이시설"]
     },
     {
       "id": 106,
       "category": "complex",
-      "question": "서울 날씨 좋은 날 갈만한 기념관 추천해줘",
+      "question": "서울 강북구 날씨 좋은 날 실외놀이시설 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "서울 날씨 확인 후 기념관 추천",
-      "relevant_doc_ids": ["419기념관", "419혁명기념회관"]
+      "ground_truth": "강북구 날씨 확인 후 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["북서울꿈의숲 유아숲체험원", "삼양체육과학공원놀이터(북한산근린공원) 놀이터", "색동어린이공원", "솔샘어린이공원", "송월어린이공원", "오패산 유아숲체험원(오동근린공원) 놀이터", "하늘어린이공원"]
     },
     {
       "id": 107,
       "category": "complex",
-      "question": "광주 날씨 확인하고 518기념관도 알려줘",
+      "question": "서울 강동구 날씨랑 실외놀이시설 정보 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "광주 날씨와 518기념관 정보 제공",
-      "relevant_doc_ids": ["518기념문화센터", "518기념문화회관민주홀", "518민주화운동기록관"]
+      "ground_truth": "강동구 날씨와 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["달님어린이공원", "말우물어린이공원", "무궁화어린이공원", "선사어린이공원", "성심어린이공원", "성안어린이공원", "어린이공원"]
     },
     {
       "id": 108,
       "category": "complex",
-      "question": "경기도 화성 날씨 어떤지랑 물놀이장 추천해줘",
+      "question": "서울 강남구 날씨 좋으면 관광지 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "화성 날씨와 물놀이장 정보 제공",
-      "relevant_doc_ids": ["[5권역] 신리천 3-1공구 물놀이장 놀이터", "[동부]다람산근린공원 내 물놀이장 놀이터", "[시청직영]송방천공원 물놀이장 놀이터"]
+      "ground_truth": "강남구 날씨 확인 후 관광지 정보 제공",
+      "relevant_doc_ids": ["313아트프로젝트", "도곡정보문화도서관", "동영아트홀", "스페이스두루", "이봄씨어터", "코엑스아트홀", "플레툰쿤스트할레"]
     },
     {
       "id": 109,
       "category": "complex",
-      "question": "전남 순천 날씨 좋으면 코코몽 구경할래",
+      "question": "서울 서초구 날씨 맑으면 실외놀이시설 갈래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "순천 날씨 확인 후 코코몽 정보 제공",
-      "relevant_doc_ids": ["(주) 이키즈랜드 코코몽 순천점"]
+      "ground_truth": "서초구 날씨 확인 후 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["느티나무어린이공원", "당골어린이공원", "도구머리 숲 놀이터", "문화예술공원 유아숲체험장 놀이터", "반원어린이공원", "시민의 숲 공원 놀이터", "예술어린이공원"]
     },
     {
       "id": 110,
       "category": "complex",
-      "question": "경기도 파주 날씨랑 헤이리마을 박물관 알려줘",
+      "question": "서울 송파구 날씨 확인하고 영화/공연장 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "파주 날씨와 헤이리마을 박물관 정보 제공",
-      "relevant_doc_ids": ["05스튜디오", "93뮤지엄"]
+      "ground_truth": "송파구 날씨와 영화/공연장 정보 제공",
+      "relevant_doc_ids": ["가든파이브아트홀", "석촌호수아트갤러리", "송파장난감도서관", "예인작은도서관", "올림픽공원인형극장", "큐브온블럭", "큰솔어린이공원", "한국광고문화회관"]
     },
     {
       "id": 111,
       "category": "complex",
-      "question": "강원도 고성 날씨 좋으면 켄싱턴리조트 가볼래",
+      "question": "경기도 군포시 날씨 비 오면 실내놀이시설 가야겠다",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "고성 날씨 확인 후 켄싱턴리조트 정보 제공",
-      "relevant_doc_ids": ["(주)켄싱턴리조트 키즈월드(설악비치점)"]
+      "ground_truth": "군포시 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸 군포송정점", "라온제나 키즈룸", "별숲(무인키즈)", "브리앙뜨워터키즈룸 군포송정점", "스토리방방", "아우어 테디", "아이퍼니 키즈룸 송정점", "아이퍼니(I-FUNNY)", "챔피온 롯데몰 산본점", "포포누리 실내종합놀이터"]
     },
     {
       "id": 112,
       "category": "complex",
-      "question": "경기도 성남 날씨 확인하고 도서관도 알려줘",
+      "question": "경기도 안성시 날씨랑 실내놀이시설 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "성남 날씨와 도서관 정보 제공",
-      "relevant_doc_ids": ["1318도서관하랑", "1318하랑작은도서관"]
+      "ground_truth": "안성시 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["노리파크 공도점", "라성관광농원 실내 어린이놀이터", "맬맬키즈룸", "무인공도점", "스타필드 안성 별마당놀이터", "아이포레 안성공도점", "안성팜랜드 어린이놀이터", "천안문 실내놀이시설", "키즈팡팡", "희망놀이터"]
     },
     {
       "id": 113,
       "category": "complex",
-      "question": "경남 진주 날씨 괜찮으면 히어로플레이파크 가볼래",
+      "question": "경기도 평택시 날씨 괜찮으면 공연장 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "진주 날씨 확인 후 히어로플레이파크 정보 제공",
-      "relevant_doc_ids": ["(주)히어로플레이파크 진주"]
+      "ground_truth": "평택시 날씨 확인 후 공연장 정보 제공",
+      "relevant_doc_ids": ["기지촌여성인권역사관", "배다리도서관", "북부문화예술회관", "빅점프빅", "삽다리길어린이공원", "서정작은도서관", "점핑클럽", "청북도서관", "평택호자동차극장", "포승작은도서관"]
     },
     {
       "id": 114,
       "category": "complex",
-      "question": "서울 영등포 날씨랑 63빌딩 정보 알려줘",
+      "question": "경기도 파주시 날씨 확인하고 공연장 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "영등포 날씨와 63빌딩 정보 제공",
-      "relevant_doc_ids": ["63빌딩63스카이아트미술관", "63스퀘어63왁스뮤지엄", "63아트"]
+      "ground_truth": "파주시 날씨와 공연장 정보 제공",
+      "relevant_doc_ids": ["가람도서관", "교하도서관", "극장하다", "명필름", "문산거점도서관지하공영주차장(2025년1월예정)", "옛날물건박물관", "이마트문화센터", "키키카페"]
     },
     {
       "id": 115,
       "category": "complex",
-      "question": "서울 구로 날씨 더우면 수영장 가야겠다",
+      "question": "경기도 오산시 날씨 좋으면 실외놀이시설 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "구로 날씨 확인 후 수영장 정보 제공",
-      "relevant_doc_ids": ["50+남부캠퍼스수영장"]
+      "ground_truth": "오산시 날씨 확인 후 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["궐동제3어린이공원", "맑음터 공원 물놀이장 놀이터", "문화스포츠센터 제2주차장 상부공원", "수청동제3어린이공원", "오산 유아모험놀이터", "오산 키즈맘 물놀이장 놀이터", "제2유아모험놀이터", "죽미체육공원 물놀이장 놀이터"]
     },
     {
       "id": 116,
       "category": "complex",
-      "question": "경기도 하남 날씨 좋으면 실내놀이터 가볼래",
+      "question": "경기도 광주시 날씨랑 실내놀이시설 정보 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "하남 날씨 확인 후 실내놀이터 정보 제공",
-      "relevant_doc_ids": ["(주)프렌즈", "29아트"]
+      "ground_truth": "광주시 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["경기도 친환경농산물유통센터 놀이터", "꿀잼키즈룸 역동점", "육전무실내놀이방", "코코파파", "킹콩점프 정글짐", "팀업캠퍼스 1층 실내놀이시설", "파티타임"]
     },
     {
       "id": 117,
       "category": "complex",
-      "question": "충남 천안 날씨랑 점핑GO 정보 알려줘",
+      "question": "인천 연수구 날씨 좋은 날 공연장 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "천안 날씨와 점핑GO 정보 제공",
-      "relevant_doc_ids": ["(주)케이디시티 점핑GO"]
+      "ground_truth": "연수구 날씨 확인 후 공연장 정보 제공",
+      "relevant_doc_ids": ["문화의집아트플러그", "선학별빛도서관", "송도국제기구도서관", "송도국제도시도서관(2025년3월예정)", "송도제10호어린이공원", "송도키즈랜드앤실내썰매장", "연수2동작은도서관", "연수구문화의집", "인천아트센터", "함박비류도서관"]
     },
     {
       "id": 118,
       "category": "complex",
-      "question": "창원 날씨 비 오면 실내 놀이터 가야지",
+      "question": "인천 서구 날씨 맑으면 실외놀이시설 갈래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "창원 날씨 확인 후 실내 놀이터 정보 제공",
-      "relevant_doc_ids": ["315아트센터", "315의거발원지기념관"]
+      "ground_truth": "인천 서구 날씨 확인 후 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["가원유아숲체험원", "가좌이음숲 유아숲체험원", "경서근린공원 유아숲체험원", "근린공원2호 숲속 놀이터", "불로2호어린이공원", "서인공원 숲속놀이터", "석남이음숲 유아숲체험원", "자연마당 실외 어린이 놀이시설", "청라노을공원 유아숲체험원", "한신 어린이공원 물놀이장 놀이터"]
     },
     {
       "id": 119,
       "category": "complex",
-      "question": "경북 경주 날씨 확인하고 기념관 추천해줘",
+      "question": "인천 남동구 날씨 확인하고 실내놀이시설 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "경주 날씨와 기념관 정보 제공",
-      "relevant_doc_ids": ["(주)이랜드파크 켄싱턴리조트 경주"]
+      "ground_truth": "남동구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸 서창지구점", "남동논현도서관 실내놀이시설", "노리파크 서창지구점", "돈키호테 유아 실내놀이터", "메리스포레스트 인천구월숲", "모어앤모어 키즈룸 서창점", "신대한 경희대 태권도 실내 어린이놀이시설", "크크크키즈 실내놀이시설", "퍼펙트 플레이", "홈플러스인천논현점상상노리"]
     },
     {
       "id": 120,
       "category": "complex",
-      "question": "경기도 고양 날씨 좋으면 뮤즈파크 갈래",
+      "question": "인천 연수구 날씨 비 오면 실내놀이시설 가야겠다",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "고양 날씨 확인 후 뮤즈파크 정보 제공",
-      "relevant_doc_ids": ["(주)하나로뮤즈파크"]
+      "ground_truth": "연수구 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["더크림하우스", "리틀비틀 연수점", "미니특공대 송도점", "스퀘어원 야외", "아틀란티스 송도점", "엄마도 좀 쉬자", "인천광역시 여성의광장"]
     },
     {
       "id": 121,
       "category": "complex",
-      "question": "전남 목포 날씨랑 놀이시설 알려줘",
+      "question": "인천 부평구 날씨랑 실내놀이시설 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "목포 날씨와 놀이시설 정보 제공",
-      "relevant_doc_ids": ["(주)이든 내 실내놀이시설", "가루야놀자"]
+      "ground_truth": "부평구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["노리파크 산곡점", "라라 키즈 어드벤처 부평", "라라 키즈 어드벤처 삼산", "모다이노칩부평점", "부평깡시장고객쉼터 실내놀이시설", "이언교육 실내놀이터6층"]
     },
     {
       "id": 122,
       "category": "complex",
-      "question": "전남 담양 날씨 맑으면 실내놀이터 가볼래",
+      "question": "부산 금정구 날씨 좋으면 공연장 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "담양 날씨 확인 후 실내놀이터 정보 제공",
-      "relevant_doc_ids": ["(주)다함 실내놀이터(판다스토리)"]
+      "ground_truth": "금정구 날씨 확인 후 공연장 정보 제공",
+      "relevant_doc_ids": ["금정문화회관금빛누리홀", "금정문화회관은빛샘홀", "금정북뱅크", "남삼문화원", "늘푸른도서관", "예마당소극장", "이마트문화센터", "줄넘기세상", "캠퍼스디", "팡팡노리터"]
     },
     {
       "id": 123,
       "category": "complex",
-      "question": "대구 228기념회관 가는데 날씨 알려줘",
+      "question": "부산 강서구 날씨 확인하고 실내놀이시설 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "대구 날씨와 228기념회관 정보 제공",
-      "relevant_doc_ids": ["228민주운동기념회관"]
+      "ground_truth": "부산 강서구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["강서구육아종합지원센터 실내놀이시설", "나무늘보", "노리파크 지사점", "렛츠런파크 내 영국관 어린이놀이터", "명지오션퍼스트 실외어린이놀이시설", "몬스터파크 명지점", "히어로플레이파크 부산명지점"]
     },
     {
       "id": 124,
       "category": "complex",
-      "question": "경북 영주 날씨랑 아트스퀘어 정보 알려줘",
+      "question": "대구 수성구 날씨랑 공연장 정보 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "영주 날씨와 아트스퀘어 정보 제공",
-      "relevant_doc_ids": ["148아트스퀘어"]
+      "ground_truth": "수성구 날씨와 공연장 정보 제공",
+      "relevant_doc_ids": ["대구가상스포츠체험관", "대구교육문화원", "대구스포츠기념관", "더제이댄스센터", "두산동공공도서관", "물망이도서관", "아트센터달", "책숲길도서관", "파동도서관"]
     },
     {
       "id": 125,
       "category": "complex",
-      "question": "경기도 가평 날씨 좋으면 유원지 가볼래",
+      "question": "대구 동구 날씨 비 오면 실내놀이시설 가야겠다",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "가평 날씨 확인 후 유원지 정보 제공",
-      "relevant_doc_ids": ["가람유원지", "1939시네마"]
+      "ground_truth": "대구 동구 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["대구신세계백화점 리틀란드", "동대구 화성파크드림 센텀 커뮤니티 키즈룸(실내)", "리틀팡팡", "블럭통 실내놀이터 내 유아놀이시설인 정글짐", "슈퍼몬스터-폐쇄형놀이기구", "초록우산 어린이재단 실내놀이시설", "토이빌리지-실내놀이시설", "현대시티아울렛 대구점", "홈플러스 동촌점 내 챔피언"]
     },
     {
       "id": 126,
       "category": "complex",
-      "question": "인천 날씨랑 어린이과학관 정보 알려줘",
+      "question": "대구 북구 날씨 좋은 날 관광지 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "인천 날씨와 어린이과학관 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "대구 북구 날씨 확인 후 관광지 정보 제공",
+      "relevant_doc_ids": ["대현도서관", "매직홀릭엔터테인먼트", "블럭버스", "아이띠네", "유후점핑클럽", "조이점핑클럽", "펀스방스", "하이키즈"]
     },
     {
       "id": 127,
       "category": "complex",
-      "question": "대전 날씨 좋으면 아쿠아리움 가고 싶어",
+      "question": "대전 서구 날씨 괜찮으면 공연장 가려고",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "대전 날씨 확인 후 아쿠아리움 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "대전 서구 날씨 확인 후 공연장 정보 제공",
+      "relevant_doc_ids": ["괴정새마을도서관", "대전시립연정국악원작은마당", "대전어린이장난감도서관", "소극장보다", "이마트문화센터", "중앙국악원", "키즈카페어린왕자", "평화어린이공원", "해뜰마을어린이도서관", "KT&G상상유니브"]
     },
     {
       "id": 128,
       "category": "complex",
-      "question": "울산 날씨 확인하고 박물관 추천해줘",
+      "question": "대전 유성구 날씨 확인하고 실내놀이시설 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "울산 날씨와 박물관 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "유성구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸 대전노은점", "뉴키즈온어린이놀이시설", "대전과학체험관-실내키즈룸", "대전현대아울렛 내 어린이놀이시설", "방방플레이클럽", "우리끼리 달빛마을", "청양먹거리직매장 실내놀이방(정글짐)", "현대 프리미엄 아울렛 대전점 챔피언 1250", "NC유성점 챔피언더블랙벨트"]
     },
     {
       "id": 129,
       "category": "complex",
-      "question": "세종시 날씨랑 체험관 정보 알려줘",
+      "question": "광주 광산구 날씨랑 실내놀이시설 정보 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "세종 날씨와 체험관 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "광산구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼 키즈룸 신창점", "무키무키 무인키즈룸", "아이즐링 실내놀이터", "요요플레이방", "점핑고플러스 실내놀이터", "정담 어린이 실내놀이방", "코코별", "플레이원-폐쇄형놀이기구", "홈플러스-하남점-챔피언"]
     },
     {
       "id": 130,
       "category": "complex",
-      "question": "청주 날씨 비 오면 키즈카페 갈래",
+      "question": "광주 서구 날씨 맑으면 실외놀이시설 갈래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "청주 날씨 확인 후 키즈카페 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "광주 서구 날씨 확인 후 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["강나루어린이공원", "공룡어린이공원", "믿음어린이공원", "백일어린이공원", "어린이생태공원 놀이터", "제1어린이공원", "제3어린이공원", "제7호어린이공원"]
     },
     {
       "id": 131,
       "category": "complex",
-      "question": "익산 날씨 좋으면 놀이공원 가고 싶어",
+      "question": "울산 남구 날씨 비 오면 실내놀이시설 가야겠다",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "익산 날씨 확인 후 놀이공원 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "울산 남구 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["까궁키즈룸", "로보트태권브이 키즈테마파크", "무한수산 내 실내 놀이시설", "스타루루 울산점", "아이키즈 내 실내놀이시설", "울산가족문화센터", "현대백화점 울산점 챔피언 더 블랙벨트", "홈플러스울산남구 챔피언", "JSP 웰리키즈랜드"]
     },
     {
       "id": 132,
       "category": "complex",
-      "question": "포항 날씨랑 어린이도서관 알려줘",
+      "question": "경남 양산시 날씨랑 실내놀이시설 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "포항 날씨와 어린이도서관 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "양산시 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꼬마대통령 양산점", "꿀잼키즈룸 양산사송점", "꿀잼키즈룸 양산증산점", "아이랑", "양산 농산물센터 내 어린이놀이시설", "양산 에비뉴원 실내놀이시설", "양산하루애 실내놀이터", "어썸헤어 실내놀이시설", "파파키즈룸 내 실내놀이시설", "하이아르떼 실내놀이시설(공간대여업)"]
     },
     {
       "id": 133,
       "category": "complex",
-      "question": "춘천 날씨 괜찮으면 동물원 가볼래",
+      "question": "경남 진주시 날씨 괜찮으면 실내놀이시설 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "춘천 날씨 확인 후 동물원 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "진주시 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["(주)히어로플레이파크 진주", "매직월드", "무지개동산 장난감은행 실내놀이터", "사단법인 올리브나무 실내놀이시설", "차타타(진주 평거점)", "충무공동 장난감은행 실내놀이시설", "키즈랜드 정글어드벤쳐 놀이시설", "타요키즈까페"]
     },
     {
       "id": 134,
       "category": "complex",
-      "question": "제주 날씨 확인하고 테마파크 추천해줘",
+      "question": "충남 아산시 날씨 확인하고 실내놀이시설 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "제주 날씨와 테마파크 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "아산시 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["노라보리키즈룸", "리카 아산 배방점", "모아방방", "아산 육아종합지원센터 실내놀이터", "아산시육아종합지원센터 실내시설", "용화태권도 실내놀이터", "조이키즈룸", "챔피언 아산퍼스트빌리지점", "해링턴플레이스 스마트밸리 실내놀이시설(커뮤니티센터)"]
     },
     {
       "id": 135,
       "category": "complex",
-      "question": "안양 날씨 좋으면 어린이대공원 갈래",
+      "question": "충남 서산시 날씨 좋으면 실내놀이시설 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "안양 날씨 확인 후 어린이대공원 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "서산시 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["노리파크 테크노벨리점", "무키무키 폐쇄형 놀이기구", "쁘띠몽드 서산점", "서산유아실내체육센터", "수석태권도 실내놀이시설", "와우그라운드", "우리끼리 캠핑마을", "조아키즈서산점(실내놀이시설)", "yiel(이엘) 실내놀이시설"]
     },
     {
       "id": 136,
       "category": "complex",
-      "question": "기장 날씨랑 해양체험관 정보 알려줘",
+      "question": "전남 여수시 날씨랑 실내놀이시설 정보 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "기장 날씨와 해양체험관 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "여수시 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸", "녹테마레 어린이놀이시설", "더옐로우여수 놀이시설", "베네치아호텔앤리조트 실내놀이시설", "여수 대성베르힐 - 실내키즈롬", "여수시 공공형 실내놀이터", "여수시 육아종합지원센터 실내놀이시설", "여천눈썰매장 에코힐즈 놀이터", "유키즈룸"]
     },
     {
       "id": 137,
       "category": "complex",
-      "question": "고양 날씨 확인하고 어린이문화센터 추천해줘",
+      "question": "전북 군산시 날씨 좋은 날 실내놀이시설 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "고양 날씨와 어린이문화센터 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "군산시 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["군산공설시장 키드존", "마마아쁘(조촌점)", "무쏘무한리필 내 실내놀이시설", "복's 한가족 실내놀이시설", "아이드림", "유키즈존", "이마트 군산점 플레이타임", "키즈티끄", "플레이타임 챔피온 롯데몰 군산점"]
     },
     {
       "id": 138,
       "category": "complex",
-      "question": "아산 날씨 추우면 온천 가고 싶어",
+      "question": "강원 춘천시 날씨 맑으면 관광지 갈래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "아산 날씨 확인 후 온천 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "춘천시 날씨 확인 후 관광지 정보 제공",
+      "relevant_doc_ids": ["가족놀이터", "굴레소극장", "점핑팡팡", "조이점핑클럽", "춘천로봇상설전시체험관", "키즈카페어린왕자", "플레이타임"]
     },
     {
       "id": 139,
       "category": "complex",
-      "question": "여수 날씨랑 아쿠아플라넷 정보 알려줘",
+      "question": "강원 원주시 날씨 확인하고 공연장 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "여수 날씨와 아쿠아플라넷 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "원주시 날씨와 공연장 정보 제공",
+      "relevant_doc_ids": ["동화산단어린이공원", "샘마루도서관", "원주문화의집", "원주허브팜식물박물관", "중천철학도서관", "한지문화원", "희망어린이공원"]
     },
     {
       "id": 140,
       "category": "complex",
-      "question": "통영 날씨 좋으면 케이블카 타러 갈래",
+      "question": "서울 중랑구 날씨 좋으면 실외놀이시설 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "통영 날씨 확인 후 케이블카 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "중랑구 날씨 확인 후 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["근린공원 2호 생태숲 놀이공원", "방죽공원", "본동어린이공원", "봉화산근린공원(봉수대공원 물놀이터) 놀이터", "봉화산근린공원(봉화원 숲속놀이터) 놀이터", "사가정공원 유아숲체험원"]
     },
     {
       "id": 141,
       "category": "complex",
-      "question": "속초 날씨 확인하고 해수욕장 알려줘",
+      "question": "서울 마포구 날씨랑 관광지 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "속초 날씨와 해수욕장 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "마포구 날씨와 관광지 정보 제공",
+      "relevant_doc_ids": ["마포구청마포구립하늘도서관", "마포중앙도서관", "맘키즈블럭캠프", "박영석산악문화센터", "벨벳바나나", "아이스페이스", "영상으로T90호", "합정어린이놀이터"]
     },
     {
       "id": 142,
       "category": "complex",
-      "question": "원주 날씨 좋으면 자연휴양림 가볼래",
+      "question": "서울 송파구 날씨 좋으면 관광지 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "원주 날씨 확인 후 자연휴양림 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "송파구 날씨 확인 후 관광지 정보 제공",
+      "relevant_doc_ids": ["대중음악전문공연장", "블럭버스", "송파글마루도서관", "에듀엔", "우리금융아트홀", "청아아트센터", "플레이타임"]
     },
     {
       "id": 143,
       "category": "complex",
-      "question": "전주 날씨랑 한옥마을 정보 알려줘",
+      "question": "서울 은평구 날씨랑 실외놀이시설 정보 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "전주 날씨와 한옥마을 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "은평구 날씨와 실외놀이시설 정보 제공",
+      "relevant_doc_ids": ["괜찮은홀", "국립한국문학관(2026년예정)", "리틀채플린", "박석어린이공원", "신사어린이도서관", "신한카드아름인도서관", "아이띠네", "증산정보도서관", "징검다리도서관"]
     },
     {
       "id": 144,
       "category": "complex",
-      "question": "남원 날씨 괜찮으면 관광지 추천해줘",
+      "question": "경기도 군포시 날씨 괜찮으면 실내놀이시설 추천해줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "남원 날씨와 관광지 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "군포시 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸 군포송정점", "라온제나 키즈룸", "별숲(무인키즈)", "브리앙뜨워터키즈룸 군포송정점", "스토리방방", "아우어 테디", "아이퍼니 키즈룸 송정점", "아이퍼니(I-FUNNY)", "챔피온 롯데몰 산본점", "포포누리 실내종합놀이터"]
     },
     {
       "id": 145,
       "category": "complex",
-      "question": "용인 날씨 좋으면 에버랜드 갈래",
+      "question": "경기도 안성시 날씨 좋으면 실내놀이시설 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "용인 날씨 확인 후 에버랜드 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "안성시 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["노리파크 공도점", "라성관광농원 실내 어린이놀이터", "맬맬키즈룸", "무인공도점", "스타필드 안성 별마당놀이터", "아이포레 안성공도점", "안성팜랜드 어린이놀이터", "천안문 실내놀이시설", "키즈팡팡", "희망놀이터"]
     },
     {
       "id": 146,
       "category": "complex",
-      "question": "안산 날씨 확인하고 공원 추천해줘",
+      "question": "인천 남동구 날씨 확인하고 실내놀이시설 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "안산 날씨와 공원 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "남동구 날씨와 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸 서창지구점", "남동논현도서관 실내놀이시설", "노리파크 서창지구점", "돈키호테 유아 실내놀이터", "메리스포레스트 인천구월숲", "모어앤모어 키즈룸 서창점", "신대한 경희대 태권도 실내 어린이놀이시설", "크크크키즈 실내놀이시설", "퍼펙트 플레이", "홈플러스인천논현점상상노리"]
     },
     {
       "id": 147,
       "category": "complex",
-      "question": "양양 날씨랑 서핑 장소 알려줘",
+      "question": "부산 금정구 날씨랑 영화/공연장 알려줘",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "양양 날씨와 서핑 장소 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "금정구 날씨와 영화/공연장 정보 제공",
+      "relevant_doc_ids": ["금정문화회관금빛누리홀", "금정문화회관은빛샘홀", "금정북뱅크", "남삼문화원", "늘푸른도서관", "예마당소극장", "이마트문화센터", "줄넘기세상", "캠퍼스디", "팡팡노리터"]
     },
     {
       "id": 148,
       "category": "complex",
-      "question": "강릉 날씨 좋으면 해변 산책하러 갈래",
+      "question": "대구 수성구 날씨 좋으면 영화/공연장 갈래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "강릉 날씨 확인 후 해변 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "수성구 날씨 확인 후 영화/공연장 정보 제공",
+      "relevant_doc_ids": ["대구가상스포츠체험관", "대구교육문화원", "대구스포츠기념관", "더제이댄스센터", "두산동공공도서관", "물망이도서관", "아트센터달", "책숲길도서관", "파동도서관"]
     },
     {
       "id": 149,
       "category": "complex",
-      "question": "군산 날씨 확인하고 근대문화유산 추천해줘",
+      "question": "대전 유성구 날씨 확인하고 실내놀이시설 가볼래",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "군산 날씨와 근대문화유산 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "유성구 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼키즈룸 대전노은점", "뉴키즈온어린이놀이시설", "대전과학체험관-실내키즈룸", "대전현대아울렛 내 어린이놀이시설", "방방플레이클럽", "우리끼리 달빛마을", "청양먹거리직매장 실내놀이방(정글짐)", "현대 프리미엄 아울렛 대전점 챔피언 1250", "NC유성점 챔피언더블랙벨트"]
     },
     {
       "id": 150,
       "category": "complex",
-      "question": "부여 날씨 좋으면 백제유적지 가볼래",
+      "question": "광주 광산구 날씨 좋으면 실내놀이시설 가고 싶어",
       "expected_tools": ["get_weather_forecast", "search_facilities"],
       "expected_tool_params": {},
-      "ground_truth": "부여 날씨 확인 후 백제유적지 정보 제공",
-      "relevant_doc_ids": []
+      "ground_truth": "광산구 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["꿀잼 키즈룸 신창점", "무키무키 무인키즈룸", "아이즐링 실내놀이터", "요요플레이방", "점핑고플러스 실내놀이터", "정담 어린이 실내놀이방", "코코별", "플레이원-폐쇄형놀이기구", "홈플러스-하남점-챔피언"]
     },
     {
       "id": 151,
