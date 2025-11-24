@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FacilityModal from "../components/FacilityModal";
 import { fetchFacilities } from "../libs/fetchFacilities";
 import { fetchPrograms } from "../libs/fetchPrograms";

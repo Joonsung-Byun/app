@@ -37,13 +37,14 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typin
             <div key={i}>
               {msg.type === "map" ? (
                 <>
-                  {/* map 타입: 텍스트 + 지도 보기 버튼 + 지도 */}
-                  <MessageBubble 
-                    role={msg.role} 
-                    content={msg.content} 
-                    link={msg.link} // 👈 link prop 전달
-                  />
-                  {msg.data && <KakaoMapView data={msg.data} />}
+                  {/* map 타입: 설명 텍스트가 있을 때만 말풍선 표시 */}
+                  {msg.content && msg.content.trim().length > 0 && (
+                    <MessageBubble 
+                      role={msg.role} 
+                      content={msg.content}
+                    />
+                  )}
+                  {msg.data && <KakaoMapView data={msg.data} link={msg.link} />}
                 </>
               ) : (
                 /* text 타입: 텍스트만 */
