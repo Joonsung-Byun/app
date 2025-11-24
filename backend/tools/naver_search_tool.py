@@ -8,7 +8,7 @@ from typing import List
 from config import settings
 from datetime import datetime, timedelta
 from models.chat_models import get_llm
-from utils.conversation_memory import save_search_results, get_shown_facility_names
+from utils.conversation_memory import save_search_results, get_shown_facility_names, set_status
 
 from bs4 import BeautifulSoup
 import re
@@ -132,6 +132,9 @@ def naver_web_search(query: str, conversation_id: str) -> str:
     params = {"query": final_query, "display": 20, "sort": "sim"} # 정확도순
 
     try:
+        if conversation_id:
+            set_status(conversation_id, "웹 정보 확인 중..")
+
         response = requests.get(url, headers=headers, params=params)
         data = response.json()
         

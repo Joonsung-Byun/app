@@ -6,11 +6,14 @@ from agent import create_agent
 from utils.conversation_memory import (
     get_conversation_history,
     add_message,
-    save_search_results
+    save_search_results,
+    set_status,
+    get_status,
 )
 import json
 import logging
 import uuid
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +30,8 @@ async def chat(request: ChatRequest):
         conversation_id = str(uuid.uuid4())
     
     user_message = request.message
+    # 초기 상태: 사용자 의도 파악 중
+    set_status(conversation_id, "요청 분석 중..")
 
     try:
         # 2. 대화 히스토리 로드 및 사용자 메시지 저장
@@ -41,14 +46,18 @@ async def chat(request: ChatRequest):
         
         # 3. Agent 실행
         # invoke 결과의 output은 '문자열'일 수도 있고, 'MapResponse 객체'일 수도 있습니다.
-        result = agent_executor.invoke({
-            "input": user_message,
-            "chat_history": chat_history,
-            "conversation_history": history_str,
-            "child_age": request.child_age,
-            "original_query": user_message,
-            "conversation_id": conversation_id
-        })
+        # 👉 CPU/IO 작업을 별도 스레드에서 돌려서, /chat/status 폴링 요청이 동시에 처리될 수 있게 함.
+        result = await asyncio.to_thread(
+            agent_executor.invoke,
+            {
+                "input": user_message,
+                "chat_history": chat_history,
+                "conversation_history": history_str,
+                "child_age": request.child_age,
+                "original_query": user_message,
+                "conversation_id": conversation_id,
+            },
+        )
         
         output = result["output"]
         intermediate_steps = result.get("intermediate_steps", [])
@@ -162,3 +171,14 @@ async def chat(request: ChatRequest):
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/chat/status/{conversation_id}")
+async def chat_status(conversation_id: str):
+    """
+    현재 대화(conversation_id)의 진행 상태 텍스트를 반환하는 엔드포인트.
+    프론트엔드는 이 값을 주기적으로 폴링해서
+    '날씨 확인 중..', '시설 검색 중..' 같은 실제 상태를 표시할 수 있다.
+    """
+    status = get_status(conversation_id)
+    return {"conversation_id": conversation_id, "status": status or ""}

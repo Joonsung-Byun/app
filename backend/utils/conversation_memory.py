@@ -14,6 +14,9 @@ shown_facilities_history: Dict[str, set] = {}
 # 마지막 검색 결과 저장 (conversation_id -> facilities)
 last_search_results: Dict[str, List[Dict]] = {}
 
+# 진행 상태 저장 (conversation_id -> status text)
+current_status: Dict[str, str] = {}
+
 def get_conversation_history(conversation_id: str) -> List:
     """대화 히스토리 가져오기"""
     if conversation_id not in conversation_history:
@@ -107,3 +110,12 @@ def get_all_conversations() -> Dict:
         conv_id: len(messages) 
         for conv_id, messages in conversation_history.items()
     }
+
+def set_status(conversation_id: str, status: str):
+    """현재 진행 상태를 저장 (예: 의도 파악 중, 시설 검색 중 등)"""
+    current_status[conversation_id] = status
+    logger.info(f"[STATUS] {conversation_id}: {status}")
+
+def get_status(conversation_id: str) -> str:
+    """저장된 진행 상태를 반환 (없으면 빈 문자열)"""
+    return current_status.get(conversation_id, "")

@@ -1,38 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+interface TypingIndicatorProps {
+  text: string;
+}
 
-const MESSAGES = [
-  '장소 정보를 찾는 중..',
-  '해당 장소 특이사항 분석 중..',
-  '응답을 생성하는 중..',
-];
-
-export function TypingIndicator() {
-  const [messageIndex, setMessageIndex] = useState(0);
-
-  useEffect(() => {
-    // messageIndex가 마지막(2)에 도달하면 더 이상 증가하지 않음
-    if (messageIndex >= MESSAGES.length - 1) {
-      return;
-    }
-
-    const interval = setInterval(() => {
-      setMessageIndex((prev) => {
-        if (prev >= MESSAGES.length - 1) {
-          return prev; // 마지막 메시지에서 멈춤
-        }
-        return prev + 1;
-      });
-    }, 4000); // 4초마다 변경
-
-    return () => clearInterval(interval);
-  }, [messageIndex]);
-
-  // 컴포넌트가 마운트될 때 초기화
-  useEffect(() => {
-    setMessageIndex(0);
-  }, []);
+export function TypingIndicator({ text }: TypingIndicatorProps) {
 
   return (
     <div className="flex items-center gap-2">
@@ -41,7 +13,7 @@ export function TypingIndicator() {
         <span className="h-2 w-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: '0.2s' }} />
         <span className="h-2 w-2 rounded-full bg-gray-500 animate-bounce" style={{ animationDelay: '0.4s' }} />
       </div>
-      <span className="text-sm text-gray-600">{MESSAGES[messageIndex]}</span>
+      <span className="text-sm text-gray-600">{text}</span>
     </div>
   );
 }

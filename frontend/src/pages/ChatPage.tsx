@@ -21,6 +21,7 @@ const ChatPage: React.FC = () => {
   const { messages, addMessage, clearMessages } = useChatStorage();
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [typingText, setTypingText] = useState("요청 분석 중...");
 
   // HeroPage에서 전달된 초기 메시지 처리
   useEffect(() => {
@@ -37,13 +38,36 @@ const ChatPage: React.FC = () => {
   };
 
   const handleSend = async (userMessage: string) => {
+    let statusTimer: number | undefined;
+
     const userMsg: Message = { role: "user", content: userMessage, type: "text" };
     addMessage(userMsg);
     setIsLoading(true);
+    setTypingText("요청 분석 중..");
 
     try {
       // conversation_id 가져오기 (없으면 빈 문자열)
       const conversationId = localStorage.getItem("conversation_id") || "";
+
+      // 진행 상태 폴링 (실제 백엔드 상태를 읽어옴)
+      if (conversationId) {
+        const pollStatus = async () => {
+          try {
+            const res = await fetch(`http://localhost:8080/api/chat/status/${conversationId}`);
+            if (!res.ok) return;
+            const data = await res.json();
+            if (data.status) {
+              setTypingText(data.status);
+            }
+          } catch {
+            // 폴링 오류는 조용히 무시
+          }
+        };
+
+        // 즉시 한 번 호출 후, 주기적으로 폴링
+        pollStatus();
+        statusTimer = window.setInterval(pollStatus, 1000);
+      }
 
       // API 호출
       const response = await fetch("http://localhost:8080/api/chat", {
@@ -99,12 +123,15 @@ const ChatPage: React.FC = () => {
       };
       addMessage(errorMsg);
     } finally {
+      if (statusTimer !== undefined) {
+        window.clearInterval(statusTimer);
+      }
       setIsLoading(false);
     }
   };
 
   window.addEventListener("beforeunload", () => {
-    localStorage.removeItem("chatMessages");
+    // localStorage.removeItem("chatMessages");
     // conversation_id 삭제 후 새로 생성
     const uuid = crypto.randomUUID();
     localStorage.setItem("conversation_id", uuid);
@@ -115,7 +142,6 @@ const ChatPage: React.FC = () => {
       <div className="w-full max-w-4xl">
         <div className="flex justify-center items-center gap-5 mb-3">
           <img src="/logo2_copy.webp" alt="" className="w-36 md:w-52 h-auto block"/>
-          <h1 className="text-xl font-bold">키즈 액티비티 가이드🍃</h1>
         </div>
 
         <div className="mb-4 min-w-0">
@@ -123,6 +149,7 @@ const ChatPage: React.FC = () => {
             messages={messages} 
             onPromptClick={handlePromptClick}
             isLoading={isLoading}
+            typingText={typingText}
           />
         </div>
 

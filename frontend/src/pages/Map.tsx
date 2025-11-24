@@ -16,6 +16,18 @@ export default function MapPage() {
 
   const [selected, setSelected] = useState<any>(null);
   const [kakaoLoaded, setKakaoLoaded] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isProgramsLoading, setIsProgramsLoading] = useState(false);
+
+  const CATEGORIES = [
+  { emoji: "🏃", label: "생활체육관", value: "생활체육관" },
+  { emoji: "🖼️", label: "전시", value: "전시/기념관" },
+  { emoji: "📍", label: "관광지", value: "관광지" },
+  { emoji: "🧸", label: "실내놀이시설", value: "실내놀이시설" },
+  { emoji: "🌳", label: "실외놀이시설", value: "실외놀이시설" },
+  //영화
+  { emoji: "🎬", label: "영화/연극", value: "영화/연극/공연" },
+];
 
   // ---------- Kakao JS SDK load ----------
   useEffect(() => {
@@ -103,18 +115,25 @@ const renderMarkers = (items: any[]) => {
     markersRef.current.push(marker);
 
     window.kakao.maps.event.addListener(marker, "click", async () => {
-      // 1) 선택한 시설 먼저 표시
-      let fullData = { ...f, programs: [] };
-      setSelected(fullData);
+      const baseData = { ...f, programs: [] };
+      setSelected(baseData);
+      setIsProgramsLoading(true);
 
-      // 2) 프로그램 fetch
-      const programs = await fetchPrograms(f.id);
-
-      // 3) 병합 후 다시 업데이트
-      setSelected({
-        ...f,
-        programs: programs || []
-      });
+      try {
+        const programs = await fetchPrograms(f.id);
+        setSelected({
+          ...f,
+          programs: programs || [],
+        });
+      } catch (error) {
+        console.error("Failed to fetch programs", error);
+        setSelected({
+          ...f,
+          programs: [],
+        });
+      } finally {
+        setIsProgramsLoading(false);
+      }
     });
   });
 };
@@ -127,38 +146,61 @@ const renderMarkers = (items: any[]) => {
   }
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center gap-4">
+    <div className="relative w-full h-screen flex flex-col items-center justify-center gap-4 p-4 md:p-0">
       {/* Header */}
-      <div className="flex justify-center items-center gap-5">
+      {/* <div className="flex justify-center items-center gap-5">
         <img
           src="/logo2_copy.webp"
           alt=""
           className="w-36 md:w-52 h-auto block"
         />
-        <h1 className="text-xl font-bold">키즈 액티비티 지도 🗺️</h1>
-      </div>
+      </div> */}
 
-      <div className="relative w-4/5 h-4/5 border rounded-xl shadow-xl overflow-hidden">
+      <div className="relative w-full max-w-6xl h-[70vh] md:w-4/5 md:h-4/5 rounded-xl shadow-xl overflow-hidden mx-4 lg:mx-0 border border-green-300">
         {/* Category buttons */}
-        <div className="absolute top-4 left-4 bg-white p-3 shadow-lg rounded-lg z-10 flex gap-2">
-          <button
-            className="px-3 py-1 bg-blue-500 text-white rounded"
-            onClick={() => handleCategorySelect("생활체육관")}
-          >
-            생활체육관
-          </button>
-          <button
-            className="px-3 py-1 bg-green-500 text-white rounded"
-            onClick={() => handleCategorySelect("전시/기념관")}
-          >
-            전시
-          </button>
-          <button
-            className="px-3 py-1 bg-purple-500 text-white rounded"
-            onClick={() => handleCategorySelect("관광지")}
-          >
-            관광지
-          </button>
+        <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 w-full px-3 lg:top-4 lg:px-0">
+          {/* Mobile: ... button + dropdown */}
+          <div className="lg:hidden flex justify-end">
+            <div className="relative inline-block text-left">
+              <button
+                className="flex items-center justify-center px-3 py-1.5 bg-white rounded-full border border-gray-300 shadow-md text-sm font-medium hover:bg-gray-50 transition hover:cursor-pointer"
+                onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+              >
+                <span className="text-2xl">•••</span>
+              </button>
+              {isMobileMenuOpen && (
+                <div className="absolute right-0 mt-2 w-40 bg-white rounded-lg shadow-lg border border-gray-200 z-20">
+                  {CATEGORIES.map((cat) => (
+                    <button
+                      key={cat.value}
+                      className="flex items-center gap-2 w-full px-4 py-2 text-sm text-left  hover:bg-gray-100 transition hover:cursor-pointer"
+                      onClick={() => {
+                        handleCategorySelect(cat.value);
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      <span>{cat.emoji}</span>
+                      <span>{cat.label}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Desktop: pill menu */}
+          <div className="hidden lg:flex items-center gap-2  px-2 py-2 rounded-full  overflow-x-auto max-w-full">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.value}
+                className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-300 shadow-md text-sm font-medium hover:bg-gray-50 transition hover:cursor-pointer whitespace-nowrap"
+                onClick={() => handleCategorySelect(cat.value)}
+              >
+                <span>{cat.emoji}</span>
+                <span className="font-semibold">{cat.label}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* MAP */}
@@ -168,6 +210,7 @@ const renderMarkers = (items: any[]) => {
           <FacilityModal
             facility={selected}
             onClose={() => setSelected(null)}
+            isProgramsLoading={isProgramsLoading}
           />
         )}
       </div>

@@ -3,6 +3,7 @@ import requests
 from config import settings  # 수정
 from datetime import datetime, timedelta
 import json
+from utils.conversation_memory import set_status
 
 def get_target_datetime(date_str: str) -> datetime:
     """날짜 문자열을 datetime으로 변환"""
@@ -24,7 +25,7 @@ def get_target_datetime(date_str: str) -> datetime:
             return today
 
 @tool
-def get_weather_forecast(city_name: str, date: str = "today") -> str:
+def get_weather_forecast(city_name: str, date: str = "today", conversation_id: str = "") -> str:
     """
     특정 날짜의 날씨 예보를 조회합니다.
     
@@ -35,6 +36,10 @@ def get_weather_forecast(city_name: str, date: str = "today") -> str:
     Returns:
         날씨 정보 JSON
     """
+    if conversation_id:
+        print("날씨에서 conversation_id:", conversation_id)
+        set_status(conversation_id, "날씨 정보 확인 중..")
+
     city_mapping = {
         "서울": "Seoul",
         "부산": "Busan",

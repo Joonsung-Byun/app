@@ -6,7 +6,7 @@ from models.pca_embeddings import pca_embeddings
 from typing import Optional
 import json
 import logging
-from utils.conversation_memory import get_shown_facility_names
+from utils.conversation_memory import get_shown_facility_names, set_status
 
 logger = logging.getLogger(__name__)
 
@@ -54,6 +54,9 @@ def search_facilities(
     logger.info(f"\n{'='*50}")
     logger.info(f"시설 검색 시작 | Query: {original_query} | Loc: {location}")
     logger.info(f"{'='*50}")
+    # 진행 상태 업데이트
+    if conversation_id:
+        set_status(conversation_id, "시설 후보 찾는 중..")
 
     if not conversation_id:
         logger.error("conversation_id가 전달되지 않았습니다.")

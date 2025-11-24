@@ -1,6 +1,6 @@
 from langchain.tools import tool
 from models.chat_models import get_llm
-from utils.conversation_memory import get_conversation_history
+from utils.conversation_memory import get_conversation_history, set_status
 import json
 import logging
 
@@ -31,6 +31,9 @@ def show_map_for_facilities(
             "message": "대화 세션을 찾을 수 없습니다",
             "facilities": []
         }, ensure_ascii=False)
+
+    # 진행 상태 업데이트
+    set_status(conversation_id, "지도 데이터 구성 중..")
     
     logger.info(f"지도 생성 도구 호출: conversation_id={conversation_id}, indices={facility_indices}")
     

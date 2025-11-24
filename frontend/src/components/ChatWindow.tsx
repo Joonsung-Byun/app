@@ -9,9 +9,10 @@ interface Props {
   messages: Message[];
   onPromptClick: (prompt: string) => void;
   isLoading: boolean;
+  typingText?: string;
 }
 
-const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading }) => {
+const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typingText }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
@@ -55,7 +56,7 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading }) => 
           {isLoading && (
             <div className="flex justify-start">
               <div className="max-w-[80%] p-3 rounded-2xl bg-gray-100 border border-gray-200 rounded-bl-none shadow-sm">
-                <TypingIndicator />
+                <TypingIndicator text={typingText ?? "생각 정리 중.."} />
               </div>
             </div>
           )}
