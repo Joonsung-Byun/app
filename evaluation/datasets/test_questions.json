@@ -1,0 +1,1819 @@
+{
+  "metadata": {
+    "version": "4.0",
+    "total_questions": 200,
+    "categories": ["weather", "places", "general", "complex", "web_search", "map"],
+    "distribution": {
+      "weather": 25,
+      "places": 40,
+      "general": 35,
+      "complex": 50,
+      "web_search": 30,
+      "map": 20
+    },
+    "created_date": "2024-01-01",
+    "note": "통계적 유의성을 위해 200개로 확장. 중복 없음."
+  },
+  "questions": [
+    {
+      "id": 1,
+      "category": "weather",
+      "question": "서울 날씨 어때?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "서울"},
+      "ground_truth": "서울의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 2,
+      "category": "weather",
+      "question": "오늘 부산 비 와?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "부산"},
+      "ground_truth": "부산의 강수 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 3,
+      "category": "weather",
+      "question": "제주도 날씨 좋아?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "제주도"},
+      "ground_truth": "제주도의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 4,
+      "category": "weather",
+      "question": "인천 기온이 몇 도야?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "인천"},
+      "ground_truth": "인천의 현재 기온",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 5,
+      "category": "weather",
+      "question": "대전 날씨 알려줘",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "대전"},
+      "ground_truth": "대전의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 6,
+      "category": "weather",
+      "question": "광주 오늘 춥니?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "광주"},
+      "ground_truth": "광주의 기온 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 7,
+      "category": "weather",
+      "question": "대구 미세먼지 어때?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "대구"},
+      "ground_truth": "대구의 미세먼지 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 8,
+      "category": "weather",
+      "question": "울산 날씨 좋으면 나가서 놀아도 돼?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "울산"},
+      "ground_truth": "울산 날씨 기반 야외활동 추천",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 9,
+      "category": "weather",
+      "question": "강원도 눈 와?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "강원도"},
+      "ground_truth": "강원도 강설 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 10,
+      "category": "weather",
+      "question": "수원 날씨 궁금해",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "수원"},
+      "ground_truth": "수원의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 11,
+      "category": "weather",
+      "question": "경주 여행 가는데 날씨 어때?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "경주"},
+      "ground_truth": "경주의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 12,
+      "category": "weather",
+      "question": "전주 오늘 더워?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "전주"},
+      "ground_truth": "전주의 기온 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 13,
+      "category": "weather",
+      "question": "창원 비 올 것 같아?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "창원"},
+      "ground_truth": "창원의 강수 예보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 14,
+      "category": "weather",
+      "question": "포항 바람 많이 불어?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "포항"},
+      "ground_truth": "포항의 풍속 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 15,
+      "category": "weather",
+      "question": "세종시 날씨 알려줄래?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "세종"},
+      "ground_truth": "세종시의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 16,
+      "category": "weather",
+      "question": "천안 우산 필요해?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "천안"},
+      "ground_truth": "천안의 강수 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 17,
+      "category": "weather",
+      "question": "김해 오늘 맑아?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "김해"},
+      "ground_truth": "김해의 날씨 상태",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 18,
+      "category": "weather",
+      "question": "원주 날씨 춥니?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "원주"},
+      "ground_truth": "원주의 기온 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 19,
+      "category": "weather",
+      "question": "청주 하늘 어때?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "청주"},
+      "ground_truth": "청주의 날씨 상태",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 20,
+      "category": "weather",
+      "question": "목포 날씨 좋아?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "목포"},
+      "ground_truth": "목포의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 21,
+      "category": "weather",
+      "question": "안산 날씨 어떤지 알려줘",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "안산"},
+      "ground_truth": "안산의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 22,
+      "category": "weather",
+      "question": "용인 오늘 흐려?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "용인"},
+      "ground_truth": "용인의 날씨 상태",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 23,
+      "category": "weather",
+      "question": "남원 날씨 좋니?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "남원"},
+      "ground_truth": "남원의 현재 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 24,
+      "category": "weather",
+      "question": "춘천 기온 알려줘",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "춘천"},
+      "ground_truth": "춘천의 현재 기온",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 25,
+      "category": "weather",
+      "question": "속초 바다 날씨 어때?",
+      "expected_tools": ["get_weather_forecast"],
+      "expected_tool_params": {"location": "속초"},
+      "ground_truth": "속초의 해안 날씨 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 26,
+      "category": "places",
+      "question": "서울에 실내놀이시설 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "실내놀이시설", "location": "서울"},
+      "ground_truth": "서울의 실내놀이시설 목록",
+      "relevant_doc_ids": ["2001아울렛 구로 어린이 소극장", "3D블랙아트", "4차산업혁명체험센터"]
+    },
+    {
+      "id": 27,
+      "category": "places",
+      "question": "경기도 수원에 아이랑 갈만한 놀이터 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "놀이터", "location": "수원"},
+      "ground_truth": "수원의 어린이 놀이시설 정보",
+      "relevant_doc_ids": ["(구)영통스파렉스-실내놀이시설", "(주)이키즈랜드 코코몽 키즈랜드 동수원점", "(주)플레이영 천천지점"]
+    },
+    {
+      "id": 28,
+      "category": "places",
+      "question": "서울 도봉구에 어린이놀이터 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "어린이놀이터", "location": "도봉구"},
+      "ground_truth": "도봉구 어린이놀이터 정보",
+      "relevant_doc_ids": ["(다람쥐 어린이공원) 창의적 어린이놀이터"]
+    },
+    {
+      "id": 29,
+      "category": "places",
+      "question": "부산에 키즈랜드 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "키즈랜드", "location": "부산"},
+      "ground_truth": "부산의 키즈랜드 정보",
+      "relevant_doc_ids": ["(주)아이조아키즈랜드"]
+    },
+    {
+      "id": 30,
+      "category": "places",
+      "question": "전남 순천에 코코몽 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "코코몽", "location": "순천"},
+      "ground_truth": "순천 코코몽 정보",
+      "relevant_doc_ids": ["(주) 이키즈랜드 코코몽 순천점"]
+    },
+    {
+      "id": 31,
+      "category": "places",
+      "question": "서울에 419기념관 어디야?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "419기념관", "location": "서울"},
+      "ground_truth": "419기념관 위치 정보",
+      "relevant_doc_ids": ["419기념관", "419혁명기념회관"]
+    },
+    {
+      "id": 32,
+      "category": "places",
+      "question": "경기도에 3D체험관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "3D체험관", "location": "경기도"},
+      "ground_truth": "경기도 3D체험관 정보",
+      "relevant_doc_ids": ["3D공룡체험박물관"]
+    },
+    {
+      "id": 33,
+      "category": "places",
+      "question": "경남 양산에 과학체험관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "과학체험관", "location": "양산"},
+      "ground_truth": "양산 과학체험관 정보",
+      "relevant_doc_ids": ["3D과학체험관"]
+    },
+    {
+      "id": 34,
+      "category": "places",
+      "question": "서울에 63빌딩 미술관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "63빌딩 미술관", "location": "서울"},
+      "ground_truth": "63빌딩 미술관 정보",
+      "relevant_doc_ids": ["63빌딩63스카이아트미술관", "63스퀘어63왁스뮤지엄"]
+    },
+    {
+      "id": 35,
+      "category": "places",
+      "question": "대구에 엘리몽 놀이시설 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "엘리몽", "location": "대구"},
+      "ground_truth": "대구 엘리몽 정보",
+      "relevant_doc_ids": ["(주)유성씨앤에프 엘리몽", "(주)이키즈랜드 코코몽 대구수성점"]
+    },
+    {
+      "id": 36,
+      "category": "places",
+      "question": "강원도 고성에 켄싱턴리조트 키즈월드 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "켄싱턴리조트 키즈월드", "location": "고성"},
+      "ground_truth": "켄싱턴리조트 키즈월드 정보",
+      "relevant_doc_ids": ["(주)켄싱턴리조트 키즈월드(설악비치점)"]
+    },
+    {
+      "id": 37,
+      "category": "places",
+      "question": "경기도 하남에 실내놀이터 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "실내놀이터", "location": "하남"},
+      "ground_truth": "하남 실내놀이터 정보",
+      "relevant_doc_ids": ["(주)프렌즈", "29아트"]
+    },
+    {
+      "id": 38,
+      "category": "places",
+      "question": "경남 진주에 히어로플레이파크 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "히어로플레이파크", "location": "진주"},
+      "ground_truth": "진주 히어로플레이파크 정보",
+      "relevant_doc_ids": ["(주)히어로플레이파크 진주"]
+    },
+    {
+      "id": 39,
+      "category": "places",
+      "question": "경기도 화성에 물놀이장 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "물놀이장", "location": "화성"},
+      "ground_truth": "화성 물놀이장 정보",
+      "relevant_doc_ids": ["[5권역] 신리천 3-1공구 물놀이장 놀이터", "[동부]다람산근린공원 내 물놀이장 놀이터", "[시청직영]송방천공원 물놀이장 놀이터"]
+    },
+    {
+      "id": 40,
+      "category": "places",
+      "question": "서울 종로에 공연장 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "공연장", "location": "종로"},
+      "ground_truth": "종로 공연장 정보",
+      "relevant_doc_ids": ["001스테이지", "30스튜디오"]
+    },
+    {
+      "id": 41,
+      "category": "places",
+      "question": "서울 구로에 수영장 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "수영장", "location": "구로"},
+      "ground_truth": "구로 수영장 정보",
+      "relevant_doc_ids": ["50+남부캠퍼스수영장"]
+    },
+    {
+      "id": 42,
+      "category": "places",
+      "question": "광주에 518기념문화센터 어디야?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "518기념문화센터", "location": "광주"},
+      "ground_truth": "518기념문화센터 정보",
+      "relevant_doc_ids": ["518기념문화센터", "518기념문화회관민주홀", "518민주화운동기록관"]
+    },
+    {
+      "id": 43,
+      "category": "places",
+      "question": "경기도 파주에 625전쟁납북자기념관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "625전쟁납북자기념관", "location": "파주"},
+      "ground_truth": "625전쟁납북자기념관 정보",
+      "relevant_doc_ids": ["625전쟁납북자기념관"]
+    },
+    {
+      "id": 44,
+      "category": "places",
+      "question": "경기도 파주 헤이리마을에 박물관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "헤이리마을 박물관", "location": "파주"},
+      "ground_truth": "헤이리마을 박물관 정보",
+      "relevant_doc_ids": ["05스튜디오", "93뮤지엄"]
+    },
+    {
+      "id": 45,
+      "category": "places",
+      "question": "부산 해운대에 어린이공원 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "어린이공원", "location": "해운대"},
+      "ground_truth": "해운대 어린이공원 정보",
+      "relevant_doc_ids": ["13호어린이공원"]
+    },
+    {
+      "id": 46,
+      "category": "places",
+      "question": "경북 영주에 아트스퀘어 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "아트스퀘어", "location": "영주"},
+      "ground_truth": "영주 아트스퀘어 정보",
+      "relevant_doc_ids": ["148아트스퀘어"]
+    },
+    {
+      "id": 47,
+      "category": "places",
+      "question": "경기도에 캠프장 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "캠프", "location": "경기도"},
+      "ground_truth": "경기도 캠프장 정보",
+      "relevant_doc_ids": ["153가족캠프"]
+    },
+    {
+      "id": 48,
+      "category": "places",
+      "question": "경기도 성남에 도서관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "도서관", "location": "성남"},
+      "ground_truth": "성남 도서관 정보",
+      "relevant_doc_ids": ["1318도서관하랑", "1318하랑작은도서관"]
+    },
+    {
+      "id": 49,
+      "category": "places",
+      "question": "대구에 228민주운동기념회관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "228민주운동기념회관", "location": "대구"},
+      "ground_truth": "228민주운동기념회관 정보",
+      "relevant_doc_ids": ["228민주운동기념회관"]
+    },
+    {
+      "id": 50,
+      "category": "places",
+      "question": "경남 김해에 가야랜드 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "가야랜드", "location": "김해"},
+      "ground_truth": "가야랜드 정보",
+      "relevant_doc_ids": ["가야랜드"]
+    },
+    {
+      "id": 51,
+      "category": "places",
+      "question": "인천에 어린이과학관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "어린이과학관", "location": "인천"},
+      "ground_truth": "인천 어린이과학관 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 52,
+      "category": "places",
+      "question": "대전에 아쿠아리움 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "아쿠아리움", "location": "대전"},
+      "ground_truth": "대전 아쿠아리움 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 53,
+      "category": "places",
+      "question": "울산에 박물관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "박물관", "location": "울산"},
+      "ground_truth": "울산 박물관 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 54,
+      "category": "places",
+      "question": "세종시에 아이랑 갈만한 체험관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "체험관", "location": "세종"},
+      "ground_truth": "세종 체험관 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 55,
+      "category": "places",
+      "question": "충북 청주에 키즈카페 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "키즈카페", "location": "청주"},
+      "ground_truth": "청주 키즈카페 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 56,
+      "category": "places",
+      "question": "전북 익산에 놀이공원 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "놀이공원", "location": "익산"},
+      "ground_truth": "익산 놀이공원 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 57,
+      "category": "places",
+      "question": "경북 포항에 어린이도서관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "어린이도서관", "location": "포항"},
+      "ground_truth": "포항 어린이도서관 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 58,
+      "category": "places",
+      "question": "강원도 춘천에 동물원 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "동물원", "location": "춘천"},
+      "ground_truth": "춘천 동물원 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 59,
+      "category": "places",
+      "question": "제주에 어린이테마파크 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "테마파크", "location": "제주"},
+      "ground_truth": "제주 테마파크 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 60,
+      "category": "places",
+      "question": "경기도 안양에 어린이대공원 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "어린이대공원", "location": "안양"},
+      "ground_truth": "안양 어린이대공원 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 61,
+      "category": "places",
+      "question": "부산 기장에 해양체험관 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "해양체험관", "location": "기장"},
+      "ground_truth": "기장 해양체험관 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 62,
+      "category": "places",
+      "question": "경기도 고양에 어린이문화센터 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "어린이문화센터", "location": "고양"},
+      "ground_truth": "고양 어린이문화센터 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 63,
+      "category": "places",
+      "question": "충남 아산에 온천 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "온천", "location": "아산"},
+      "ground_truth": "아산 온천 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 64,
+      "category": "places",
+      "question": "전남 여수에 아쿠아플라넷 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "아쿠아플라넷", "location": "여수"},
+      "ground_truth": "여수 아쿠아플라넷 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 65,
+      "category": "places",
+      "question": "경남 통영에 케이블카 있어?",
+      "expected_tools": ["search_facilities"],
+      "expected_tool_params": {"original_query": "케이블카", "location": "통영"},
+      "ground_truth": "통영 케이블카 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 66,
+      "category": "general",
+      "question": "공룡은 왜 멸종했어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "운석 충돌과 기후 변화로 인한 대멸종",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 67,
+      "category": "general",
+      "question": "무지개는 왜 생겨?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "빛의 굴절과 반사로 인한 현상",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 68,
+      "category": "general",
+      "question": "달은 왜 모양이 바뀌어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "지구와 태양의 위치에 따른 달의 위상 변화",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 69,
+      "category": "general",
+      "question": "비가 왜 내려?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "수증기가 응결되어 구름이 되고 물방울이 떨어지는 현상",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 70,
+      "category": "general",
+      "question": "바다는 왜 파란색이야?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "빛의 산란과 흡수로 인한 파란색",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 71,
+      "category": "general",
+      "question": "지구는 왜 돌아?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "태양계 형성 시 받은 각운동량 보존",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 72,
+      "category": "general",
+      "question": "별은 왜 반짝여?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "대기의 흔들림으로 인한 빛의 굴절",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 73,
+      "category": "general",
+      "question": "눈은 왜 하얀색이야?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "눈 결정이 모든 색의 빛을 반사하기 때문",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 74,
+      "category": "general",
+      "question": "식물은 왜 녹색이야?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "엽록소가 녹색 빛을 반사하기 때문",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 75,
+      "category": "general",
+      "question": "번개는 왜 쳐?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "구름 속 전하 차이로 인한 방전 현상",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 76,
+      "category": "general",
+      "question": "지진은 왜 일어나?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "지각판의 이동과 충돌로 인한 현상",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 77,
+      "category": "general",
+      "question": "화산은 왜 폭발해?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "지하 마그마의 압력으로 인한 분출",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 78,
+      "category": "general",
+      "question": "하늘은 왜 파란색이야?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "레일리 산란으로 파란 빛이 더 많이 산란됨",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 79,
+      "category": "general",
+      "question": "구름은 왜 떠있어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "작은 물방울이 공기 저항으로 천천히 떨어지기 때문",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 80,
+      "category": "general",
+      "question": "태양은 왜 뜨거워?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "핵융합 반응으로 인한 열 발생",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 81,
+      "category": "general",
+      "question": "밤은 왜 어두워?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "지구 자전으로 태양 빛이 닿지 않는 곳이 생김",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 82,
+      "category": "general",
+      "question": "겨울은 왜 추워?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "지구의 기울기로 태양 빛을 적게 받기 때문",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 83,
+      "category": "general",
+      "question": "여름은 왜 더워?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "지구의 기울기로 태양 빛을 많이 받기 때문",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 84,
+      "category": "general",
+      "question": "바람은 왜 불어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "기압 차이로 공기가 이동하는 현상",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 85,
+      "category": "general",
+      "question": "파도는 왜 생겨?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "바람이 해수면을 밀어서 생기는 현상",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 86,
+      "category": "general",
+      "question": "얼음은 왜 물에 뜨니?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "얼음이 물보다 밀도가 낮기 때문",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 87,
+      "category": "general",
+      "question": "새는 어떻게 날아?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "날개로 양력을 만들어 비행",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 88,
+      "category": "general",
+      "question": "물고기는 어떻게 숨을 쉬어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "아가미로 물 속 산소를 흡수",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 89,
+      "category": "general",
+      "question": "나무는 어떻게 커?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "광합성으로 양분을 만들어 성장",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 90,
+      "category": "general",
+      "question": "꽃은 왜 예쁜 색이야?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "벌과 나비를 유인하기 위한 진화",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 91,
+      "category": "general",
+      "question": "개미는 왜 줄지어 다녀?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "페로몬을 따라 이동하기 때문",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 92,
+      "category": "general",
+      "question": "고양이는 왜 그르렁거려?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "만족하거나 편안할 때 내는 소리",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 93,
+      "category": "general",
+      "question": "강아지는 왜 꼬리를 흔들어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "감정을 표현하는 방법",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 94,
+      "category": "general",
+      "question": "거미는 어떻게 거미줄을 만들어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "거미줄샘에서 실크 단백질을 분비",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 95,
+      "category": "general",
+      "question": "반딧불이는 왜 빛나?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "발광 화학반응으로 빛을 냄",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 96,
+      "category": "general",
+      "question": "토끼는 왜 귀가 길어?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "소리를 잘 듣고 체온 조절을 위해",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 97,
+      "category": "general",
+      "question": "펭귄은 왜 못 날아?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "수영에 적합하도록 날개가 진화",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 98,
+      "category": "general",
+      "question": "오로라는 왜 생겨?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "태양풍과 대기 입자의 충돌로 발생",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 99,
+      "category": "general",
+      "question": "사막은 왜 더워?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "구름과 수분이 없어 열이 쉽게 방출됨",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 100,
+      "category": "general",
+      "question": "나비는 어떻게 변해?",
+      "expected_tools": [],
+      "expected_tool_params": {},
+      "ground_truth": "알-애벌레-번데기-성충 완전변태",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 101,
+      "category": "complex",
+      "question": "서울 날씨 좋으면 실내놀이시설 가고 싶어",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "서울 날씨 확인 후 실내놀이시설 정보 제공",
+      "relevant_doc_ids": ["2001아울렛 구로 어린이 소극장", "3D블랙아트", "4차산업혁명체험센터"]
+    },
+    {
+      "id": 102,
+      "category": "complex",
+      "question": "부산 비 안 오면 해운대 어린이공원 가도 돼?",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "부산 날씨 확인 후 해운대 어린이공원 정보 제공",
+      "relevant_doc_ids": ["13호어린이공원"]
+    },
+    {
+      "id": 103,
+      "category": "complex",
+      "question": "경기도 수원 날씨랑 놀이터 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "수원 날씨와 놀이터 정보 제공",
+      "relevant_doc_ids": ["(구)영통스파렉스-실내놀이시설", "(주)이키즈랜드 코코몽 키즈랜드 동수원점", "(주)플레이영 천천지점"]
+    },
+    {
+      "id": 104,
+      "category": "complex",
+      "question": "대구 날씨 괜찮으면 엘리몽 가려고",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "대구 날씨 확인 후 엘리몽 정보 제공",
+      "relevant_doc_ids": ["(주)유성씨앤에프 엘리몽", "(주)이키즈랜드 코코몽 대구수성점"]
+    },
+    {
+      "id": 105,
+      "category": "complex",
+      "question": "경남 김해 여행 가는데 날씨랑 가야랜드 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "김해 날씨와 가야랜드 정보 제공",
+      "relevant_doc_ids": ["가야랜드", "가야문화예술관", "가야박물관"]
+    },
+    {
+      "id": 106,
+      "category": "complex",
+      "question": "서울 날씨 좋은 날 갈만한 기념관 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "서울 날씨 확인 후 기념관 추천",
+      "relevant_doc_ids": ["419기념관", "419혁명기념회관"]
+    },
+    {
+      "id": 107,
+      "category": "complex",
+      "question": "광주 날씨 확인하고 518기념관도 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "광주 날씨와 518기념관 정보 제공",
+      "relevant_doc_ids": ["518기념문화센터", "518기념문화회관민주홀", "518민주화운동기록관"]
+    },
+    {
+      "id": 108,
+      "category": "complex",
+      "question": "경기도 화성 날씨 어떤지랑 물놀이장 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "화성 날씨와 물놀이장 정보 제공",
+      "relevant_doc_ids": ["[5권역] 신리천 3-1공구 물놀이장 놀이터", "[동부]다람산근린공원 내 물놀이장 놀이터", "[시청직영]송방천공원 물놀이장 놀이터"]
+    },
+    {
+      "id": 109,
+      "category": "complex",
+      "question": "전남 순천 날씨 좋으면 코코몽 구경할래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "순천 날씨 확인 후 코코몽 정보 제공",
+      "relevant_doc_ids": ["(주) 이키즈랜드 코코몽 순천점"]
+    },
+    {
+      "id": 110,
+      "category": "complex",
+      "question": "경기도 파주 날씨랑 헤이리마을 박물관 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "파주 날씨와 헤이리마을 박물관 정보 제공",
+      "relevant_doc_ids": ["05스튜디오", "93뮤지엄"]
+    },
+    {
+      "id": 111,
+      "category": "complex",
+      "question": "강원도 고성 날씨 좋으면 켄싱턴리조트 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "고성 날씨 확인 후 켄싱턴리조트 정보 제공",
+      "relevant_doc_ids": ["(주)켄싱턴리조트 키즈월드(설악비치점)"]
+    },
+    {
+      "id": 112,
+      "category": "complex",
+      "question": "경기도 성남 날씨 확인하고 도서관도 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "성남 날씨와 도서관 정보 제공",
+      "relevant_doc_ids": ["1318도서관하랑", "1318하랑작은도서관"]
+    },
+    {
+      "id": 113,
+      "category": "complex",
+      "question": "경남 진주 날씨 괜찮으면 히어로플레이파크 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "진주 날씨 확인 후 히어로플레이파크 정보 제공",
+      "relevant_doc_ids": ["(주)히어로플레이파크 진주"]
+    },
+    {
+      "id": 114,
+      "category": "complex",
+      "question": "서울 영등포 날씨랑 63빌딩 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "영등포 날씨와 63빌딩 정보 제공",
+      "relevant_doc_ids": ["63빌딩63스카이아트미술관", "63스퀘어63왁스뮤지엄", "63아트"]
+    },
+    {
+      "id": 115,
+      "category": "complex",
+      "question": "서울 구로 날씨 더우면 수영장 가야겠다",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "구로 날씨 확인 후 수영장 정보 제공",
+      "relevant_doc_ids": ["50+남부캠퍼스수영장"]
+    },
+    {
+      "id": 116,
+      "category": "complex",
+      "question": "경기도 하남 날씨 좋으면 실내놀이터 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "하남 날씨 확인 후 실내놀이터 정보 제공",
+      "relevant_doc_ids": ["(주)프렌즈", "29아트"]
+    },
+    {
+      "id": 117,
+      "category": "complex",
+      "question": "충남 천안 날씨랑 점핑GO 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "천안 날씨와 점핑GO 정보 제공",
+      "relevant_doc_ids": ["(주)케이디시티 점핑GO"]
+    },
+    {
+      "id": 118,
+      "category": "complex",
+      "question": "창원 날씨 비 오면 실내 놀이터 가야지",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "창원 날씨 확인 후 실내 놀이터 정보 제공",
+      "relevant_doc_ids": ["315아트센터", "315의거발원지기념관"]
+    },
+    {
+      "id": 119,
+      "category": "complex",
+      "question": "경북 경주 날씨 확인하고 기념관 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "경주 날씨와 기념관 정보 제공",
+      "relevant_doc_ids": ["(주)이랜드파크 켄싱턴리조트 경주"]
+    },
+    {
+      "id": 120,
+      "category": "complex",
+      "question": "경기도 고양 날씨 좋으면 뮤즈파크 갈래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "고양 날씨 확인 후 뮤즈파크 정보 제공",
+      "relevant_doc_ids": ["(주)하나로뮤즈파크"]
+    },
+    {
+      "id": 121,
+      "category": "complex",
+      "question": "전남 목포 날씨랑 놀이시설 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "목포 날씨와 놀이시설 정보 제공",
+      "relevant_doc_ids": ["(주)이든 내 실내놀이시설", "가루야놀자"]
+    },
+    {
+      "id": 122,
+      "category": "complex",
+      "question": "전남 담양 날씨 맑으면 실내놀이터 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "담양 날씨 확인 후 실내놀이터 정보 제공",
+      "relevant_doc_ids": ["(주)다함 실내놀이터(판다스토리)"]
+    },
+    {
+      "id": 123,
+      "category": "complex",
+      "question": "대구 228기념회관 가는데 날씨 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "대구 날씨와 228기념회관 정보 제공",
+      "relevant_doc_ids": ["228민주운동기념회관"]
+    },
+    {
+      "id": 124,
+      "category": "complex",
+      "question": "경북 영주 날씨랑 아트스퀘어 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "영주 날씨와 아트스퀘어 정보 제공",
+      "relevant_doc_ids": ["148아트스퀘어"]
+    },
+    {
+      "id": 125,
+      "category": "complex",
+      "question": "경기도 가평 날씨 좋으면 유원지 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "가평 날씨 확인 후 유원지 정보 제공",
+      "relevant_doc_ids": ["가람유원지", "1939시네마"]
+    },
+    {
+      "id": 126,
+      "category": "complex",
+      "question": "인천 날씨랑 어린이과학관 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "인천 날씨와 어린이과학관 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 127,
+      "category": "complex",
+      "question": "대전 날씨 좋으면 아쿠아리움 가고 싶어",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "대전 날씨 확인 후 아쿠아리움 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 128,
+      "category": "complex",
+      "question": "울산 날씨 확인하고 박물관 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "울산 날씨와 박물관 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 129,
+      "category": "complex",
+      "question": "세종시 날씨랑 체험관 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "세종 날씨와 체험관 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 130,
+      "category": "complex",
+      "question": "청주 날씨 비 오면 키즈카페 갈래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "청주 날씨 확인 후 키즈카페 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 131,
+      "category": "complex",
+      "question": "익산 날씨 좋으면 놀이공원 가고 싶어",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "익산 날씨 확인 후 놀이공원 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 132,
+      "category": "complex",
+      "question": "포항 날씨랑 어린이도서관 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "포항 날씨와 어린이도서관 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 133,
+      "category": "complex",
+      "question": "춘천 날씨 괜찮으면 동물원 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "춘천 날씨 확인 후 동물원 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 134,
+      "category": "complex",
+      "question": "제주 날씨 확인하고 테마파크 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "제주 날씨와 테마파크 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 135,
+      "category": "complex",
+      "question": "안양 날씨 좋으면 어린이대공원 갈래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "안양 날씨 확인 후 어린이대공원 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 136,
+      "category": "complex",
+      "question": "기장 날씨랑 해양체험관 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "기장 날씨와 해양체험관 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 137,
+      "category": "complex",
+      "question": "고양 날씨 확인하고 어린이문화센터 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "고양 날씨와 어린이문화센터 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 138,
+      "category": "complex",
+      "question": "아산 날씨 추우면 온천 가고 싶어",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "아산 날씨 확인 후 온천 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 139,
+      "category": "complex",
+      "question": "여수 날씨랑 아쿠아플라넷 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "여수 날씨와 아쿠아플라넷 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 140,
+      "category": "complex",
+      "question": "통영 날씨 좋으면 케이블카 타러 갈래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "통영 날씨 확인 후 케이블카 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 141,
+      "category": "complex",
+      "question": "속초 날씨 확인하고 해수욕장 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "속초 날씨와 해수욕장 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 142,
+      "category": "complex",
+      "question": "원주 날씨 좋으면 자연휴양림 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "원주 날씨 확인 후 자연휴양림 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 143,
+      "category": "complex",
+      "question": "전주 날씨랑 한옥마을 정보 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "전주 날씨와 한옥마을 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 144,
+      "category": "complex",
+      "question": "남원 날씨 괜찮으면 관광지 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "남원 날씨와 관광지 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 145,
+      "category": "complex",
+      "question": "용인 날씨 좋으면 에버랜드 갈래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "용인 날씨 확인 후 에버랜드 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 146,
+      "category": "complex",
+      "question": "안산 날씨 확인하고 공원 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "안산 날씨와 공원 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 147,
+      "category": "complex",
+      "question": "양양 날씨랑 서핑 장소 알려줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "양양 날씨와 서핑 장소 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 148,
+      "category": "complex",
+      "question": "강릉 날씨 좋으면 해변 산책하러 갈래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "강릉 날씨 확인 후 해변 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 149,
+      "category": "complex",
+      "question": "군산 날씨 확인하고 근대문화유산 추천해줘",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "군산 날씨와 근대문화유산 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 150,
+      "category": "complex",
+      "question": "부여 날씨 좋으면 백제유적지 가볼래",
+      "expected_tools": ["get_weather_forecast", "search_facilities"],
+      "expected_tool_params": {},
+      "ground_truth": "부여 날씨 확인 후 백제유적지 정보 제공",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 151,
+      "category": "web_search",
+      "question": "요즘 서울에서 하는 어린이 축제 있어?",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "서울 어린이 축제"},
+      "ground_truth": "서울 어린이 축제 정보 검색 결과",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 152,
+      "category": "web_search",
+      "question": "부산 불꽃축제 언제야?",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "부산 불꽃축제"},
+      "ground_truth": "부산 불꽃축제 일정 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 153,
+      "category": "web_search",
+      "question": "김치찌개 맛있게 만드는 방법 알려줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "김치찌개 만드는 방법"},
+      "ground_truth": "김치찌개 레시피 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 154,
+      "category": "web_search",
+      "question": "제주도 벚꽃 개화시기 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "제주도 벚꽃 개화시기"},
+      "ground_truth": "제주도 벚꽃 개화 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 155,
+      "category": "web_search",
+      "question": "어린이날 행사 후기 찾아줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이날 행사 후기"},
+      "ground_truth": "어린이날 행사 후기 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 156,
+      "category": "web_search",
+      "question": "대전 과학축전 정보 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "대전 과학축전"},
+      "ground_truth": "대전 과학축전 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 157,
+      "category": "web_search",
+      "question": "경주 불국사 관람 후기",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "경주 불국사 관람 후기"},
+      "ground_truth": "불국사 관람 후기 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 158,
+      "category": "web_search",
+      "question": "초등학생 과학실험 추천해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "초등학생 과학실험"},
+      "ground_truth": "초등학생 과학실험 추천 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 159,
+      "category": "web_search",
+      "question": "가족 캠핑장 추천 블로그 찾아줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "가족 캠핑장 추천"},
+      "ground_truth": "가족 캠핑장 추천 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 160,
+      "category": "web_search",
+      "question": "아이랑 만들기 놀이 아이디어 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "아이 만들기 놀이"},
+      "ground_truth": "아이 만들기 놀이 아이디어",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 161,
+      "category": "web_search",
+      "question": "여름방학 체험학습 프로그램 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "여름방학 체험학습 프로그램"},
+      "ground_truth": "여름방학 체험학습 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 162,
+      "category": "web_search",
+      "question": "어린이 독서캠프 후기 찾아줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이 독서캠프 후기"},
+      "ground_truth": "어린이 독서캠프 후기 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 163,
+      "category": "web_search",
+      "question": "서울 어린이대공원 행사 일정 알려줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "서울 어린이대공원 행사"},
+      "ground_truth": "어린이대공원 행사 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 164,
+      "category": "web_search",
+      "question": "아이와 함께 보기 좋은 영화 추천해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "아이 영화 추천"},
+      "ground_truth": "아이와 볼 영화 추천 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 165,
+      "category": "web_search",
+      "question": "초등학생 영어 공부 방법 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "초등학생 영어 공부 방법"},
+      "ground_truth": "초등학생 영어 학습 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 166,
+      "category": "web_search",
+      "question": "유아 미술 놀이 아이디어 찾아줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "유아 미술 놀이"},
+      "ground_truth": "유아 미술 놀이 아이디어",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 167,
+      "category": "web_search",
+      "question": "어린이집 입학 준비물 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이집 입학 준비물"},
+      "ground_truth": "어린이집 입학 준비물 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 168,
+      "category": "web_search",
+      "question": "초등학생 체력 단련 방법 알려줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "초등학생 체력 단련"},
+      "ground_truth": "초등학생 체력 단련 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 169,
+      "category": "web_search",
+      "question": "어린이 수영 교실 후기 찾아줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이 수영 교실 후기"},
+      "ground_truth": "어린이 수영 교실 후기",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 170,
+      "category": "web_search",
+      "question": "유아 피아노 학원 추천해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "유아 피아노 학원 추천"},
+      "ground_truth": "유아 피아노 학원 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 171,
+      "category": "web_search",
+      "question": "어린이 축구 교실 정보 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이 축구 교실"},
+      "ground_truth": "어린이 축구 교실 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 172,
+      "category": "web_search",
+      "question": "가족 뮤지컬 공연 추천해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "가족 뮤지컬 공연 추천"},
+      "ground_truth": "가족 뮤지컬 공연 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 173,
+      "category": "web_search",
+      "question": "어린이 코딩 교육 프로그램 찾아줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이 코딩 교육"},
+      "ground_truth": "어린이 코딩 교육 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 174,
+      "category": "web_search",
+      "question": "초등학생 방학 활동 아이디어 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "초등학생 방학 활동"},
+      "ground_truth": "초등학생 방학 활동 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 175,
+      "category": "web_search",
+      "question": "어린이 발레 학원 후기 알려줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이 발레 학원 후기"},
+      "ground_truth": "어린이 발레 학원 후기",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 176,
+      "category": "web_search",
+      "question": "유아 놀이학교 프로그램 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "유아 놀이학교 프로그램"},
+      "ground_truth": "유아 놀이학교 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 177,
+      "category": "web_search",
+      "question": "아이와 가볼만한 전시회 추천해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "아이 전시회 추천"},
+      "ground_truth": "아이와 가볼 전시회 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 178,
+      "category": "web_search",
+      "question": "어린이 태권도 도장 추천해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이 태권도 도장 추천"},
+      "ground_truth": "어린이 태권도 도장 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 179,
+      "category": "web_search",
+      "question": "초등학생 독서록 쓰는 방법 알려줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "초등학생 독서록 쓰는 방법"},
+      "ground_truth": "독서록 작성법 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 180,
+      "category": "web_search",
+      "question": "어린이 미술대회 정보 검색해줘",
+      "expected_tools": ["naver_web_search"],
+      "expected_tool_params": {"query": "어린이 미술대회"},
+      "ground_truth": "어린이 미술대회 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 181,
+      "category": "map",
+      "question": "서울역 지도에서 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "서울역"},
+      "ground_truth": "서울역 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 182,
+      "category": "map",
+      "question": "국립중앙박물관 위치 지도로 알려줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "국립중앙박물관"},
+      "ground_truth": "국립중앙박물관 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 183,
+      "category": "map",
+      "question": "롯데월드타워 주소로 지도 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "롯데월드타워"},
+      "ground_truth": "롯데월드타워 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 184,
+      "category": "map",
+      "question": "경복궁 지도 링크 알려줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "경복궁"},
+      "ground_truth": "경복궁 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 185,
+      "category": "map",
+      "question": "코엑스 지도에서 찾아줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "코엑스"},
+      "ground_truth": "코엑스 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 186,
+      "category": "map",
+      "question": "부산 해운대해수욕장 위치 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "해운대해수욕장"},
+      "ground_truth": "해운대해수욕장 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 187,
+      "category": "map",
+      "question": "인천공항 지도 링크 줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "인천공항"},
+      "ground_truth": "인천공항 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 188,
+      "category": "map",
+      "question": "남산타워 위치 지도로 확인하고 싶어",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "남산타워"},
+      "ground_truth": "남산타워 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 189,
+      "category": "map",
+      "question": "제주 성산일출봉 지도 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "성산일출봉"},
+      "ground_truth": "성산일출봉 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 190,
+      "category": "map",
+      "question": "대전역 위치 알려줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "대전역"},
+      "ground_truth": "대전역 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 191,
+      "category": "map",
+      "question": "광화문광장 지도 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "광화문광장"},
+      "ground_truth": "광화문광장 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 192,
+      "category": "map",
+      "question": "에버랜드 위치 지도로 알려줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "에버랜드"},
+      "ground_truth": "에버랜드 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 193,
+      "category": "map",
+      "question": "롯데월드 어드벤처 지도 찾아줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "롯데월드 어드벤처"},
+      "ground_truth": "롯데월드 어드벤처 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 194,
+      "category": "map",
+      "question": "부산타워 위치 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "부산타워"},
+      "ground_truth": "부산타워 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 195,
+      "category": "map",
+      "question": "전주한옥마을 지도 알려줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "전주한옥마을"},
+      "ground_truth": "전주한옥마을 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 196,
+      "category": "map",
+      "question": "경주 첨성대 위치 지도로 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "첨성대"},
+      "ground_truth": "첨성대 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 197,
+      "category": "map",
+      "question": "강릉 경포대 지도 찾아줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "경포대"},
+      "ground_truth": "경포대 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 198,
+      "category": "map",
+      "question": "여수 엑스포해양공원 위치 알려줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "여수 엑스포해양공원"},
+      "ground_truth": "엑스포해양공원 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 199,
+      "category": "map",
+      "question": "대구 이월드 지도 보여줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "대구 이월드"},
+      "ground_truth": "이월드 지도 정보",
+      "relevant_doc_ids": []
+    },
+    {
+      "id": 200,
+      "category": "map",
+      "question": "춘천 남이섬 위치 지도로 알려줘",
+      "expected_tools": ["search_map_by_address"],
+      "expected_tool_params": {"place_name_or_address": "남이섬"},
+      "ground_truth": "남이섬 지도 정보",
+      "relevant_doc_ids": []
+    }
+  ]
+}

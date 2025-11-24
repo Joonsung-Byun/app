@@ -11,6 +11,7 @@ backend/pca_model.joblib
 backend/rag_data_integrated_final.csv
 backend/rag_data_integrated_final_rev_loc.csv
 
+
 # Model files
 backend/model_files/
 backend/model_files/*
@@ -32,6 +33,7 @@ backend/*.pyo
 backend/*.pyd
 backend/.Python
 backend/*.so
+
 
 # ==========================================
 # Frontend
@@ -70,3 +72,7 @@ Thumbs.db
 .env
 venv/
 
+# ==========================================
+# evaluation
+# ==========================================
+evaluation/rag_data_integrated_final (1).csv
