@@ -21,7 +21,6 @@ def get_facilities(
 
     params = [("select", "*")]
 
-    print("요청 파라미터:", category2, minLat, maxLat, minLon, maxLon)
 
     # category filter
     if category2:

@@ -37,7 +37,6 @@ def get_weather_forecast(city_name: str, date: str = "today", conversation_id: s
         날씨 정보 JSON
     """
     if conversation_id:
-        print("날씨에서 conversation_id:", conversation_id)
         set_status(conversation_id, "날씨 정보 확인 중..")
 
     city_mapping = {

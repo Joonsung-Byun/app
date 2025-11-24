@@ -54,8 +54,6 @@ def show_map_for_facilities(
         for msg in chat_history
     ])
     
-    print("show_map에서 보는 conversation_id:", conversation_id)
-    print("show_map에서 보는 chat_history 메시지 수:", len(chat_history))
     
     llm = get_llm()
     
