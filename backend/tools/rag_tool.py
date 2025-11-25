@@ -7,99 +7,59 @@ from typing import Optional
 import json
 import logging
 from utils.conversation_memory import get_shown_facility_names, set_status
+from .naver_search_tool import naver_web_search
 
 logger = logging.getLogger(__name__)
 
-# 유사도 커트라인
-# 테스트해보면서 1.0 ~ 1.5 사이로 조절 필요. 숫자가 작을수록 엄격함.
-SIMILARITY_THRESHOLD = 1.3 
+# 임계값 (엄격하게 적용)
+SIMILARITY_THRESHOLD = 1.1 
+
+# 주소 필터링 시 무시할 일반 단어들
+IGNORE_LOCATION_TERMS = ["입구", "출구", "기구", "친구", "야구", "축구", "농구", "배구", "도구", "문구", "아동", "운동", "활동", "행동"]
 
 # ChromaDB 클라이언트 초기화
 try:
     chroma_client = chromadb.HttpClient(
         host=settings.CHROMA_HOST,
         port=settings.CHROMA_PORT,
-        settings=ChromaSettings(
-            anonymized_telemetry=False
-        )
+        settings=ChromaSettings(anonymized_telemetry=False)
     )
-    
-    collection = chroma_client.get_collection(
-        name="kid_program_collection"
-    )
-    
-    logger.info(f"✅ ChromaDB 연결 성공: {collection.name}")
-    logger.info(f"컬렉션 항목 수: {collection.count()}")
-    
+    collection = chroma_client.get_collection(name="kid_program_collection")
 except Exception as e:
     logger.error(f"❌ ChromaDB 연결 실패: {e}")
     collection = None
 
 @tool
-def search_facilities(
+async def search_facilities(
     original_query: str,
     conversation_id: str,
-    location: str = "",  # 🟢 [추가] 지역 필터링을 위한 파라미터
+    location: str = "",
+    indoor_outdoor: str = "",
     k: int = 3 
 ) -> str:
     """
-    사용자 질문과 가장 유사한 시설을 검색합니다.
-    
-    Args:
-        original_query: 사용자의 원본 질문 (예: "부산 자전거 타기 좋은 곳")
-        conversation_id: 현재 대화 ID (중복 추천 방지용)
-        location: 사용자가 언급한 지역명 (예: "부산", "송파"). 없으면 빈 문자열.
-        k: 반환할 결과 개수.
+    사용자 질문과 가장 유사한 시설을 RAG(DB)에서 검색합니다.
+    지역명(시/군/구/동)과 실내외 여부를 정밀하게 필터링합니다.
     """
-    logger.info(f"\n{'='*50}")
-    logger.info(f"시설 검색 시작 | Query: {original_query} | Loc: {location}")
-    logger.info(f"{'='*50}")
-    # 진행 상태 업데이트
+    logger.info(f"🔍 RAG 검색 | Q: {original_query} | Loc: {location} | InOut: {indoor_outdoor}")
+    
     if conversation_id:
         set_status(conversation_id, "시설 후보 찾는 중..")
 
-    if not conversation_id:
-        logger.error("conversation_id가 전달되지 않았습니다.")
-        return json.dumps({
-            "success": False,
-            "message": "대화 ID가 없어 검색을 진행할 수 없습니다.",
-            "facilities": []
-        }, ensure_ascii=False)
-    
     if collection is None:
-        logger.error("ChromaDB 컬렉션이 없음")
-        return json.dumps({
-            "success": False,
-            "message": "ChromaDB 연결 실패",
-            "facilities": []
-        }, ensure_ascii=False)
+        return json.dumps({"success": False, "facilities": []})
     
     try:
-        # 임베딩 생성
+        # 임베딩 생성 (동기 작업이지만 빠르므로 유지)
         query_embedding = pca_embeddings.embed_query(original_query)
-        
-        # 중복 방지 (이미 보여준 시설 이름 가져오기)
-        facilities_names_already_shown = get_shown_facility_names(conversation_id) if conversation_id else []
-        logger.info(f"제외할 시설들(중복): {facilities_names_already_shown}")
+        shown_facilities = get_shown_facility_names(conversation_id) if conversation_id else []
 
-        # 쿼리 실행 (중복 제외 로직 포함)
-        if facilities_names_already_shown == []:
-            results = collection.query(
-                query_embeddings=[query_embedding],
-                n_results=10, # 넉넉하게 가져와서 필터링함
-                include=["metadatas", "documents", "distances"]
-            )
-        else:
-            results = collection.query(
-                query_embeddings=[query_embedding],
-                n_results=10, # 넉넉하게 가져와서 필터링함
-                where={
-                    "Name": {"$nin": facilities_names_already_shown}
-                },
-                include=["metadatas", "documents", "distances"]
-            )
-        
-        logger.info(f"✅ 벡터 검색 완료: {len(results['ids'][0])}개 후보")
+        # 쿼리 실행
+        results = collection.query(
+            query_embeddings=[query_embedding],
+            n_results=10, 
+            include=["metadatas", "documents", "distances"]
+        )
         
         facilities = []
         
@@ -108,65 +68,81 @@ def search_facilities(
             documents = results['documents'][0]
             distances = results['distances'][0]
             
+            # 상세 주소 필터링용 단어 추출
+            query_words = original_query.split()
+            detail_locations = []
+            for w in query_words:
+                if len(w) >= 2 and w[-1] in ["시", "군", "구", "동", "읍", "면"]:
+                    if w not in IGNORE_LOCATION_TERMS:
+                        detail_locations.append(w)
+            
+            if detail_locations:
+                logger.info(f"📍 상세 지역 필터 감지: {detail_locations}")
+
             for i, metadata in enumerate(metadatas):
                 name = metadata.get("Name", metadata.get("name", "이름없음"))
-                current_dist = distances[i]
-                
-                # 🟡 [위치 이동] 주소를 필터링에 써야 해서 미리 가져옴
                 address = metadata.get("Address", "")
+                db_in_out = metadata.get("in_out", "") 
+                current_dist = distances[i]
 
-                # 1. 유사도 점수 필터링
-                if current_dist > SIMILARITY_THRESHOLD:
-                    logger.warning(f"  ❌ [점수미달] {name} ({current_dist:.4f})")
-                    continue 
-                
-                # 2. 🟢 [추가] 지역명 강제 필터링 (핵심!)
-                # 사용자가 '부산'이라고 했는데 주소에 '부산'이 없으면 탈락시킴
-                if location and location not in address:
-                    logger.warning(f"  ❌ [지역불일치] {name} (요청: {location} != 주소: {address})")
+                # [필터링 1] 중복 제외
+                if name in shown_facilities:
                     continue
 
-                logger.info(f"  ✅ [통과] {name} ({current_dist:.4f})")
-                
-                # 좌표 변환
-                lat = metadata.get("LAT", "37.5665")
-                lon = metadata.get("LON", "126.9780")
-                try:
-                    lat = float(lat)
-                    lon = float(lon)
-                except (ValueError, TypeError):
-                    lat = 37.5665
-                    lon = 126.9780
-                
-                # 설명 생성
-                category1 = metadata.get("Category1", "")
-                category3 = metadata.get("Category3", "")
-                
-                desc = ""
-                if i < len(documents) and documents[i]:
-                    desc = documents[i][:100]
-                elif address:
-                    desc = address[:100]
-                elif category3:
-                    desc = f"{category1} - {category3}"
+                # [필터링 2] 유사도 거리
+                if current_dist > SIMILARITY_THRESHOLD:
+                    logger.warning(f"  ❌ [탈락:거리] {name} ({current_dist:.2f})")
+                    continue 
+
+                # [필터링 3] 기본 지역 필터
+                if location and location not in address:
+                    logger.warning(f"  ❌ [탈락:지역기본] {name} (주소:{address} vs 요청:{location})")
+                    continue
+
+                # [필터링 4] 상세 주소 필터
+                is_detail_match = True
+                for detail_loc in detail_locations:
+                    if detail_loc not in address:
+                        logger.warning(f"  ❌ [탈락:세부지역] {name} (주소에 '{detail_loc}' 없음)")
+                        is_detail_match = False
+                        break
+                if not is_detail_match:
+                    continue
+
+                # [필터링 5] 실내/실외
+                if indoor_outdoor:
+                    if indoor_outdoor not in db_in_out:
+                         logger.warning(f"  ❌ [탈락:실내외] {name} (DB:{db_in_out} != Req:{indoor_outdoor})")
+                         continue
+
+                # 통과
+                category = metadata.get("Category3") or metadata.get("Category1")
+                desc = documents[i][:100] if i < len(documents) else address[:100]
                 
                 facilities.append({
                     "name": name,
-                    "lat": lat,
-                    "lng": lon,
-                    "note": metadata.get("Note", ""),
-                    "category": category3 or category1 or "시설",
+                    "lat": float(metadata.get("LAT", 0.0)),
+                    "lng": float(metadata.get("LON", 0.0)),
+                    "category": category,
                     "desc": desc,
+                    "in_out": db_in_out,
                     "distance": current_dist
                 })
-        
-        else:
-            logger.warning("⚠️  ChromaDB 결과가 비어있음")
-        
-        logger.info(f"최종 유효 결과: {len(facilities)}개")
-        
-        # 요청한 개수(k)만큼 자르기
+
         facilities = facilities[:k]
+        
+        # [Fallback] RAG 검색 결과 0건 시, naver_web_search 폴백 실행
+        if not facilities:
+            logger.warning("🚫 RAG 검색 결과 0건. naver_web_search로 폴백 실행.")
+            set_status(conversation_id, "RAG 결과 부족으로 웹 검색 폴백 실행 중...")
+            
+            web_search_output = await naver_web_search.ainvoke({
+                "query": original_query, 
+                "conversation_id": conversation_id
+            })
+            return web_search_output 
+
+        logger.info(f"✅ 최종 RAG 결과: {len(facilities)}개 반환")
         
         return json.dumps({
             "success": True,
@@ -175,12 +151,5 @@ def search_facilities(
         }, ensure_ascii=False)
         
     except Exception as e:
-        logger.error(f"❌ 검색 중 오류: {str(e)}")
-        import traceback
-        logger.error(traceback.format_exc())
-        
-        return json.dumps({
-            "success": False,
-            "message": f"검색 중 오류: {str(e)}",
-            "facilities": []
-        }, ensure_ascii=False)
+        logger.error(f"❌ RAG 검색 오류: {e}")
+        return json.dumps({"success": False, "facilities": []})

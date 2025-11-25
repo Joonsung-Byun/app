@@ -8,11 +8,10 @@ class Settings(BaseSettings):
     # API Keys
     OPENWEATHER_API_KEY: str = ""
     KAKAO_API_KEY: str = ""
-    KAKAO_REST_API_KEY: str = ""  # 추가
+    KAKAO_REST_API_KEY: str = "" 
     OPENAI_API_KEY: str
     NAVER_CLIENT_ID: str = ""      
     NAVER_CLIENT_SECRET: str = ""
-    KAKAO_REST_API_KEY: str = ""
     # ChromaDB
     CHROMA_HOST: str = "localhost"
     CHROMA_PORT: int = 8000
@@ -21,7 +20,7 @@ class Settings(BaseSettings):
     # 새로운 LLM 백엔드 설정
     LLM_BACKEND: str = ""  # "auto" | "openai" | "vllm"
     VLLM_ENDPOINT: str = ""
-    VLLM_MODEL_NAME: str = ""  # AWQ로 변경
+    VLLM_MODEL_NAME: str = "" 
 
     SUPABASE_URL: str = ""
     SUPABASE_KEY: str = ""

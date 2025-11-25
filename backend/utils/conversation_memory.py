@@ -68,20 +68,27 @@ def add_message(conversation_id: str, role: str, content):
     )
 
 def save_search_results(conversation_id: str, facilities: List[Dict]):
-    """검색 결과 저장"""
+    """검색 결과를 메모리에 저장 (지도 표시 및 중복 방지용)"""
+    
+    if not facilities:
+        logger.info(f"⚠️ 검색 결과 없음(0건) -> 메모리 저장 건너뜀: {conversation_id}")
+        return
+
+    # 1. 마지막 검색 결과 갱신 (지도 툴용)
+    # 항상 최신 검색 결과로 '교체'합니다. (사용자는 방금 검색한 걸 보고 싶어 하니까요)
     last_search_results[conversation_id] = facilities
     
-    # 시스템 메시지로도 저장 (Agent가 참조할 수 있게)
-    facilities_summary = json.dumps(facilities, ensure_ascii=False)
-
+    # 2. 중복 방지 히스토리 누적 (추천 제외용)
     if conversation_id not in shown_facilities_history:
         shown_facilities_history[conversation_id] = set()
     
     for fac in facilities:
-        # 메타데이터의 키가 'Name'인지 'name'인지 확인하여 저장
-        name = fac.get("name") or fac.get("Name")
+        # 메타데이터의 키가 RAG는 'Name', Web은 'title'일 수 있으므로 안전하게 가져옴
+        name = fac.get("name") or fac.get("Name") or fac.get("title")
         if name:
             shown_facilities_history[conversation_id].add(name)
+            
+    logger.info(f"✅ 검색 결과 메모리 저장 완료: {len(facilities)}개")
 
     
 
