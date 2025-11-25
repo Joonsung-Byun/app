@@ -138,11 +138,11 @@ const ChatPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10 bg-linear-to-b from-green-50 via-white to-green-50">
-      <div className="w-full max-w-4xl">
-        <div className="flex justify-center items-center gap-5 mb-3">
+    <div className="min-h-screen flex justify-center px-4 pt-20 pb-6 md:pt-20 bg-linear-to-b from-green-50 via-white to-green-50">
+      <div className="w-full max-w-6xl">
+        {/* <div className="flex justify-center items-center gap-5 mb-3">
           <img src="/logo2_copy.webp" alt="" className="w-36 md:w-52 h-auto block"/>
-        </div>
+        </div> */}
 
         <div className="mb-4 min-w-0">
           <ChatWindow 

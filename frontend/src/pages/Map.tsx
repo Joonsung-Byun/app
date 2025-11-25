@@ -146,7 +146,7 @@ const renderMarkers = (items: any[]) => {
   }
 
   return (
-    <div className="relative w-full h-screen flex flex-col items-center justify-center gap-4 p-4 md:p-0">
+    <div className="relative w-full min-h-screen flex flex-col items-center gap-4 px-4 pt-20 pb-4 md:pt-20">
       {/* Header */}
       {/* <div className="flex justify-center items-center gap-5">
         <img
@@ -156,7 +156,7 @@ const renderMarkers = (items: any[]) => {
         />
       </div> */}
 
-      <div className="relative w-full max-w-6xl h-[70vh] md:w-4/5 md:h-4/5 rounded-xl shadow-xl overflow-hidden mx-4 lg:mx-0 border border-green-300">
+      <div className="relative w-full max-w-6xl h-[80vh] md:w-4/5 rounded-xl shadow-xl overflow-hidden mx-4 lg:mx-0 border border-green-300">
         {/* Category buttons */}
         <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 w-full px-3 lg:top-4 lg:px-0">
           {/* Mobile: ... button + dropdown */}

@@ -1,4 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&family=Gowun+Dodum&display=swap');
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 /* Optional: custom base styles */
 @layer base {
