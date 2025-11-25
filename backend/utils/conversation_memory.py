@@ -83,7 +83,6 @@ def save_search_results(conversation_id: str, facilities: List[Dict]):
         if name:
             shown_facilities_history[conversation_id].add(name)
 
-    print(f"저장된 시설 이름: {shown_facilities_history[conversation_id]}")
     
 
 def get_shown_facility_names(conversation_id: str) -> List[str]:

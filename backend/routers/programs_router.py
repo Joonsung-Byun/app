@@ -21,6 +21,5 @@ def get_programs(facility_id: int):
 
     res = requests.get(url, headers=headers, params=params)
 
-    print("프로그램 응답:", res.status_code, res.text)
 
     return res.json()

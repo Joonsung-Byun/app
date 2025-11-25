@@ -20,7 +20,7 @@ CHROMA_HOST = "kids-chatbot-chromadb"
 CHROMA_PORT = 8000
 COLLECTION_NAME = "kid_program_collection"
 
-CSV_PATH = "./rag_data_integrated_final_rev_loc.csv"
+CSV_PATH = "./rag_data_integrated_final_rev_loc_inout_fixed.csv"
 
 # OpenAI 임베딩 모델 선택
 EMB_MODEL = "text-embedding-3-large"    # 3072차원 (추천)
@@ -87,7 +87,7 @@ def build_doc(row):
 
     # 8) 실내/실외
     if row.get("in_out"):
-        parts.append(f"시설 형태: {row['in_out']}")
+        parts.append(f"실내/실외: {row['in_out']}")
 
     # 9) 권장연령 (자연어로 의미 있으므로 포함)
     if row.get("Age"):
@@ -97,7 +97,7 @@ def build_doc(row):
     if row.get("Note"):
         parts.append(f"추가설명: {row['Note']}")
 
-    return ". ".join(parts)
+    return "\n".join(parts)
 
 print("\n📝 문서 생성 중...")
 documents = df.apply(build_doc, axis=1).tolist()
