@@ -1,4 +1,3 @@
-import requests
 import json
 import asyncio
 import aiohttp
@@ -13,57 +12,46 @@ from datetime import datetime, timedelta
 from models.chat_models import get_llm
 from utils.conversation_memory import save_search_results, get_shown_facility_names, set_status
 
-# 비동기 이벤트 루프 충돌 방지
-import nest_asyncio
-nest_asyncio.apply()
+FULL_MOBILE_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
 
 # ============================================
-# 1. 비동기 크롤링 헬퍼 함수 (Async)
+# 1. 비동기 크롤링 헬퍼 함수
 # ============================================
 async def fetch_single_blog(session, link: str) -> str:
     """개별 네이버 블로그를 비동기로 크롤링."""
     try:
-        # 모바일 버전 URL로 변환 (iframe 회피)
         target_link = link
         if "blog.naver.com" in link and "m.blog.naver.com" not in link:
             target_link = link.replace("blog.naver.com", "m.blog.naver.com")
 
         headers = {
-            "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15"
+            "User-Agent": FULL_MOBILE_USER_AGENT
         }
-
-        # 3초 타임아웃 설정 (너무 오래 걸리면 포기)
         async with session.get(target_link, headers=headers, timeout=3) as resp:
-            if resp.status != 200:
-                return ""
-
+            if resp.status != 200: return ""
             html = await resp.text()
             soup = BeautifulSoup(html, "html.parser")
             
-            # 본문 타겟팅
             content = soup.find("div", class_="se-main-container")
             if not content:
                 content = soup.find("div", id="postViewArea")
 
             if content:
-                # 텍스트만 추출 (공백 정리)
-                return content.get_text(" ", strip=True)[:1500] # 1500자 제한
+                return content.get_text(" ", strip=True)[:850] 
 
             return ""
 
     except Exception as e:
-        # 크롤링 에러는 조용히 무시 (전체 로직에 영향 안 주게)
         return ""
 
 async def fetch_multiple_urls(links: List[str]) -> List[str]:
     """여러 블로그 링크를 동시에(병렬로) 크롤링."""
     async with aiohttp.ClientSession() as session:
-        # 리스트 컴프리헨션으로 태스크 생성 -> 동시에 실행
         tasks = [fetch_single_blog(session, link) for link in links]
         return await asyncio.gather(*tasks)
 
 # ============================================
-# 2. 날짜 계산 유틸리티
+# 2. 날짜 계산 유틸리티 (기존과 동일)
 # ============================================
 WEEKDAY_MAP = {
     "월요일": 0, "월": 0, "화요일": 1, "화": 1, "수요일": 2, "수": 2,
@@ -99,7 +87,7 @@ def calculate_date_range(keyword: str) -> str:
     return ""
 
 # ============================================
-# 3. AI 분석 데이터 모델
+# 3. AI 분석 데이터 모델 
 # ============================================
 class SearchResultItem(BaseModel):
     title: str = Field(description="블로그 제목")
@@ -111,12 +99,12 @@ class SearchAnalysisResult(BaseModel):
     results: List[SearchResultItem]
 
 # ============================================
-# 4. 툴 정의 (비동기 통합)
+# 4. 툴 정의 
 # ============================================
 @tool
-def naver_web_search(query: str, conversation_id: str) -> str:
+async def naver_web_search(query: str, conversation_id: str) -> str:
     """
-    네이버 블로그 검색 -> 상위 결과 병렬 크롤링 -> 정확한 장소명 추출의 과정을 거칩니다.
+    네이버 블로그 검색 -> 상위 결과 병렬 크롤링 -> 정확한 장소명 추출의 과정을 거칩니다. (완전 비동기)
     """
     naver_client_id = settings.NAVER_CLIENT_ID
     naver_client_secret = settings.NAVER_CLIENT_SECRET
@@ -134,17 +122,20 @@ def naver_web_search(query: str, conversation_id: str) -> str:
 
     shown_items = set(get_shown_facility_names(conversation_id)) if conversation_id else set()
 
-    # [Step 2] 네이버 API 호출
+    # [Step 2] 네이버 API 호출 
     url = "https://openapi.naver.com/v1/search/blog.json"
     headers = {"X-Naver-Client-Id": naver_client_id, "X-Naver-Client-Secret": naver_client_secret}
-    params = {"query": final_query, "display": 20, "sort": "sim"}
+    params = {"query": final_query, "display": 10, "sort": "sim"}
 
     try:
         if conversation_id:
             set_status(conversation_id, "웹 정보 확인 중..")
 
-        response = requests.get(url, headers=headers, params=params)
-        data = response.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers, params=params) as resp:
+                if resp.status != 200:
+                    return f"네이버 API 오류 발생 (상태코드: {resp.status})"
+                data = await resp.json() 
         
         if not data.get('items'): return f"'{final_query}' 검색 결과가 없습니다."
 
@@ -163,7 +154,7 @@ def naver_web_search(query: str, conversation_id: str) -> str:
 
         if not raw_items: return "새로운 검색 결과가 없습니다."
 
-        # [Step 3] 1차 필터링 (Snippet 기반으로 상위 3개 선정)
+        # [Step 3] 1차 필터링
         llm = get_llm()
         parser = JsonOutputParser(pydantic_object=SearchAnalysisResult)
         
@@ -186,9 +177,10 @@ def naver_web_search(query: str, conversation_id: str) -> str:
             partial_variables={"format_instructions": parser.get_format_instructions()}
         )
 
-        raw_text_list = [f"- 제목: {i['title']}\n  링크: {i['link']}\n  요약: {i['description']}\n  날짜: {i['postdate']}" for i in raw_items[:15]]
+        raw_text_list = [f"- 제목: {i['title']}\n  링크: {i['link']}\n  요약: {i['description']}\n  날짜: {i['postdate']}" for i in raw_items[:10]]
         
-        analysis = (prompt_filter | llm | parser).invoke({
+        chain = prompt_filter | llm | parser
+        analysis = await chain.ainvoke({
             "user_query": query,
             "date_info": date_info,
             "today_date": today.strftime("%Y-%m-%d"),
@@ -198,25 +190,22 @@ def naver_web_search(query: str, conversation_id: str) -> str:
         top_3_results = analysis['results']
 
        # [Step 4] 2차 정밀 분석 
-        
-        # 1. 링크 리스트 추출
         target_links = [item['link'] for item in top_3_results]
         
-        # 2. 비동기 크롤링 실행
-        crawled_contents = asyncio.run(fetch_multiple_urls(target_links))
+        # 3. 비동기 크롤링 실행 
+        crawled_contents = await fetch_multiple_urls(target_links)
 
         final_output_results = []
         
-        # 3. 결과 매핑 및 LLM 분석
         for idx, item in enumerate(top_3_results):
-            full_text = crawled_contents[idx] # 미리 받아온 본문
+            full_text = crawled_contents[idx]
             
             if full_text:
-                # 4. LLM에게 분석 요청 (본문 존재하는 경우)
+                # 4. LLM에게 분석 요청 
                 refine_prompt = f"""
                 블로그 본문을 읽고 다음 두 가지 정보를 JSON 형식으로 추출해.
                 
-                [본문]: {full_text[:1500]}...
+                [본문]: {full_text[:850]}...
                 
                 [미션]
                 1. venue: 행사가 열리는 **검색 가능한 건물명/시설명**만 추출해. 
@@ -234,7 +223,9 @@ def naver_web_search(query: str, conversation_id: str) -> str:
                 """
                 
                 try:
-                    refined_result = llm.invoke(refine_prompt).content.strip()
+                    refined_result_msg = await llm.ainvoke(refine_prompt)
+                    refined_result = refined_result_msg.content.strip()
+                    
                     refined_result = refined_result.replace("```json", "").replace("```", "")
                     refined_data = json.loads(refined_result)
                     
@@ -245,7 +236,7 @@ def naver_web_search(query: str, conversation_id: str) -> str:
                         item['description'] = "✨AI요약: " + refined_data["summary"]
                         
                 except Exception as e:
-                    print(f"본문 분석 실패: {e}")
+                    pass
             
             final_output_results.append(item)
 

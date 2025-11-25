@@ -12,9 +12,9 @@ from .naver_search_tool import naver_web_search
 logger = logging.getLogger(__name__)
 
 # 임계값 (엄격하게 적용)
-SIMILARITY_THRESHOLD = 0.8 
+SIMILARITY_THRESHOLD = 1.1 
 
-# 주소 필터링 시 무시할 일반 단어들 (구/동으로 끝나지만 지역명이 아닌 것들)
+# 주소 필터링 시 무시할 일반 단어들
 IGNORE_LOCATION_TERMS = ["입구", "출구", "기구", "친구", "야구", "축구", "농구", "배구", "도구", "문구", "아동", "운동", "활동", "행동"]
 
 # ChromaDB 클라이언트 초기화
@@ -30,7 +30,7 @@ except Exception as e:
     collection = None
 
 @tool
-def search_facilities(
+async def search_facilities(
     original_query: str,
     conversation_id: str,
     location: str = "",
@@ -50,13 +50,14 @@ def search_facilities(
         return json.dumps({"success": False, "facilities": []})
     
     try:
+        # 임베딩 생성 (동기 작업이지만 빠르므로 유지)
         query_embedding = pca_embeddings.embed_query(original_query)
         shown_facilities = get_shown_facility_names(conversation_id) if conversation_id else []
 
         # 쿼리 실행
         results = collection.query(
             query_embeddings=[query_embedding],
-            n_results=10, # 필터링을 위해 넉넉히 가져옴
+            n_results=10, 
             include=["metadatas", "documents", "distances"]
         )
         
@@ -67,13 +68,11 @@ def search_facilities(
             documents = results['documents'][0]
             distances = results['distances'][0]
             
-            # 사용자 쿼리에서 '구/동' 키워드 추출 (상세 주소 필터링용)
+            # 상세 주소 필터링용 단어 추출
             query_words = original_query.split()
             detail_locations = []
             for w in query_words:
-                # 2글자 이상이고, 행정구역 단위로 끝나는 단어
                 if len(w) >= 2 and w[-1] in ["시", "군", "구", "동", "읍", "면"]:
-                    # 예외 단어가 아니면 상세 지역으로 간주
                     if w not in IGNORE_LOCATION_TERMS:
                         detail_locations.append(w)
             
@@ -86,30 +85,21 @@ def search_facilities(
                 db_in_out = metadata.get("in_out", "") 
                 current_dist = distances[i]
 
-                # ----------------------------------------------------
                 # [필터링 1] 중복 제외
-                # ----------------------------------------------------
                 if name in shown_facilities:
                     continue
 
-                # ----------------------------------------------------
-                # [필터링 2] 유사도 거리 (Similarity Distance)
-                # ----------------------------------------------------
+                # [필터링 2] 유사도 거리
                 if current_dist > SIMILARITY_THRESHOLD:
                     logger.warning(f"  ❌ [탈락:거리] {name} ({current_dist:.2f})")
                     continue 
 
-                # ----------------------------------------------------
-                # [필터링 3] Agent 추출 지역명 (기본 필터)
-                # ----------------------------------------------------
+                # [필터링 3] 기본 지역 필터
                 if location and location not in address:
                     logger.warning(f"  ❌ [탈락:지역기본] {name} (주소:{address} vs 요청:{location})")
                     continue
 
-                # ----------------------------------------------------
-                # [필터링 4] 상세 주소 (구/동 단위) - 🟢 핵심 추가 부분
-                # ----------------------------------------------------
-                # 사용자가 "해운대구"라고 했는데 주소에 "해운대구"가 없으면 탈락
+                # [필터링 4] 상세 주소 필터
                 is_detail_match = True
                 for detail_loc in detail_locations:
                     if detail_loc not in address:
@@ -119,16 +109,13 @@ def search_facilities(
                 if not is_detail_match:
                     continue
 
-                # ----------------------------------------------------
-                # [필터링 5] 실내/실외 (In/Out)
-                # ----------------------------------------------------
+                # [필터링 5] 실내/실외
                 if indoor_outdoor:
-                    # DB 값이나 요청 값에 서로 포함되는지 확인 (유연하게)
                     if indoor_outdoor not in db_in_out:
                          logger.warning(f"  ❌ [탈락:실내외] {name} (DB:{db_in_out} != Req:{indoor_outdoor})")
                          continue
 
-                # --- 모든 관문 통과! ---
+                # 통과
                 category = metadata.get("Category3") or metadata.get("Category1")
                 desc = documents[i][:100] if i < len(documents) else address[:100]
                 
@@ -144,18 +131,17 @@ def search_facilities(
 
         facilities = facilities[:k]
         
-   
         # [Fallback] RAG 검색 결과 0건 시, naver_web_search 폴백 실행
         if not facilities:
             logger.warning("🚫 RAG 검색 결과 0건. naver_web_search로 폴백 실행.")
             set_status(conversation_id, "RAG 결과 부족으로 웹 검색 폴백 실행 중...")
             
-            web_search_output = naver_web_search(
-                query=original_query, 
-                conversation_id=conversation_id
-            )
+            web_search_output = await naver_web_search.ainvoke({
+                "query": original_query, 
+                "conversation_id": conversation_id
+            })
             return web_search_output 
-        # -------------------------------------------------------------------
+
         logger.info(f"✅ 최종 RAG 결과: {len(facilities)}개 반환")
         
         return json.dumps({

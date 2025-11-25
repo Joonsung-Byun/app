@@ -1,8 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from models.schemas import ChatRequest, ChatResponse
 from models.map_models import MapResponse, MapData, MapMarker, MapCenter 
-from starlette.concurrency import run_in_threadpool
-
 from agent import create_agent
 from utils.conversation_memory import (
     get_conversation_history,
@@ -40,18 +38,15 @@ async def chat(request: ChatRequest):
             for msg in chat_history
         ])
         
-        # 3. Agent 실행
-        result = await run_in_threadpool(
-            agent_executor.invoke,
-            {
-                "input": user_message,
-                "chat_history": chat_history,
-                "conversation_history": history_str,
-                "child_age": request.child_age,
-                "original_query": user_message,
-                "conversation_id": conversation_id
-            }
-        )
+        # 3. Agent 실행 (⚡️ 완전 비동기 실행)
+        result = await agent_executor.ainvoke({
+            "input": user_message,
+            "chat_history": chat_history,
+            "conversation_history": history_str,
+            "child_age": request.child_age,
+            "original_query": user_message,
+            "conversation_id": conversation_id
+        })
         
         output = result["output"]
         intermediate_steps = result.get("intermediate_steps", [])
@@ -59,6 +54,8 @@ async def chat(request: ChatRequest):
         # -------------------------------------------------------
         # [Step Processing] 툴 실행 결과 후처리
         # -------------------------------------------------------
+        map_response_from_tool = None
+
         for step in intermediate_steps:
             tool_name = getattr(step[0], 'tool', None)
             tool_output = step[1]
@@ -84,23 +81,28 @@ async def chat(request: ChatRequest):
                             
                 except Exception as e:
                     logger.error(f"검색 결과 처리 실패: {e}")
+            
+            # (B) search_map_by_address 결과가 MapResponse 객체로 온 경우 캐싱 (return_direct 실패 대비)
+            if tool_name == "search_map_by_address" and isinstance(tool_output, MapResponse):
+                map_response_from_tool = tool_output
 
         # -------------------------------------------------------
         # [Response Type A] 신규 지오코딩 툴 결과 (MapResponse 객체 반환)
         # -------------------------------------------------------
-        if isinstance(output, MapResponse):
+        if isinstance(output, MapResponse) or map_response_from_tool:
+            map_output = output if isinstance(output, MapResponse) else map_response_from_tool
             logger.info("📍 지오코딩 툴에 의한 MapResponse 객체 반환")
             
             # AI 응답 저장 (MapResponse는 add_message 내부에서 안전하게 처리됨)
-            add_message(conversation_id, "ai", output)
+            add_message(conversation_id, "ai", map_output)
             
             return ChatResponse(
                 conversation_id=conversation_id,
                 role="ai",
-                type=output.type,       # 'map'
-                content=output.content, # "지도를 보여드릴게요" 등
-                link=output.link,       # 카카오맵 링크
-                data=output.data        # MapData 객체 (center, markers)
+                type=map_output.type,       # 'map'
+                content=map_output.content, # "지도를 보여드릴게요" 등
+                link=map_output.link,       # 카카오맵 링크
+                data=map_output.data        # MapData 객체 (center, markers)
             )
 
         # -------------------------------------------------------

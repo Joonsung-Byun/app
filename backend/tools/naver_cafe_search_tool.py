@@ -1,4 +1,3 @@
-import requests
 import json
 import asyncio
 import aiohttp
@@ -10,37 +9,45 @@ from pydantic import BaseModel, Field
 from typing import List
 from config import settings
 from models.chat_models import get_llm
-from utils.conversation_memory import save_search_results, get_shown_facility_names
-import nest_asyncio
+from utils.conversation_memory import save_search_results, get_shown_facility_names, set_status 
 
-nest_asyncio.apply()
+# 맘카페 차단 회피를 위한 완전한 User-Agent
+USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 14_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
 
-# --- 비동기 크롤링 함수 (블로그와 동일하게 재사용 가능하나, 카페 특화 처리 위해 별도 작성) ---
+# ============================================
+# 1. 비동기 크롤링 헬퍼 함수
+# ============================================
+
 async def fetch_single_cafe(session, link: str) -> str:
+    """개별 카페 글을 비동기로 크롤링."""
     try:
-        # 카페는 모바일 링크 변환이 더 중요함
+        # 모바일 링크로 변환하여 본문 접근 용이하게 함
         target = link.replace("cafe.naver.com", "m.cafe.naver.com")
-        headers = {"User-Agent": "Mozilla/5.0 ..."} # (User-Agent 필수)
+        headers = {"User-Agent": USER_AGENT} 
         
         async with session.get(target, headers=headers, timeout=3) as resp:
             if resp.status != 200: return ""
             html = await resp.text()
             soup = BeautifulSoup(html, 'html.parser')
-            
-            # 카페 본문 클래스 (se-main-container 등)
+        
+            # 본문 내용 추출
             content = soup.find("div", class_="se-main-container")
             if not content: content = soup.find("div", id="postContent")
             
-            if content: return content.get_text(" ", strip=True)[:1500]
+            if content: return content.get_text(" ", strip=True)[:850]
             return ""
     except:
         return ""
 
 async def fetch_cafe_urls(links: List[str]):
+    """여러 카페 글을 병렬로 크롤링."""
     async with aiohttp.ClientSession() as session:
         return await asyncio.gather(*[fetch_single_cafe(session, l) for l in links])
 
-# --- 데이터 모델 ---
+# ============================================
+# 2. AI 분석 데이터 모델
+# ============================================
+
 class CafeItem(BaseModel):
     title: str = Field(description="제목")
     link: str = Field(description="링크")
@@ -50,23 +57,44 @@ class CafeItem(BaseModel):
 class CafeAnalysis(BaseModel):
     results: List[CafeItem]
 
+# ============================================
+# 3. 툴 정의 
+# ============================================
+
 @tool
-def naver_cafe_search(query: str, conversation_id: str) -> str:
+async def naver_cafe_search(query: str, conversation_id: str) -> str:
     """
-    네이버 맘카페를 검색하여 '솔직 후기', '장단점', '주차/웨이팅 꿀팁'을 확인합니다.
+    네이버 맘카페를 검색하여 '솔직 후기', '장단점', '주차/웨이팅 꿀팁'을 확인합니다. (완전 비동기)
     검증이나 평판 조회가 필요할 때 사용하세요.
     """
     naver_id = settings.NAVER_CLIENT_ID
     naver_secret = settings.NAVER_CLIENT_SECRET
     
-    # [Step 1] 카페 검색 API
+    if not naver_id or not naver_secret:
+        return "오류: 서버 설정(config)에 네이버 API 키가 누락되었습니다."
+
+    # [Step 1] 카페 검색 API 설정
     url = "https://openapi.naver.com/v1/search/cafearticle.json"
-    headers = {"X-Naver-Client-Id": naver_id, "X-Naver-Client-Secret": naver_secret}
-    params = {"query": query, "display": 15, "sort": "sim"} # 정확도순
+    headers = {
+        "X-Naver-Client-Id": naver_id, 
+        "X-Naver-Client-Secret": naver_secret
+    }
+    params = {"query": query, "display": 10, "sort": "sim"} 
     
     try:
-        resp = requests.get(url, headers=headers, params=params)
-        data = resp.json()
+        if conversation_id:
+            set_status(conversation_id, "맘카페 후기 검색 중...")
+            
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, headers=headers, params=params) as resp:
+        
+                # API 호출 실패 오류 방지 (resp.status 사용)
+                if resp.status != 200:
+                    return f"네이버 API 오류 발생 (상태코드: {resp.status})"
+
+                # 응답 JSON을 비동기로 가져오기
+                data = await resp.json() 
+        
         if not data.get('items'): return "관련 카페 후기가 없습니다."
 
         raw_items = []
@@ -79,7 +107,7 @@ def naver_cafe_search(query: str, conversation_id: str) -> str:
 
         if not raw_items: return "새로운 후기가 없습니다."
 
-        # [Step 2] LLM 1차 선별
+        # [Step 2] LLM 1차 선별 (
         llm = get_llm()
         parser = JsonOutputParser(pydantic_object=CafeAnalysis)
         
@@ -100,18 +128,19 @@ def naver_cafe_search(query: str, conversation_id: str) -> str:
         )
         
         raw_text = "\n".join([f"- {i['title']} ({i['link']}) : {i['desc']}" for i in raw_items[:10]])
-        analysis = (prompt | llm | parser).invoke({"user_query": query, "raw_data": raw_text})
+        
+        chain = prompt | llm | parser
+        analysis = await chain.ainvoke({"user_query": query, "raw_data": raw_text})
         top_3 = analysis['results']
 
-        # [Step 3] ⚡ 카페글 비동기 병렬 크롤링
+        # [Step 3] 비동기 병렬 크롤링 (await 사용)
         target_links = [item['link'] for item in top_3]
-        contents = asyncio.run(fetch_cafe_urls(target_links))
+        contents = await fetch_cafe_urls(target_links) 
 
         final_results = []
         for idx, item in enumerate(top_3):
             full_text = contents[idx]
             
-            # 본문을 긁어왔으면 내용을 더 보강함 (안 긁혔으면 1차 LLM 결과 그대로 사용)
             if full_text:
                 refine_prompt = f"""
                 맘카페 후기 본문을 보고 '엄마들을 위한 찐 꿀팁'을 한 줄로 요약해줘.
@@ -120,7 +149,8 @@ def naver_cafe_search(query: str, conversation_id: str) -> str:
                 [본문]: {full_text}
                 """
                 try:
-                    tip = llm.invoke(refine_prompt).content.strip()
+                    tip_msg = await llm.ainvoke(refine_prompt)
+                    tip = tip_msg.content.strip()
                     item['summary'] = f"{item['summary']} (💡 {tip})"
                 except: pass
             
