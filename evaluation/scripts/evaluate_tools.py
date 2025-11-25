@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 import numpy as np
 from collections import defaultdict
 from evaluation.scripts.eval_cases import classify_case, load_dataset
+from backend.utils.tool_timings import get_and_reset as get_tool_timings
 
 
 class ToolCallLogger:
@@ -93,10 +94,11 @@ def calculate_parameter_accuracy(
 
 
 def evaluate_tool_accuracy(
-    agent,
-    test_data: List[Dict[str, Any]],
-    tool_logger: ToolCallLogger,
-    meta: Dict[str, Any] = None
+    agent=None,
+    test_data: List[Dict[str, Any]] = None,
+    tool_logger: ToolCallLogger = None,
+    meta: Dict[str, Any] = None,
+    runs: List[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Tool 사용 정확도 전체 평가"""
     meta = meta or {}
@@ -128,35 +130,51 @@ def evaluate_tool_accuracy(
     service_success = defaultdict(list)
     per_tool_hits = defaultdict(lambda: {"expected": 0, "hit": 0})
 
-    for i, item in enumerate(test_data):
-        question = item["question"]
-        expected_tools = item.get("expected_tools", [])
-        expected_params = item.get("expected_tool_params", {})
-        ctype = classify_case(item, meta)
+    items = runs if runs is not None else test_data
 
-        print(f"[{i+1}/{len(test_data)}] 평가 중: {question[:30]}...")
+    for i, item in enumerate(items):
+        qobj = item.get("item", item)
+        question = qobj["question"]
+        expected_tools = qobj.get("expected_tools", [])
+        expected_params = qobj.get("expected_tool_params", {})
+        ctype = classify_case(qobj, meta)
 
-        # 로거 리셋
-        tool_logger.reset()
+        print(f"[{i+1}/{len(items)}] 평가 중: {question[:30]}...")
 
-        # 에이전트 실행
-        try:
-            response = agent.invoke({
-                "input": question,
-                "conversation_id": "eval_session",
-                "chat_history": []
-            })
-            # intermediate_steps에서 tool 호출 추출
+        # 응답/콜스택 추출
+        if runs is not None:
+            response = item.get("response", {})
             actual_tools, actual_calls = record_from_intermediate_steps(response)
-            # fallback: 직접 logger가 가진 값 사용
-            if not actual_tools:
+            if not actual_tools and tool_logger:
                 actual_tools = tool_logger.get_called_tools()
-            if not actual_calls:
                 actual_calls = tool_logger.tool_calls
-        except Exception as e:
-            print(f"Error for question '{question}': {e}")
-            actual_tools = []
-            actual_calls = []
+        else:
+            # 로거 리셋
+            tool_logger.reset()
+            try:
+                response = agent.invoke({
+                    "input": question,
+                    "conversation_id": "eval_session",
+                    "chat_history": []
+                })
+                actual_tools, actual_calls = record_from_intermediate_steps(response)
+                if not actual_tools:
+                    actual_tools = tool_logger.get_called_tools()
+                if not actual_calls:
+                    actual_calls = tool_logger.tool_calls
+            except Exception as e:
+                print(f"Error for question '{question}': {e}")
+                actual_tools = []
+                actual_calls = []
+
+        # extract_user_intent 제거 (채점 제외)
+        actual_tools = [t for t in actual_tools if t != "extract_user_intent"]
+        filtered_calls = []
+        for call in actual_calls:
+            if call.get("tool") == "extract_user_intent":
+                continue
+            filtered_calls.append(call)
+        actual_calls = filtered_calls
 
         # 점수 계산
         selection_score = calculate_tool_selection_accuracy(expected_tools, actual_tools)
@@ -213,6 +231,21 @@ def evaluate_tool_accuracy(
         # Rate limiting
         time.sleep(0.3)
 
+    # 툴 실행 시간 집계 (백엔드 콜백 기록 활용)
+    timing_records = get_tool_timings()
+    per_tool_time = defaultdict(list)
+    for rec in timing_records:
+        per_tool_time[rec.get("tool", "unknown_tool")].append(rec.get("duration", 0))
+
+    by_tool_time = {
+        tool: {
+            "count": len(times),
+            "mean_s": float(np.mean(times)) if times else 0.0,
+            "max_s": float(np.max(times)) if times else 0.0
+        }
+        for tool, times in per_tool_time.items()
+    }
+
     # 서비스 품질 요약
     by_case = {}
     for ctype, items in service_success.items():
@@ -245,7 +278,7 @@ def evaluate_tool_accuracy(
             }
         },
         "details": results,
-        "by_category": calculate_category_stats(results, test_data),
+        "by_category": calculate_category_stats(results, items),
         "by_tool": {
             tool: {
                 "expected": stats["expected"],
@@ -254,6 +287,7 @@ def evaluate_tool_accuracy(
             }
             for tool, stats in per_tool_hits.items()
         },
+        "by_tool_time": by_tool_time,
         "service_quality": {
             "by_case": by_case
         }
@@ -262,13 +296,14 @@ def evaluate_tool_accuracy(
 
 def calculate_category_stats(
     results: List[Dict[str, Any]],
-    test_data: List[Dict[str, Any]]
+    items: List[Dict[str, Any]]
 ) -> Dict[str, Any]:
     """카테고리별 통계 계산"""
     categories = {}
 
-    for result, item in zip(results, test_data):
-        category = item.get("category", "unknown")
+    for result, item in zip(results, items):
+        qobj = item.get("item", item)
+        category = qobj.get("category", "unknown")
         if category not in categories:
             categories[category] = {
                 "selection_scores": [],

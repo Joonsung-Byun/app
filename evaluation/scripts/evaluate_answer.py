@@ -122,12 +122,12 @@ def get_model_answer(agent, question: str) -> str:
 
 
 def evaluate_answer_quality(
-    agent,
-    test_data: List[Dict[str, Any]],
-    api_key: str = None
+    agent=None,
+    test_data: List[Dict[str, Any]] = None,
+    api_key: str = None,
+    runs: List[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """답변 품질 전체 평가"""
-
     # OpenAI 클라이언트 초기화
     client = OpenAI(api_key=api_key or os.getenv("OPENAI_API_KEY"))
 
@@ -138,14 +138,30 @@ def evaluate_answer_quality(
 
     results = []
 
-    for i, item in enumerate(test_data):
-        question = item["question"]
-        ground_truth = item["ground_truth"]
+    items = runs if runs is not None else test_data
 
-        print(f"[{i+1}/{len(test_data)}] 평가 중: {question[:30]}...")
+    for i, item in enumerate(items):
+        # item이 run이면 item["item"]에 원본 질문 dict가 있음
+        qobj = item.get("item", item)
+        question = qobj["question"]
+        ground_truth = qobj.get("ground_truth", "")
+
+        print(f"[{i+1}/{len(items)}] 평가 중: {question[:30]}...")
 
         # 모델 답변 가져오기
-        model_answer = get_model_answer(agent, question)
+        if runs is not None:
+            resp = item.get("response")
+            if isinstance(resp, dict):
+                model_answer = resp.get("output") or resp.get("response") or resp
+            else:
+                model_answer = str(resp)
+            if not model_answer and item.get("error"):
+                model_answer = f"Error: {item.get('error')}"
+        else:
+            model_answer = get_model_answer(agent, question)
+
+        # JSON 직렬화 가능하도록 문자열로 강제
+        model_answer = model_answer if isinstance(model_answer, str) else str(model_answer)
 
         # LLM-as-Judge로 평가
         evaluation = evaluate_single_answer(
