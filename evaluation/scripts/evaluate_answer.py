@@ -110,7 +110,13 @@ def get_model_answer(agent, question: str) -> str:
             "conversation_id": "eval_session",
             "chat_history": []
         })
-        return response.get("output", str(response))
+        # LangChain AgentExecutor가 dict를 반환하지만 output 값이 메시지 객체일 수도 있으니
+        # 문자열로 강제 변환해 JSON 직렬화가 항상 가능하도록 한다.
+        if isinstance(response, dict):
+            output = response.get("output", response)
+        else:
+            output = response
+        return output if isinstance(output, str) else str(output)
     except Exception as e:
         return f"Error: {e}"
 
@@ -203,7 +209,7 @@ def evaluate_answer_quality(
 def main():
     """답변 품질 평가 실행"""
     # 테스트 데이터 로드
-    dataset_path = Path(__file__).parent.parent / "datasets" / "test_questions.json"
+    dataset_path = Path(__file__).parent.parent / "datasets" / "test_questions_updated.json"
 
     with open(dataset_path, "r", encoding="utf-8") as f:
         data = json.load(f)

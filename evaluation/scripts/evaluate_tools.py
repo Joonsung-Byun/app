@@ -15,6 +15,8 @@ import time
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
 
 import numpy as np
+from collections import defaultdict
+from evaluation.scripts.eval_cases import classify_case, load_dataset
 
 
 class ToolCallLogger:
@@ -93,18 +95,44 @@ def calculate_parameter_accuracy(
 def evaluate_tool_accuracy(
     agent,
     test_data: List[Dict[str, Any]],
-    tool_logger: ToolCallLogger
+    tool_logger: ToolCallLogger,
+    meta: Dict[str, Any] = None
 ) -> Dict[str, Any]:
     """Tool 사용 정확도 전체 평가"""
+    meta = meta or {}
+
+    def record_from_intermediate_steps(response):
+        """AgentExecutor가 반환하는 intermediate_steps에서 tool 호출을 로깅"""
+        if not isinstance(response, dict):
+            return [], []
+        steps = response.get("intermediate_steps") or []
+        actual_calls_local = []
+        actual_tools_local = []
+        for step in steps:
+            # step은 (AgentAction, observation) 형태
+            if not step or len(step) < 1:
+                continue
+            action = step[0]
+            tool_name = getattr(action, "tool", None)
+            tool_input = getattr(action, "tool_input", None)
+            if not tool_name:
+                continue
+            tool_logger.log_tool_call(tool_name, tool_input if isinstance(tool_input, dict) else {"raw": tool_input})
+            actual_calls_local.append({"tool": tool_name, "input": tool_input if isinstance(tool_input, dict) else {"raw": tool_input}})
+            actual_tools_local.append(tool_name)
+        return actual_tools_local, actual_calls_local
 
     selection_scores = []
     parameter_scores = []
     results = []
+    service_success = defaultdict(list)
+    per_tool_hits = defaultdict(lambda: {"expected": 0, "hit": 0})
 
     for i, item in enumerate(test_data):
         question = item["question"]
         expected_tools = item.get("expected_tools", [])
         expected_params = item.get("expected_tool_params", {})
+        ctype = classify_case(item, meta)
 
         print(f"[{i+1}/{len(test_data)}] 평가 중: {question[:30]}...")
 
@@ -113,13 +141,18 @@ def evaluate_tool_accuracy(
 
         # 에이전트 실행
         try:
-            agent.invoke({
+            response = agent.invoke({
                 "input": question,
                 "conversation_id": "eval_session",
                 "chat_history": []
             })
-            actual_tools = tool_logger.get_called_tools()
-            actual_calls = tool_logger.tool_calls
+            # intermediate_steps에서 tool 호출 추출
+            actual_tools, actual_calls = record_from_intermediate_steps(response)
+            # fallback: 직접 logger가 가진 값 사용
+            if not actual_tools:
+                actual_tools = tool_logger.get_called_tools()
+            if not actual_calls:
+                actual_calls = tool_logger.tool_calls
         except Exception as e:
             print(f"Error for question '{question}': {e}")
             actual_tools = []
@@ -132,6 +165,35 @@ def evaluate_tool_accuracy(
         selection_scores.append(selection_score)
         parameter_scores.append(parameter_score)
 
+        # 서비스 품질용 간단 성공 판정 (툴 호출만 기준)
+        actual_set = set(actual_tools)
+        if ctype == "no_tool":
+            success = len(actual_tools) == 0
+            desc = "도구를 사용하지 않아야 함"
+        elif ctype == "case3_fallback":
+            success = ("search_facilities" in actual_set and "naver_web_search" in actual_set)
+            desc = "RAG 0건 → web_search까지 호출"
+        elif ctype in ("case2", "case2_review"):
+            success = "search_facilities" in actual_set
+            desc = "시설 검색 호출"
+        elif ctype == "web":
+            success = "naver_web_search" in actual_set
+            desc = "웹 검색 호출"
+        elif ctype == "weather_places":
+            success = ("get_weather_forecast" in actual_set and "search_facilities" in actual_set)
+            desc = "날씨 확인 후 시설 검색 호출"
+        elif ctype == "weather":
+            success = "get_weather_forecast" in actual_set
+            desc = "날씨 조회 호출"
+        elif ctype == "map":
+            success = any(t in actual_set for t in ["search_map_for_facilities", "search_map_by_address", "show_map_for_facilities"])
+            desc = "지도 관련 도구 호출"
+        else:
+            success = len(actual_tools) == 0
+            desc = "기대 도구 없음"
+
+        service_success[ctype].append({"success": success, "description": desc})
+
         results.append({
             "question": question,
             "expected_tools": expected_tools,
@@ -142,8 +204,26 @@ def evaluate_tool_accuracy(
             "parameter_accuracy": parameter_score
         })
 
+        # per-tool 통계 (기대된 툴 기준)
+        for t in expected_tools:
+            per_tool_hits[t]["expected"] += 1
+            if t in actual_set:
+                per_tool_hits[t]["hit"] += 1
+
         # Rate limiting
         time.sleep(0.3)
+
+    # 서비스 품질 요약
+    by_case = {}
+    for ctype, items in service_success.items():
+        if not items:
+            continue
+        succ = [1 if it["success"] else 0 for it in items]
+        by_case[ctype] = {
+            "success_rate": float(np.mean(succ)),
+            "count": len(items),
+            "description": items[0]["description"]
+        }
 
     return {
         "summary": {
@@ -165,7 +245,18 @@ def evaluate_tool_accuracy(
             }
         },
         "details": results,
-        "by_category": calculate_category_stats(results, test_data)
+        "by_category": calculate_category_stats(results, test_data),
+        "by_tool": {
+            tool: {
+                "expected": stats["expected"],
+                "hit": stats["hit"],
+                "success_rate": (stats["hit"] / stats["expected"]) if stats["expected"] else 0.0
+            }
+            for tool, stats in per_tool_hits.items()
+        },
+        "service_quality": {
+            "by_case": by_case
+        }
     }
 
 
@@ -201,11 +292,7 @@ def calculate_category_stats(
 def main():
     """Tool 정확도 평가 실행"""
     # 테스트 데이터 로드
-    dataset_path = Path(__file__).parent.parent / "datasets" / "test_questions.json"
-
-    with open(dataset_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+    data = load_dataset()
     test_questions = data["questions"]
 
     # Agent 및 Tool Logger 초기화
@@ -222,7 +309,7 @@ def main():
         print("⚠️ Tool 로깅을 위해 agent에 콜백 핸들러를 연결해야 합니다.")
         print("현재는 기본 평가만 수행됩니다.\n")
 
-        results = evaluate_tool_accuracy(agent, test_questions, tool_logger)
+        results = evaluate_tool_accuracy(agent, test_questions, tool_logger, meta=data.get("metadata", {}))
 
         # 결과 저장
         output_path = Path(__file__).parent.parent / "results" / "tool_evaluation.json"

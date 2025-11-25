@@ -10,6 +10,7 @@ backend/embeddings_pca_512.npy
 backend/pca_model.joblib
 backend/rag_data_integrated_final.csv
 backend/rag_data_integrated_final_rev_loc.csv
+backend/rag_data_integrated_final_rev_loc_inout_fixed.csv
 
 
 # Model files
@@ -72,7 +73,4 @@ Thumbs.db
 .env
 venv/
 
-# ==========================================
-# evaluation
-# ==========================================
-evaluation/rag_data_integrated_final (1).csv
+

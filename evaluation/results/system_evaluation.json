@@ -1,0 +1,258 @@
+{
+  "summary": {
+    "total_evaluated": 20,
+    "latency": {
+      "mean": 13.518568277359009,
+      "std": 14.349041813126485,
+      "min": 1.5182561874389648,
+      "max": 43.50043535232544,
+      "p50": 6.1844823360443115,
+      "p90": 37.85205268859864,
+      "p99": 43.248767154216765
+    },
+    "memory": {
+      "initial_mb": 410.421875,
+      "final_mb": 410.90625,
+      "peak_mb": 410.90625,
+      "mean_mb": 410.63828125,
+      "growth_mb": 0.484375
+    },
+    "success_rate": 1.0,
+    "total_successes": 20,
+    "total_failures": 0
+  },
+  "details": [
+    {
+      "question": "인천 남동구 날씨 확인하고 실내놀이시설 추천해줘",
+      "category": "complex",
+      "latency": 27.413002967834473,
+      "memory_before": 410.421875,
+      "memory_after": 410.5625,
+      "memory_delta": 0.140625,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "인천 기온이 몇 도야?",
+      "category": "weather",
+      "latency": 1.5182561874389648,
+      "memory_before": 410.5625,
+      "memory_after": 410.5625,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "대전 '키즈 VR 체험전' 열리는지 알아봐",
+      "category": "web_search",
+      "latency": 23.34504199028015,
+      "memory_before": 410.5625,
+      "memory_after": 410.578125,
+      "memory_delta": 0.015625,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "남원 날씨 좋니?",
+      "category": "weather",
+      "latency": 2.503464937210083,
+      "memory_before": 410.578125,
+      "memory_after": 410.578125,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "전남 여수시 날씨랑 실내놀이시설 정보 알려줘",
+      "category": "complex",
+      "latency": 10.230221033096313,
+      "memory_before": 410.578125,
+      "memory_after": 410.59375,
+      "memory_delta": 0.015625,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "공룡은 왜 멸종했어?",
+      "category": "general",
+      "latency": 2.2407102584838867,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "포항 바람 많이 불어?",
+      "category": "weather",
+      "latency": 3.898408889770508,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "목포 날씨 좋아?",
+      "category": "weather",
+      "latency": 3.0831820964813232,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "서울 마포구 날씨 좋으면 실외놀이시설 가고 싶어",
+      "category": "complex",
+      "latency": 10.495605230331421,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "에버랜드 위치 지도로 알려줘",
+      "category": "map",
+      "latency": 1.5901758670806885,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "청주 하늘 어때?",
+      "category": "weather",
+      "latency": 2.5399270057678223,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "어린이 미술대회 정보 검색해줘",
+      "category": "web_search",
+      "latency": 29.182873249053955,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "인천공항 지도 링크 줘",
+      "category": "map",
+      "latency": 1.7809550762176514,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "초등학생 과학실험 추천해줘",
+      "category": "general",
+      "latency": 1.8696520328521729,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "용인 오늘 흐려?",
+      "category": "weather",
+      "latency": 2.6928608417510986,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "충남 아산시에 실내놀이시설 있어?",
+      "category": "places",
+      "latency": 14.468541860580444,
+      "memory_before": 410.59375,
+      "memory_after": 410.59375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "서울 송파구 날씨 확인하고 영화/공연장 추천해줘",
+      "category": "complex",
+      "latency": 42.17586588859558,
+      "memory_before": 410.59375,
+      "memory_after": 410.734375,
+      "memory_delta": 0.140625,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "요즘 서울에서 하는 어린이 축제 있어?",
+      "category": "web_search",
+      "latency": 43.50043535232544,
+      "memory_before": 410.734375,
+      "memory_after": 410.859375,
+      "memory_delta": 0.125,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "천안 우산 필요해?",
+      "category": "weather",
+      "latency": 8.470555782318115,
+      "memory_before": 410.859375,
+      "memory_after": 410.859375,
+      "memory_delta": 0.0,
+      "success": true,
+      "error": null
+    },
+    {
+      "question": "청주 '캐릭터 포토존 팝업' 정보 있어?",
+      "category": "web_search",
+      "latency": 37.37162899971008,
+      "memory_before": 410.859375,
+      "memory_after": 410.90625,
+      "memory_delta": 0.046875,
+      "success": true,
+      "error": null
+    }
+  ],
+  "by_category": {
+    "complex": {
+      "count": 4,
+      "avg_latency": 22.578673779964447,
+      "success_rate": 1.0
+    },
+    "weather": {
+      "count": 7,
+      "avg_latency": 3.529522248676845,
+      "success_rate": 1.0
+    },
+    "web_search": {
+      "count": 4,
+      "avg_latency": 33.34999489784241,
+      "success_rate": 1.0
+    },
+    "general": {
+      "count": 2,
+      "avg_latency": 2.05518114566803,
+      "success_rate": 1.0
+    },
+    "map": {
+      "count": 2,
+      "avg_latency": 1.68556547164917,
+      "success_rate": 1.0
+    },
+    "places": {
+      "count": 1,
+      "avg_latency": 14.468541860580444,
+      "success_rate": 1.0
+    }
+  }
+}

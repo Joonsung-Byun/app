@@ -7,13 +7,15 @@
 ```
 evaluation/
 ├── datasets/
-│   └── test_questions.json    # 평가 데이터셋 (200개 질문)
+│   ├── test_questions_prompt_aligned.json   # 기존 정합성 보강 데이터
+│   └── test_questions_prompt_pruned.json    # 최신 평가용 (211문항)
 ├── scripts/
 │   ├── evaluate_all.py        # 전체 평가 실행
 │   ├── evaluate_rag.py        # RAG 검색 품질 평가
 │   ├── evaluate_answer.py     # 답변 품질 평가 (LLM-as-Judge)
 │   ├── evaluate_tools.py      # Tool 사용 정확도 평가
 │   └── evaluate_system.py     # 시스템 성능 평가
+│   └── eval_cases.py          # 케이스 분류/필터링 유틸
 ├── results/                   # 평가 결과 저장
 ├── requirements.txt           # 의존성
 └── README.md
@@ -31,73 +33,85 @@ pip install -r requirements.txt
 ### 전체 평가 실행
 
 ```bash
-python scripts/evaluate_all.py
+# 모듈 실행 권장 (import 경로 문제 방지)
+python -m evaluation.scripts.evaluate_all
 ```
 
 ### 옵션
 
 ```bash
 # 샘플 크기 지정 (빠른 테스트용)
-python scripts/evaluate_all.py --sample 10
+python -m evaluation.scripts.evaluate_all --sample 10
 
 # 특정 평가만 스킵
-python scripts/evaluate_all.py --skip-answer --skip-tools
+python -m evaluation.scripts.evaluate_all --skip-answer --skip-tools
 
 # 결과 저장 위치 지정
-python scripts/evaluate_all.py --output ./my_results
+python -m evaluation.scripts.evaluate_all --output ./my_results
 ```
 
 ### 개별 평가 실행
 
 ```bash
 # 답변 품질만 평가
-python scripts/evaluate_answer.py
+python -m evaluation.scripts.evaluate_answer
 
 # Tool 정확도만 평가
-python scripts/evaluate_tools.py
+python -m evaluation.scripts.evaluate_tools
 
 # 시스템 성능만 평가
-python scripts/evaluate_system.py
+python -m evaluation.scripts.evaluate_system
 ```
 
 ## 평가 항목
 
-### 1. RAG 검색 품질
-- **Precision@K**: 검색된 K개 중 관련 문서 비율
-- **Recall@K**: 전체 관련 문서 중 검색된 비율
-- **MRR**: 첫 정답 순위의 역수 평균
+### 1. 서비스 품질 (케이스별)
+- Case2(시설/RAG): Precision@3, Hit@3, 빈결과율
+- Case3(fallback): RAG 0건 시 search_facilities→naver_web_search 호출 성공률
+- No-tool: 도구 미사용 성공률
+- Web: 시의성 질문에서 web_search 호출률
 
-> ⚠️ RAG 평가를 사용하려면 `test_questions.json`의 `relevant_doc_ids`를 채워야 합니다.
+### 2. 검색 품질 (순수 RAG)
+- **Precision@K**, **MRR** (Case2 rel 있는 문항만 대상)
 
-### 2. 답변 품질 (LLM-as-Judge)
+### 3. 답변 품질 (LLM-as-Judge)
+
 GPT-4o-mini를 사용하여 1-5점 평가:
+
 - **정확성**: 사실적 정확성
 - **관련성**: 질문에 적절한 답변인지
 - **유용성**: 어린이에게 도움이 되는지
 
 ground_truth는 **참고용**으로만 사용되며, 정확히 일치하지 않아도 의미적으로 맞으면 높은 점수를 받습니다.
 
-### 3. Tool 사용 정확도
+### 4. Tool 사용 정확도
+
 - **Tool 선택 정확도**: 올바른 Tool을 호출했는지 (Jaccard 유사도)
 - **파라미터 정확도**: Tool에 올바른 파라미터를 전달했는지
 
-### 4. 시스템 성능
+### 5. 시스템 성능
+
 - **응답 시간**: 평균, P50, P90, P99
 - **메모리 사용량**: 초기, 피크, 최종
 - **성공률**: 에러 없이 응답한 비율
 
 ## 테스트 데이터셋
 
-`datasets/test_questions.json`에 200개의 테스트 질문이 포함되어 있습니다:
+`datasets/test_questions_prompt_pruned.json` (211개) 기준 분포:
 
-| 카테고리 | 개수 | 설명 |
-|----------|------|------|
-| weather | 25 | 날씨 질문 (get_weather_forecast) |
-| places | 40 | 장소 검색 (search_facilities) |
-| general | 35 | 일반 상식 질문 (도구 미사용) |
-| complex | 50 | 복합 질문 (날씨 + 시설 검색) |
-| web_search | 30 | 웹 검색 (naver_web_search) |
-| map | 20 | 지도 검색 (search_map_by_address) |
+| 카테고리   | 개수 | 설명                                  |
+| ---------- | ---- | ------------------------------------- |
+| weather    | 25   | 날씨 질문 (get_weather_forecast)      |
+| complex    | 50   | 날씨+시설 복합 (get_weather_forecast+search_facilities) |
+| places     | 60   | 시설 검색 (search_facilities)         |
+| web_search | 44   | 시의성/웹 검색 (naver_web_search)     |
+| map        | 20   | 지도 검색 (search_map_by_address/show_map_for_facilities) |
+| general    | 12   | 무도구(검증용)                        |
+
+케이스별 특수 집합:
+- Case2 후기/리뷰 단어 포함 시설 검색: 20문항
+- Case3 RAG→Web fallback: 20문항
+- No-tool 검증: 12문항 (general 6 + Case4 6)
 
 ### 데이터셋 구조
 
@@ -107,7 +121,7 @@ ground_truth는 **참고용**으로만 사용되며, 정확히 일치하지 않�
   "category": "weather",
   "question": "서울 날씨 어때?",
   "expected_tools": ["get_weather_forecast"],
-  "expected_tool_params": {"location": "서울"},
+  "expected_tool_params": { "location": "서울" },
   "ground_truth": "서울의 현재 날씨 정보",
   "relevant_doc_ids": []
 }
@@ -135,12 +149,12 @@ ground_truth는 **참고용**으로만 사용되며, 정확히 일치하지 않�
 
 ### 파인튜닝 방향 결정 기준
 
-| 문제 | 낮은 점수 지표 | 해결 방향 |
-|------|---------------|-----------|
-| 검색 품질 저하 | RAG Precision/Recall | Embedding 모델 파인튜닝 |
-| Tool 선택 오류 | Tool Selection Accuracy | Function calling 학습 데이터 추가 |
-| 답변 품질 저하 | Answer Quality (정확성/유용성) | Instruction tuning |
-| 느린 응답 | Latency P90/P99 | 모델 경량화 또는 캐싱 |
+| 문제           | 낮은 점수 지표                 | 해결 방향                         |
+| -------------- | ------------------------------ | --------------------------------- |
+| 검색 품질 저하 | RAG Precision/Recall           | Embedding 모델 파인튜닝           |
+| Tool 선택 오류 | Tool Selection Accuracy        | Function calling 학습 데이터 추가 |
+| 답변 품질 저하 | Answer Quality (정확성/유용성) | Instruction tuning                |
+| 느린 응답      | Latency P90/P99                | 모델 경량화 또는 캐싱             |
 
 ## 베이스라인 측정
 

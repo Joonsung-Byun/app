@@ -10,12 +10,15 @@ from pathlib import Path
 from datetime import datetime
 import argparse
 
-# 백엔드 모듈 임포트를 위한 경로 추가
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
+# 프로젝트 루트/백엔드 경로 추가
+ROOT_DIR = Path(__file__).parent.parent.parent
+sys.path.insert(0, str(ROOT_DIR))  # evaluation.* import 가능
+sys.path.insert(0, str(ROOT_DIR / "backend"))
 
-from evaluate_answer import evaluate_answer_quality
-from evaluate_tools import evaluate_tool_accuracy, ToolCallLogger
-from evaluate_system import evaluate_system_performance
+from evaluation.scripts.evaluate_answer import evaluate_answer_quality
+from evaluation.scripts.evaluate_tools import evaluate_tool_accuracy, ToolCallLogger
+from evaluation.scripts.evaluate_system import evaluate_system_performance
+from evaluation.scripts.eval_cases import load_dataset, partition_by_case
 
 
 def run_all_evaluations(
@@ -24,7 +27,8 @@ def run_all_evaluations(
     skip_answer: bool = False,
     skip_tools: bool = False,
     skip_system: bool = False,
-    sample_size: int = None
+    sample_size: int = None,
+    system_sample: int = 20
 ):
     """모든 평가 실행"""
 
@@ -37,11 +41,9 @@ def run_all_evaluations(
     output_path.mkdir(parents=True, exist_ok=True)
 
     # 테스트 데이터 로드
-    dataset_path = Path(__file__).parent.parent / "datasets" / "test_questions.json"
-    with open(dataset_path, "r", encoding="utf-8") as f:
-        data = json.load(f)
-
+    data = load_dataset()
     test_questions = data["questions"]
+    meta = data.get("metadata", {})
 
     # 샘플 크기 적용
     if sample_size and sample_size < len(test_questions):
@@ -65,13 +67,33 @@ def run_all_evaluations(
         }
     }
 
-    # 1. RAG 평가 (현재 스킵 - relevant_doc_ids 필요)
+    # 1. RAG 평가 (Case2 대상)
     if not skip_rag:
-        print("=" * 50)
-        print("1. RAG 검색 품질 평가")
-        print("=" * 50)
-        print("⚠️ RAG 평가는 relevant_doc_ids가 필요합니다. 스킵됩니다.\n")
-        results["rag"] = {"skipped": True, "reason": "relevant_doc_ids not set"}
+        try:
+            from evaluation.scripts.evaluate_rag import evaluate_rag_quality, _build_retriever
+            print("=" * 50)
+            print("1. RAG 검색 품질 평가")
+            print("=" * 50)
+            retriever = _build_retriever()
+            if retriever:
+                case2_questions = [
+                    q for q in test_questions
+                    if "search_facilities" in (q.get("expected_tools") or [])
+                    and q.get("relevant_doc_ids")
+                ]
+                print(f"RAG 평가 대상 문항: {len(case2_questions)}개")
+                rag_results = evaluate_rag_quality(retriever, case2_questions, k=3)
+                results["rag"] = rag_results
+                with open(output_path / "rag_evaluation.json", "w", encoding="utf-8") as f:
+                    json.dump(rag_results, f, ensure_ascii=False, indent=2)
+                print(f"✅ RAG 평가 완료: {len(case2_questions)}개 문항\n")
+            else:
+                results["rag"] = {"skipped": True, "reason": "retriever unavailable"}
+                print("⚠️ RAG retriever를 구성하지 못해 스킵되었습니다.\n")
+            print()
+        except Exception as e:
+            results["rag"] = {"error": str(e)}
+            print(f"⚠️ RAG 평가 실패: {e}\n")
 
     # 2. 답변 품질 평가
     if not skip_answer:
@@ -92,8 +114,10 @@ def run_all_evaluations(
         print("3. Tool 사용 정확도 평가")
         print("=" * 50)
         tool_logger = ToolCallLogger()
-        tool_results = evaluate_tool_accuracy(agent, test_questions, tool_logger)
+        tool_results = evaluate_tool_accuracy(agent, test_questions, tool_logger, meta=meta)
         results["tool_accuracy"] = tool_results
+        if "service_quality" in tool_results:
+            results["service_quality"] = tool_results["service_quality"]
 
         # 개별 결과 저장
         with open(output_path / "tool_evaluation.json", "w", encoding="utf-8") as f:
@@ -105,7 +129,8 @@ def run_all_evaluations(
         print("=" * 50)
         print("4. 시스템 성능 평가")
         print("=" * 50)
-        system_results = evaluate_system_performance(agent, test_questions)
+        sys_sample = system_sample if system_sample and system_sample > 0 else None
+        system_results = evaluate_system_performance(agent, test_questions, sample_size=sys_sample)
         results["system_performance"] = system_results
 
         # 개별 결과 저장
@@ -168,11 +193,36 @@ def generate_markdown_report(results: dict, output_path: Path):
             for cat, stats in results["tool_accuracy"]["by_category"].items():
                 md.append(f"| {cat} | {stats['count']} | {stats['selection_accuracy']:.1%} | {stats['parameter_accuracy']:.1%} |")
             md.append("\n")
+        if "by_tool" in results["tool_accuracy"]:
+            md.append("### 툴별 호출 성공률\n")
+            md.append("| 툴 | 기대 호출 | 실제 호출(히트) | 성공률 |")
+            md.append("|----|----------|---------------|--------|")
+            for tool, stats in results["tool_accuracy"]["by_tool"].items():
+                md.append(f"| {tool} | {stats.get('expected',0)} | {stats.get('hit',0)} | {stats.get('success_rate',0):.1%} |")
+            md.append("\n")
+
+    # 서비스 품질 요약 (케이스별 성공률)
+    if "service_quality" in results and "by_case" in results["service_quality"]:
+        md.append("## 3. 서비스 품질 (케이스별)\n")
+        md.append("| 케이스 | 성공률 | 샘플 수 | 지표 설명 |")
+        md.append("|--------|--------|---------|-----------|")
+        for case, stats in results["service_quality"]["by_case"].items():
+            desc = stats.get("description", "")
+            md.append(f"| {case} | {stats.get('success_rate',0):.1%} | {stats.get('count',0)} | {desc} |")
+        md.append("\n")
+
+    # RAG 검색 품질
+    if "rag" in results and "summary" in results["rag"]:
+        summary = results["rag"]["summary"]
+        md.append("## 4. RAG 검색 품질\n")
+        md.append(f"- Precision@{summary['k']}: {summary['precision_at_k']['mean']:.3f}")
+        md.append(f"- MRR: {summary['mrr']['mean']:.3f}")
+        md.append("\n")
 
     # 시스템 성능
     if "system_performance" in results and "summary" in results["system_performance"]:
         summary = results["system_performance"]["summary"]
-        md.append("## 3. 시스템 성능\n")
+        md.append("## 5. 시스템 성능\n")
         md.append("### 응답 시간\n")
         md.append(f"- 평균: **{summary['latency']['mean']:.2f}s** (±{summary['latency']['std']:.2f}s)")
         md.append(f"- P50: {summary['latency']['p50']:.2f}s")
@@ -197,6 +247,7 @@ def main():
     parser.add_argument("--skip-answer", action="store_true", help="답변 품질 평가 스킵")
     parser.add_argument("--skip-tools", action="store_true", help="Tool 정확도 평가 스킵")
     parser.add_argument("--skip-system", action="store_true", help="시스템 성능 평가 스킵")
+    parser.add_argument("--system-sample", type=int, default=20, help="시스템 성능 평가 샘플 크기 (기본 20, 0/음수면 전체)")
 
     args = parser.parse_args()
 
@@ -206,7 +257,8 @@ def main():
         skip_answer=args.skip_answer,
         skip_tools=args.skip_tools,
         skip_system=args.skip_system,
-        sample_size=args.sample
+        sample_size=args.sample,
+        system_sample=args.system_sample
     )
 
 

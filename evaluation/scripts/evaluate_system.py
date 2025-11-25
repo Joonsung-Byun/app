@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 from typing import List, Dict, Any
 import time
+import random
 
 # 백엔드 모듈 임포트를 위한 경로 추가
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / "backend"))
@@ -56,9 +57,15 @@ def get_memory_usage() -> float:
 def evaluate_system_performance(
     agent,
     test_data: List[Dict[str, Any]],
-    warmup_questions: int = 3
+    warmup_questions: int = 3,
+    sample_size: int = None
 ) -> Dict[str, Any]:
     """시스템 성능 전체 평가"""
+
+    # 샘플링 (빠른 성능 측정을 위해)
+    if sample_size and sample_size > 0 and sample_size < len(test_data):
+        test_data = random.sample(test_data, sample_size)
+        print(f"📊 시스템 성능 샘플 평가: {len(test_data)}개 질문 사용\n")
 
     # 워밍업 (첫 몇 개 질문으로 캐시/초기화)
     print(f"워밍업 중... ({warmup_questions}개 질문)")
@@ -173,8 +180,13 @@ def calculate_category_performance(results: List[Dict[str, Any]]) -> Dict[str, A
 
 def main():
     """시스템 성능 평가 실행"""
+    import argparse
+    parser = argparse.ArgumentParser(description="시스템 성능 평가")
+    parser.add_argument("--sample", "-s", type=int, help="샘플 크기 (전체 대신 일부만)")
+    args = parser.parse_args()
+
     # 테스트 데이터 로드
-    dataset_path = Path(__file__).parent.parent / "datasets" / "test_questions.json"
+    dataset_path = Path(__file__).parent.parent / "datasets" / "test_questions_prompt_pruned.json"
 
     with open(dataset_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -186,7 +198,7 @@ def main():
         from agent.agent import create_agent
         agent = create_agent()
 
-        results = evaluate_system_performance(agent, test_questions)
+        results = evaluate_system_performance(agent, test_questions, sample_size=args.sample)
 
         # 결과 저장
         output_path = Path(__file__).parent.parent / "results" / "system_evaluation.json"
