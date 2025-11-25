@@ -231,11 +231,20 @@ def evaluate_tool_accuracy(
         # Rate limiting
         time.sleep(0.3)
 
-    # 툴 실행 시간 집계 (백엔드 콜백 기록 활용)
-    timing_records = get_tool_timings()
+    # 툴 실행 시간 집계
     per_tool_time = defaultdict(list)
-    for rec in timing_records:
-        per_tool_time[rec.get("tool", "unknown_tool")].append(rec.get("duration", 0))
+
+    # runs 모드인 경우 각 run의 tool_timings에서 추출
+    if runs is not None:
+        for run in runs:
+            timing_records = run.get("tool_timings", [])
+            for rec in timing_records:
+                per_tool_time[rec.get("tool", "unknown_tool")].append(rec.get("duration", 0))
+    else:
+        # 직접 실행 모드인 경우 글로벌 버퍼에서 가져오기
+        timing_records = get_tool_timings()
+        for rec in timing_records:
+            per_tool_time[rec.get("tool", "unknown_tool")].append(rec.get("duration", 0))
 
     by_tool_time = {
         tool: {

@@ -193,19 +193,10 @@ def generate_markdown_report(results: dict, output_path: Path):
     # Tool 정확도
     if "tool_accuracy" in results and "summary" in results["tool_accuracy"]:
         summary = results["tool_accuracy"]["summary"]
-        md.append("## 2. Tool 사용 정확도\n")
-        md.append(f"- **Tool 선택 정확도**: {summary['tool_selection_accuracy']['mean']:.1%}")
-        md.append(f"- **파라미터 정확도**: {summary['parameter_accuracy']['mean']:.1%}")
-        md.append(f"- **종합 정확도**: {summary['combined_accuracy']['mean']:.1%}")
+        md.append("## 2. Tool 선택 정확도\n")
+        md.append(f"**Tool 선택 정확도: {summary['tool_selection_accuracy']['mean']:.1%}**\n")
         md.append("\n")
 
-        if "by_category" in results["tool_accuracy"]:
-            md.append("### 카테고리별 정확도\n")
-            md.append("| 카테고리 | 질문 수 | Tool 선택 | 파라미터 |")
-            md.append("|----------|---------|-----------|----------|")
-            for cat, stats in results["tool_accuracy"]["by_category"].items():
-                md.append(f"| {cat} | {stats['count']} | {stats['selection_accuracy']:.1%} | {stats['parameter_accuracy']:.1%} |")
-            md.append("\n")
         if "by_tool" in results["tool_accuracy"]:
             md.append("### 툴별 호출 성공률\n")
             md.append("| 툴 | 기대 호출 | 실제 호출(히트) | 성공률 |")
@@ -234,10 +225,14 @@ def generate_markdown_report(results: dict, output_path: Path):
     # RAG 검색 품질
     if "rag" in results and "summary" in results["rag"]:
         summary = results["rag"]["summary"]
+        precision = summary['precision_at_k']['mean']
+        recall = summary['recall_at_k']['mean']
+        f1_score = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
+
         md.append("## 4. RAG 검색 품질\n")
-        md.append(f"- Precision@{summary['k_precision']}: {summary['precision_at_k']['mean']:.3f}")
-        md.append(f"- Recall@{summary['k_recall']}: {summary['recall_at_k']['mean']:.3f}")
-        md.append(f"- MRR: {summary['mrr']['mean']:.3f}")
+        md.append(f"- Precision@{summary['k_precision']}: {precision:.3f}")
+        md.append(f"- Recall@{summary['k_recall']}: {recall:.3f}")
+        md.append(f"- F1-Score: {f1_score:.3f}")
         md.append("\n")
 
     # 시스템 성능
