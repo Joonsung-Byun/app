@@ -1,19 +1,15 @@
 from fastapi import APIRouter, HTTPException
 from models.schemas import ChatRequest, ChatResponse
 from models.map_models import MapResponse, MapData, MapMarker, MapCenter 
-
 from agent import create_agent
 from utils.conversation_memory import (
     get_conversation_history,
     add_message,
-    save_search_results,
-    set_status,
-    get_status,
+    save_search_results
 )
 import json
 import logging
 import uuid
-import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -30,8 +26,6 @@ async def chat(request: ChatRequest):
         conversation_id = str(uuid.uuid4())
     
     user_message = request.message
-    # 초기 상태: 사용자 의도 파악 중
-    set_status(conversation_id, "요청 분석 중..")
 
     try:
         # 2. 대화 히스토리 로드 및 사용자 메시지 저장
@@ -44,65 +38,75 @@ async def chat(request: ChatRequest):
             for msg in chat_history
         ])
         
-        # 3. Agent 실행
-        # invoke 결과의 output은 '문자열'일 수도 있고, 'MapResponse 객체'일 수도 있습니다.
-        # 👉 CPU/IO 작업을 별도 스레드에서 돌려서, /chat/status 폴링 요청이 동시에 처리될 수 있게 함.
-        result = await asyncio.to_thread(
-            agent_executor.invoke,
-            {
-                "input": user_message,
-                "chat_history": chat_history,
-                "conversation_history": history_str,
-                "child_age": request.child_age,
-                "original_query": user_message,
-                "conversation_id": conversation_id,
-            },
-        )
+        # 3. Agent 실행 (⚡️ 완전 비동기 실행)
+        result = await agent_executor.ainvoke({
+            "input": user_message,
+            "chat_history": chat_history,
+            "conversation_history": history_str,
+            "child_age": request.child_age,
+            "original_query": user_message,
+            "conversation_id": conversation_id
+        })
         
         output = result["output"]
         intermediate_steps = result.get("intermediate_steps", [])
         
         # -------------------------------------------------------
-        # [공통] search_facilities 결과 저장 (RAG 컨텍스트용)
+        # [Step Processing] 툴 실행 결과 후처리
         # -------------------------------------------------------
+        map_response_from_tool = None
+
         for step in intermediate_steps:
-            if getattr(step[0], 'tool', None) == "search_facilities":
+            tool_name = getattr(step[0], 'tool', None)
+            tool_output = step[1]
+
+            # (A) search_facilities 결과 처리 (RAG)
+            if tool_name == "search_facilities":
                 try:
-                    # step[1]은 툴의 리턴값(JSON string)
-                    search_result = json.loads(step[1])
+                    search_result = json.loads(tool_output)
+                    
                     if search_result.get("success"):
                         facilities_data = search_result.get("facilities", [])
-                        if facilities_data:
+                        
+                        if facilities_data and len(facilities_data) > 0:
                             save_search_results(conversation_id, facilities_data)
                             add_message(
                                 conversation_id, 
                                 "search_result", 
-                                f"마지막 검색 결과: {facilities_data}"
+                                f"RAG 검색 결과: {facilities_data}"
                             )
-                            logger.info(f"✅ 검색 결과 저장: {len(facilities_data)}개 시설")
+                            logger.info(f"✅ RAG 검색 결과 저장: {len(facilities_data)}개 시설")
+                        else:
+                            logger.info("⚠️ RAG 결과 0건 -> 메모리 덮어쓰기 방지를 위해 저장 안 함")
+                            
                 except Exception as e:
-                    logger.error(f"검색 결과 저장 실패: {e}")
+                    logger.error(f"검색 결과 처리 실패: {e}")
+            
+            # (B) search_map_by_address 결과가 MapResponse 객체로 온 경우 캐싱 (return_direct 실패 대비)
+            if tool_name == "search_map_by_address" and isinstance(tool_output, MapResponse):
+                map_response_from_tool = tool_output
 
         # -------------------------------------------------------
-        # [Case A] 신규 지오코딩 툴 결과 (MapResponse 객체 반환)
+        # [Response Type A] 신규 지오코딩 툴 결과 (MapResponse 객체 반환)
         # -------------------------------------------------------
-        if isinstance(output, MapResponse):
+        if isinstance(output, MapResponse) or map_response_from_tool:
+            map_output = output if isinstance(output, MapResponse) else map_response_from_tool
             logger.info("📍 지오코딩 툴에 의한 MapResponse 객체 반환")
             
             # AI 응답 저장 (MapResponse는 add_message 내부에서 안전하게 처리됨)
-            add_message(conversation_id, "ai", output)
+            add_message(conversation_id, "ai", map_output)
             
             return ChatResponse(
                 conversation_id=conversation_id,
                 role="ai",
-                type=output.type,       # 'map'
-                content=output.content, # "지도를 보여드릴게요" 등
-                link=output.link,       # 카카오맵 링크
-                data=output.data        # MapData 객체 (center, markers)
+                type=map_output.type,       # 'map'
+                content=map_output.content, # "지도를 보여드릴게요" 등
+                link=map_output.link,       # 카카오맵 링크
+                data=map_output.data        # MapData 객체 (center, markers)
             )
 
         # -------------------------------------------------------
-        # [Case B] 일반 텍스트 or 기존 RAG 지도 (문자열 반환)
+        # [Response Type B] 일반 텍스트 or 기존 RAG 지도 (문자열 반환)
         # -------------------------------------------------------
         else:
             logger.info("💬 일반 텍스트 또는 RAG 지도 처리")
@@ -112,47 +116,43 @@ async def chat(request: ChatRequest):
             kakao_link = None
             response_type = "text"
 
-            # RAG 지도 툴(show_map_for_facilities)이 실행되었는지 확인
+            # RAG 지도 툴(show_map_for_facilities)이 실행되었는지 확인하여 지도 데이터 구성
             for step in intermediate_steps:
                 if getattr(step[0], 'tool', None) == "show_map_for_facilities":
                     try:
                         map_result = json.loads(step[1])
                         if map_result.get("success"):
                             facilities = map_result.get("facilities", [])
-                            # selected_indices = map_result.get("selected_indices", [0, 1, 2]) # 필요시 사용
                             
                             if facilities:
-                                logger.info(f"✅ RAG 지도 데이터 생성: {len(facilities)}개")
+                                logger.info(f"✅ 지도 생성 툴 결과 감지: {len(facilities)}개")
                                 
                                 # MapMarker 리스트 생성
                                 markers = [
                                     MapMarker(
-                                        name=f["name"],
-                                        lat=float(f["lat"]),
-                                        lng=float(f["lng"]),
-                                        desc=f.get("desc", "")
+                                        name=f.get("name", "장소"),
+                                        lat=float(f.get("lat", 0.0)),
+                                        lng=float(f.get("lng", 0.0)),
+                                        desc=f.get("desc", "") or f.get("address", "")
                                     )
                                     for f in facilities
                                 ]
                                 
                                 # 중심점 잡기 (첫 번째 시설 기준)
-                                center_lat = markers[0].lat
-                                center_lng = markers[0].lng
-                                
-                                map_data = MapData(
-                                    center=MapCenter(lat=center_lat, lng=center_lng),
-                                    markers=markers
-                                )
-                                
-                                kakao_link = f"https://map.kakao.com/link/to/{markers[0].name},{markers[0].lat},{markers[0].lng}"
-                                response_type = "map"
-                                
-                                # 텍스트 메시지가 너무 단순하면 보완 (선택 사항)
-                                if not final_output_text:
-                                    final_output_text = f"{len(facilities)}개 시설의 위치를 지도에 표시합니다."
+                                if markers:
+                                    center_lat = markers[0].lat
+                                    center_lng = markers[0].lng
+                                    
+                                    map_data = MapData(
+                                        center=MapCenter(lat=center_lat, lng=center_lng),
+                                        markers=markers
+                                    )
+                                    
+                                    kakao_link = f"https://map.kakao.com/link/to/{markers[0].name},{markers[0].lat},{markers[0].lng}"
+                                    response_type = "map"
 
                     except Exception as e:
-                        logger.error(f"RAG 지도 데이터 처리 실패: {e}")
+                        logger.error(f"지도 데이터 구성 실패: {e}")
 
             # AI 응답 저장
             add_message(conversation_id, "ai", final_output_text)
@@ -171,14 +171,3 @@ async def chat(request: ChatRequest):
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/chat/status/{conversation_id}")
-async def chat_status(conversation_id: str):
-    """
-    현재 대화(conversation_id)의 진행 상태 텍스트를 반환하는 엔드포인트.
-    프론트엔드는 이 값을 주기적으로 폴링해서
-    '날씨 확인 중..', '시설 검색 중..' 같은 실제 상태를 표시할 수 있다.
-    """
-    status = get_status(conversation_id)
-    return {"conversation_id": conversation_id, "status": status or ""}
