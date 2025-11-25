@@ -37,6 +37,10 @@ psutil>=5.9.0
 beautifulsoup4==4.12.3
 lxml==5.3.0
 
+# Asyncio HTTP(비동기 HTTP 요청)
+aiohttp==3.9.5
+nest_asyncio==1.6.0
+
 # Optional: GPU 사용 시 (CUDA 11.8)
 # 아래 주석 해제하고 위의 torch 줄은 삭제
 # torch==2.5.0+cu118 --index-url https://download.pytorch.org/whl/cu118

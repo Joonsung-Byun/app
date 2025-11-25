@@ -11,6 +11,7 @@ from .show_map_tool import show_map_for_facilities
 from .naver_search_tool import naver_web_search
 from .search_map_tool import create_search_map_tool   
 from .geocoding_tool import search_map_by_address_core
+from .naver_cafe_search_tool import naver_cafe_search
 
 __all__ = [
     "extract_user_intent",
@@ -19,6 +20,7 @@ __all__ = [
     "generate_kakao_map_link",
     "show_map_for_facilities",
     "naver_web_search",
+    "naver_cafe_search",
     "create_search_map_tool",
     "search_map_by_address_core",
 ]

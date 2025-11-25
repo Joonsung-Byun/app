@@ -8,6 +8,7 @@ from tools import (
     search_facilities,
     show_map_for_facilities,
     naver_web_search,
+    naver_cafe_search,
     create_search_map_tool,  
 )
 from agent.prompts import SYSTEM_PROMPT
@@ -25,6 +26,7 @@ def create_agent():
         search_facilities,
         show_map_for_facilities,
         naver_web_search,
+        naver_cafe_search,
         create_search_map_tool(),  
     ]
 
