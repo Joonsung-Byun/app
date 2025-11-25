@@ -167,6 +167,7 @@ def naver_web_search(query: str, conversation_id: str) -> str:
 
 아래 블로그 목록 중 가장 관련성 높고 최신 정보인 **상위 3개**만 선택하세요.
 (작년 글, 광고, 관련 없는 지역 제외)
+추론 및 thinking은 하지 말고 출력 형식에 따라 답변만 작성하세요.
 
 목록:
 {raw_data}
