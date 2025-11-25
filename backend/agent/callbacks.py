@@ -1,7 +1,7 @@
 import time
 import logging
 from langchain.callbacks.base import BaseCallbackHandler
-from backend.utils.tool_timings import record_tool_timing
+from utils.tool_timings import record_tool_timing
 
 logger = logging.getLogger(__name__)
 
