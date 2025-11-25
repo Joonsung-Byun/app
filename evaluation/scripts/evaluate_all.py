@@ -17,8 +17,9 @@ sys.path.insert(0, str(ROOT_DIR / "backend"))
 
 from evaluation.scripts.evaluate_answer import evaluate_answer_quality
 from evaluation.scripts.evaluate_tools import evaluate_tool_accuracy, ToolCallLogger
-from evaluation.scripts.evaluate_system import evaluate_system_performance
+from evaluation.scripts.evaluate_system import evaluate_system_performance, evaluate_system_from_runs
 from evaluation.scripts.eval_cases import load_dataset, partition_by_case
+from evaluation.scripts.run_eval import run_all as run_all_once
 
 
 def run_all_evaluations(
@@ -28,7 +29,8 @@ def run_all_evaluations(
     skip_tools: bool = False,
     skip_system: bool = False,
     sample_size: int = None,
-    system_sample: int = 20
+    system_sample: int = 20,
+    system_case_weights: str = None
 ):
     """모든 평가 실행"""
 
@@ -45,16 +47,15 @@ def run_all_evaluations(
     test_questions = data["questions"]
     meta = data.get("metadata", {})
 
-    # 샘플 크기 적용
-    if sample_size and sample_size < len(test_questions):
-        import random
-        test_questions = random.sample(test_questions, sample_size)
-        print(f"📊 샘플 크기: {sample_size}개 질문\n")
+    # 샘플 크기 적용은 러너에서 처리
 
-    # Agent 초기화
+    # Agent 초기화 및 단일 패스 실행
     try:
         from agent.agent import create_agent
         agent = create_agent()
+        run_data = run_all_once(agent, sample=sample_size)
+        runs = run_data["runs"]
+        test_questions = run_data["questions"]
     except ImportError as e:
         print(f"❌ Agent 임포트 실패: {e}")
         return {"error": str(e)}
@@ -82,7 +83,7 @@ def run_all_evaluations(
                     and q.get("relevant_doc_ids")
                 ]
                 print(f"RAG 평가 대상 문항: {len(case2_questions)}개")
-                rag_results = evaluate_rag_quality(retriever, case2_questions, k=3)
+                rag_results = evaluate_rag_quality(retriever, case2_questions, k_precision=3, k_recall=20, n_results=50)
                 results["rag"] = rag_results
                 with open(output_path / "rag_evaluation.json", "w", encoding="utf-8") as f:
                     json.dump(rag_results, f, ensure_ascii=False, indent=2)
@@ -100,7 +101,7 @@ def run_all_evaluations(
         print("=" * 50)
         print("2. 답변 품질 평가 (LLM-as-Judge)")
         print("=" * 50)
-        answer_results = evaluate_answer_quality(agent, test_questions)
+        answer_results = evaluate_answer_quality(runs=runs)
         results["answer_quality"] = answer_results
 
         # 개별 결과 저장
@@ -114,7 +115,7 @@ def run_all_evaluations(
         print("3. Tool 사용 정확도 평가")
         print("=" * 50)
         tool_logger = ToolCallLogger()
-        tool_results = evaluate_tool_accuracy(agent, test_questions, tool_logger, meta=meta)
+        tool_results = evaluate_tool_accuracy(runs=runs, tool_logger=tool_logger, meta=meta)
         results["tool_accuracy"] = tool_results
         if "service_quality" in tool_results:
             results["service_quality"] = tool_results["service_quality"]
@@ -130,7 +131,19 @@ def run_all_evaluations(
         print("4. 시스템 성능 평가")
         print("=" * 50)
         sys_sample = system_sample if system_sample and system_sample > 0 else None
-        system_results = evaluate_system_performance(agent, test_questions, sample_size=sys_sample)
+        case_weights = None
+        if system_case_weights:
+            try:
+                import json as _json
+                with open(system_case_weights, "r", encoding="utf-8") as f:
+                    case_weights = _json.load(f)
+            except Exception as e:
+                print(f"⚠️ 시스템 케이스 가중치 로드 실패: {e}")
+        run_subset = runs
+        if sys_sample and sys_sample > 0 and sys_sample < len(runs):
+            import random
+            run_subset = random.sample(runs, sys_sample)
+        system_results = evaluate_system_from_runs(run_subset, meta=meta, case_weights=case_weights)
         results["system_performance"] = system_results
 
         # 개별 결과 저장
@@ -200,6 +213,13 @@ def generate_markdown_report(results: dict, output_path: Path):
             for tool, stats in results["tool_accuracy"]["by_tool"].items():
                 md.append(f"| {tool} | {stats.get('expected',0)} | {stats.get('hit',0)} | {stats.get('success_rate',0):.1%} |")
             md.append("\n")
+        if "by_tool_time" in results["tool_accuracy"]:
+            md.append("### 툴별 실행 시간\n")
+            md.append("| 툴 | 호출 수 | 평균(s) | 최대(s) |")
+            md.append("|----|--------|--------|--------|")
+            for tool, stats in results["tool_accuracy"]["by_tool_time"].items():
+                md.append(f"| {tool} | {stats.get('count',0)} | {stats.get('mean_s',0):.2f} | {stats.get('max_s',0):.2f} |")
+            md.append("\n")
 
     # 서비스 품질 요약 (케이스별 성공률)
     if "service_quality" in results and "by_case" in results["service_quality"]:
@@ -215,7 +235,8 @@ def generate_markdown_report(results: dict, output_path: Path):
     if "rag" in results and "summary" in results["rag"]:
         summary = results["rag"]["summary"]
         md.append("## 4. RAG 검색 품질\n")
-        md.append(f"- Precision@{summary['k']}: {summary['precision_at_k']['mean']:.3f}")
+        md.append(f"- Precision@{summary['k_precision']}: {summary['precision_at_k']['mean']:.3f}")
+        md.append(f"- Recall@{summary['k_recall']}: {summary['recall_at_k']['mean']:.3f}")
         md.append(f"- MRR: {summary['mrr']['mean']:.3f}")
         md.append("\n")
 
@@ -233,6 +254,31 @@ def generate_markdown_report(results: dict, output_path: Path):
         md.append(f"- 최종: {summary['memory']['final_mb']:.1f} MB")
         md.append(f"- 피크: {summary['memory']['peak_mb']:.1f} MB")
         md.append(f"\n### 성공률: **{summary['success_rate']:.1%}** ({summary['total_successes']}/{summary['total_evaluated']})\n")
+        if summary.get("weighted_latency_mean") is not None:
+            md.append(f"- 가중 평균 응답 시간: {summary['weighted_latency_mean']:.2f}s\n")
+        if "by_case_latency" in results["system_performance"]:
+            md.append("### 케이스별 응답 시간\n")
+            md.append("| 케이스 | 샘플 수 | 평균(s) | P90(s) |")
+            md.append("|--------|---------|---------|--------|")
+            for c, stats in results["system_performance"]["by_case_latency"].items():
+                md.append(f"| {c} | {stats.get('count',0)} | {stats.get('mean',0):.2f} | {stats.get('p90',0):.2f} |")
+            md.append("\n")
+        if "by_tool_time" in results["system_performance"]:
+            md.append("### 툴별 실행 시간 (시스템 성능 샘플)\n")
+            md.append("| 툴 | 호출 수 | 평균(s) | 최대(s) |")
+            md.append("|----|--------|--------|--------|")
+            for tool, stats in results["system_performance"]["by_tool_time"].items():
+                md.append(f"| {tool} | {stats.get('count',0)} | {stats.get('mean_s',0):.2f} | {stats.get('max_s',0):.2f} |")
+            md.append("\n")
+        if "by_case_tool_time" in results["system_performance"]:
+            md.append("### 케이스별 툴 실행 시간\n")
+            for case, tools in results["system_performance"]["by_case_tool_time"].items():
+                md.append(f"- {case}")
+                md.append("| 툴 | 호출 수 | 평균(s) | 최대(s) |")
+                md.append("|----|--------|--------|--------|")
+                for tool, stats in tools.items():
+                    md.append(f"| {tool} | {stats.get('count',0)} | {stats.get('mean_s',0):.2f} | {stats.get('max_s',0):.2f} |")
+                md.append("")
 
     # 파일 저장
     with open(output_path, "w", encoding="utf-8") as f:
@@ -248,6 +294,7 @@ def main():
     parser.add_argument("--skip-tools", action="store_true", help="Tool 정확도 평가 스킵")
     parser.add_argument("--skip-system", action="store_true", help="시스템 성능 평가 스킵")
     parser.add_argument("--system-sample", type=int, default=20, help="시스템 성능 평가 샘플 크기 (기본 20, 0/음수면 전체)")
+    parser.add_argument("--system-case-weights", type=str, help="시스템 성능 케이스별 가중치 JSON 경로")
 
     args = parser.parse_args()
 
@@ -258,7 +305,8 @@ def main():
         skip_tools=args.skip_tools,
         skip_system=args.skip_system,
         sample_size=args.sample,
-        system_sample=args.system_sample
+        system_sample=args.system_sample,
+        system_case_weights=args.system_case_weights
     )
 
 

@@ -11,6 +11,7 @@ from tools import (
     create_search_map_tool,  
 )
 from agent.prompts import SYSTEM_PROMPT
+from agent.callbacks import ToolTimingCallbackHandler
 
 
 def create_agent():
@@ -46,4 +47,5 @@ def create_agent():
         verbose=True,
         max_iterations=5,
         return_intermediate_steps=True,
+        callbacks=[ToolTimingCallbackHandler()],
     )

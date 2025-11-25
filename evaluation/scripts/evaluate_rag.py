@@ -49,11 +49,11 @@ def _build_retriever():
         return None
 
     class SimpleRetriever:
-        def get_relevant_documents(self, query: str):
+        def get_relevant_documents(self, query: str, n_results: int = 50):
             embedding = pca_embeddings.embed_query(query)
             results = collection.query(
                 query_embeddings=[embedding],
-                n_results=5,
+                n_results=n_results,
                 include=["metadatas", "documents"],
             )
             docs = []
@@ -140,7 +140,9 @@ def mean_reciprocal_rank(retrieved: List[str], relevant: List[str]) -> float:
 def evaluate_rag_quality(
     retriever,
     test_data: List[Dict[str, Any]],
-    k: int = 5
+    k_precision: int = 3,
+    k_recall: int = 20,
+    n_results: int = 50
 ) -> Dict[str, Any]:
     """RAG 검색 품질 전체 평가"""
 
@@ -160,7 +162,7 @@ def evaluate_rag_quality(
 
         # 검색 수행
         try:
-            retrieved_docs = retriever.get_relevant_documents(question)
+            retrieved_docs = retriever.get_relevant_documents(question, n_results=n_results)
 
             # Name을 우선 식별자로 사용하고, 없을 경우 id/순번 사용
             retrieved_ids = []
@@ -178,9 +180,9 @@ def evaluate_rag_quality(
         norm_retrieved = [str(x).strip().lower() for x in retrieved_ids]
         norm_relevant = [str(x).strip().lower() for x in relevant_docs]
 
-        p_at_k = precision_at_k(norm_retrieved, norm_relevant, k)
-        r_at_k = recall_at_k(norm_retrieved, norm_relevant, k)
-        mrr = mean_reciprocal_rank(norm_retrieved, norm_relevant)
+        p_at_k = precision_at_k(norm_retrieved, norm_relevant, k_precision)
+        r_at_k = recall_at_k(norm_retrieved, norm_relevant, k_recall)
+        mrr = mean_reciprocal_rank(norm_retrieved, norm_relevant[:k_precision])
 
         precisions.append(p_at_k)
         recalls.append(r_at_k)
@@ -188,7 +190,7 @@ def evaluate_rag_quality(
 
         results.append({
             "question": question,
-            "retrieved": retrieved_ids[:k],
+            "retrieved": retrieved_ids[:k_recall],
             "relevant": relevant_docs,
             "precision_at_k": p_at_k,
             "recall_at_k": r_at_k,
@@ -222,7 +224,8 @@ def evaluate_rag_quality(
                 "min": float(np.min(mrrs)),
                 "max": float(np.max(mrrs))
             },
-            "k": k
+            "k_precision": k_precision,
+            "k_recall": k_recall
         },
         "details": results
     }
@@ -232,7 +235,9 @@ def main():
     """RAG 평가 실행"""
     parser = argparse.ArgumentParser(description="RAG 검색 품질 평가")
     parser.add_argument("--sample", "-s", type=int, help="평가할 샘플 개수 (relevant_doc_ids가 있는 질문 중 랜덤)")
-    parser.add_argument("--k", type=int, default=5, help="상위 K개로 메트릭 계산 (default: 5)")
+    parser.add_argument("--k-precision", type=int, default=3, help="Precision@K에 사용할 K (default: 3)")
+    parser.add_argument("--k-recall", type=int, default=20, help="Recall@K에 사용할 K (default: 20)")
+    parser.add_argument("--n-results", type=int, default=50, help="retriever에서 가져올 결과 수 (default: 50)")
     args = parser.parse_args()
 
     # 테스트 데이터 로드
@@ -267,7 +272,13 @@ def main():
             "note": "settings/pca_embeddings 로드 또는 Chroma 연결 실패"
         }
 
-    results = evaluate_rag_quality(retriever, rag_questions, k=args.k)
+    results = evaluate_rag_quality(
+        retriever,
+        rag_questions,
+        k_precision=args.k_precision,
+        k_recall=args.k_recall,
+        n_results=args.n_results
+    )
 
     # 결과 저장
     output_path = Path(__file__).parent.parent / "results" / "rag_evaluation.json"
@@ -284,6 +295,6 @@ if __name__ == "__main__":
         print("\n=== RAG 평가 요약 ===")
         summary = results["summary"]
         print(f"평가 질문 수: {summary['total_evaluated']}")
-        print(f"Precision@{summary['k']}: {summary['precision_at_k']['mean']:.3f} (±{summary['precision_at_k']['std']:.3f})")
-        print(f"Recall@{summary['k']}: {summary['recall_at_k']['mean']:.3f} (±{summary['recall_at_k']['std']:.3f})")
+        print(f"Precision@{summary['k_precision']}: {summary['precision_at_k']['mean']:.3f} (±{summary['precision_at_k']['std']:.3f})")
+        print(f"Recall@{summary['k_recall']}: {summary['recall_at_k']['mean']:.3f} (±{summary['recall_at_k']['std']:.3f})")
         print(f"MRR: {summary['mrr']['mean']:.3f} (±{summary['mrr']['std']:.3f})")
