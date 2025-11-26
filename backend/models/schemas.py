@@ -15,3 +15,8 @@ class ChatResponse(BaseModel):
     data: Optional[MapData] = Field(None, description="지도 데이터")
     
     conversation_id: str = Field(..., description="대화 ID")
+
+
+class ChatStatusResponse(BaseModel):
+    conversation_id: str = Field(..., description="대화 ID")
+    status: str = Field(default="", description="진행 상태 텍스트 (없으면 빈 문자열)")

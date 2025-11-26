@@ -1,5 +1,6 @@
 from langchain.tools import tool
 from utils.conversation_memory import get_last_search_results, set_status
+from tools.geocoding_tool import search_map_by_address_core
 import json
 import logging
 
@@ -58,11 +59,21 @@ def show_map_for_facilities(
                 lng_float = float(lng) if lng is not None else 0.0
             except (ValueError, TypeError):
                 lat_float, lng_float = 0.0, 0.0
-
-            # 좌표가 유효하지 않으면(0.0) 건너뜀 
+            
+            # 좌표가 없으면 지오코딩 시도
             if lat_float == 0.0 and lng_float == 0.0:
-                logger.warning(f"🚫 좌표 정보 없음(지도 생성 제외): {fac.get('name')}")
-                continue
+                query = fac.get("name", "")
+                addr_hint = fac.get("address", "") or fac.get("desc", "") or fac.get("location", "")
+                if addr_hint:
+                    query = f"{query} {addr_hint}"
+                geo_res = search_map_by_address_core(query)
+                if geo_res and geo_res.data and geo_res.data.markers:
+                    marker = geo_res.data.markers[0]
+                    lat_float = marker.lat
+                    lng_float = marker.lng
+                else:
+                    logger.warning(f"🚫 좌표 정보 없음(지오코딩 실패): {fac.get('name')}")
+                    continue
 
             filtered_facilities.append({
                 "name": fac.get('name', '장소'),
@@ -70,10 +81,11 @@ def show_map_for_facilities(
                 "lng": lng_float,
                 "desc": fac.get('desc', '') or fac.get('description', '') or fac.get('addr', '')
             })
-            
+
     # 3. 결과 반환
     # 유효한 좌표를 가진 시설이 하나도 없는 경우
     if not filtered_facilities:
+        # 좌표가 없지만 이름/주소가 있다면 search_map_by_address 사용 안내 메시지 반환
         return json.dumps({
             "success": False, 
             "message": "선택한 장소들에 좌표 정보가 없습니다. (웹 검색 결과라면 'search_map_by_address' 도구를 사용하세요)",

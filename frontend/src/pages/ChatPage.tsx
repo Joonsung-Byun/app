@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChatWindow from "../components/ChatWindow";
 import InputBox from "../components/InputBox";
@@ -8,7 +8,8 @@ import type { Message } from "../types";
 const ChatPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  
+  const sendingRef = useRef(false);
+
   // localStorage에 conversation_id를 uuid로 저장
   useEffect(() => {
     const conversationId = localStorage.getItem("conversation_id");
@@ -23,6 +24,103 @@ const ChatPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [typingText, setTypingText] = useState("요청 분석 중...");
 
+  const handleSend = useCallback(
+    async (userMessage: string) => {
+      const trimmed = userMessage.trim();
+      if (!trimmed) return;
+      if (sendingRef.current) return;
+      sendingRef.current = true;
+
+      let statusSource: EventSource | null = null;
+
+      const userMsg: Message = { role: "user", content: trimmed, type: "text" };
+      addMessage(userMsg);
+      setIsLoading(true);
+      setTypingText("요청 분석 중..");
+
+      try {
+        const conversationId = localStorage.getItem("conversation_id") || "";
+
+        // SSE로 진행 상태 스트리밍
+        if (conversationId) {
+          const url = `http://localhost:8080/api/chat/stream/${conversationId}`;
+          statusSource = new EventSource(url);
+
+          statusSource.onmessage = (event) => {
+            try {
+              const data = JSON.parse(event.data);
+              if (data.status) {
+                setTypingText(data.status);
+              }
+            } catch {
+              // 파싱 에러는 무시
+            }
+          };
+
+          statusSource.onerror = () => {
+            statusSource?.close();
+          };
+        }
+
+        // API 호출
+        const response = await fetch("http://localhost:8080/api/chat", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        body: JSON.stringify({
+          message: trimmed,
+          conversation_id: conversationId,
+        }),
+      });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        if (data.conversation_id) {
+          localStorage.setItem("conversation_id", data.conversation_id);
+        }
+
+        if (data.type === "map") {
+          const mapMsg: Message = {
+            role: "ai",
+            type: "map",
+            content: "",
+            link: data.link,
+            data: data.data,
+          };
+          addMessage(mapMsg);
+        } else {
+          const textMsg: Message = {
+            role: "ai",
+            type: "text",
+            content: data.content,
+          };
+          addMessage(textMsg);
+        }
+      } catch (error) {
+        console.error("API 호출 오류:", error);
+
+        const errorMsg: Message = {
+          role: "ai",
+          type: "text",
+          content: "죄송해요, 일시적인 오류가 발생했어요. 다시 시도해주세요. 😢",
+        };
+        addMessage(errorMsg);
+      } finally {
+        if (statusSource) {
+          statusSource.close();
+        }
+        setIsLoading(false);
+        sendingRef.current = false;
+      }
+    },
+    [addMessage]
+  );
+
   // HeroPage에서 전달된 초기 메시지 처리
   useEffect(() => {
     const initialMessage = location.state?.initialMessage;
@@ -31,134 +129,34 @@ const ChatPage: React.FC = () => {
       // state 클리어
       navigate("/chat", { replace: true, state: {} });
     }
-  }, []);
+  }, [location.state, handleSend, navigate]);
 
   const handlePromptClick = (prompt: string) => {
     setMessage(prompt);
   };
 
-  const handleSend = async (userMessage: string) => {
-    let statusTimer: number | undefined;
-
-    const userMsg: Message = { role: "user", content: userMessage, type: "text" };
-    addMessage(userMsg);
-    setIsLoading(true);
-    setTypingText("요청 분석 중..");
-
-    try {
-      // conversation_id 가져오기 (없으면 빈 문자열)
-      const conversationId = localStorage.getItem("conversation_id") || "";
-
-      // 진행 상태 폴링 (실제 백엔드 상태를 읽어옴)
-      if (conversationId) {
-        const pollStatus = async () => {
-          try {
-            const res = await fetch(`http://localhost:8080/api/chat/status/${conversationId}`);
-            if (!res.ok) return;
-            const data = await res.json();
-            if (data.status) {
-              setTypingText(data.status);
-            }
-          } catch {
-            // 폴링 오류는 조용히 무시
-          }
-        };
-
-        // 즉시 한 번 호출 후, 주기적으로 폴링
-        pollStatus();
-        statusTimer = window.setInterval(pollStatus, 1000);
-      }
-
-      // API 호출
-      const response = await fetch("http://localhost:8080/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          conversation_id: conversationId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      // 서버가 반환한 conversation_id 저장 (없으면 생성된 것)
-      if (data.conversation_id) {
-        localStorage.setItem("conversation_id", data.conversation_id);
-      }
-
-      // 응답 타입에 따라 처리
-      if (data.type === "map") {
-       const mapMsg: Message = {
-          role: "ai",
-          type: "map",
-          content: "",
-          link: data.link,
-          data: data.data, // 이제 여기가 무조건 배열임. 안심하고 넣으세요.
-        };
-        addMessage(mapMsg);
-
-      } else {
-        // 텍스트 응답
-        const textMsg: Message = {
-          role: "ai",
-          type: "text",
-          content: data.content,
-        };
-        addMessage(textMsg);
-      }
-    } catch (error) {
-      console.error("API 호출 오류:", error);
-      
-      // 에러 메시지 표시
-      const errorMsg: Message = {
-        role: "ai",
-        type: "text",
-        content: "죄송해요, 일시적인 오류가 발생했어요. 다시 시도해주세요. 😢",
-      };
-      addMessage(errorMsg);
-    } finally {
-      if (statusTimer !== undefined) {
-        window.clearInterval(statusTimer);
-      }
-      setIsLoading(false);
-    }
-  };
-
-  window.addEventListener("beforeunload", () => {
-    // localStorage.removeItem("chatMessages");
-    // conversation_id 삭제 후 새로 생성
-    const uuid = crypto.randomUUID();
-    localStorage.setItem("conversation_id", uuid);
-  });
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      const uuid = crypto.randomUUID();
+      localStorage.setItem("conversation_id", uuid);
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, []);
 
   return (
     <div className="min-h-screen flex justify-center px-4 pt-20 pb-6 md:pt-20 bg-linear-to-b from-green-50 via-white to-green-50">
       <div className="w-full max-w-6xl">
-        {/* <div className="flex justify-center items-center gap-5 mb-3">
-          <img src="/logo2_copy.webp" alt="" className="w-36 md:w-52 h-auto block"/>
-        </div> */}
-
         <div className="mb-4 min-w-0">
-          <ChatWindow 
-            messages={messages} 
+          <ChatWindow
+            messages={messages}
             onPromptClick={handlePromptClick}
             isLoading={isLoading}
             typingText={typingText}
           />
         </div>
 
-        <InputBox
-          variant="chat"
-          message={message}
-          setMessage={setMessage}
-          onSend={handleSend}
-        />
+        <InputBox variant="chat" message={message} setMessage={setMessage} onSend={handleSend} />
         <button
           onClick={() => {
             clearMessages();

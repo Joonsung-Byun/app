@@ -242,7 +242,14 @@ async def naver_web_search(query: str, conversation_id: str) -> str:
 
         # [Step 5] 결과 반환
         if conversation_id:
-            save_data = [{"name": item['title'], "link": item['link']} for item in final_output_results]
+            save_data = [
+                {
+                    "name": item.get("venue") or item.get("title"),
+                    "link": item.get("link"),
+                    "desc": item.get("description", "")
+                }
+                for item in final_output_results
+            ]
             save_search_results(conversation_id, save_data)
 
         result_text = f"🔍 '{final_query}' 검색 및 정밀 분석 결과:\n\n"

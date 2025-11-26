@@ -99,8 +99,12 @@ def get_shown_facility_names(conversation_id: str) -> List[str]:
     return []
 
 def get_last_search_results(conversation_id: str) -> Optional[List[Dict]]:
-    """마지막 검색 결과 가져오기"""
-    return last_search_results.get(conversation_id)
+    """마지막 검색 결과의 복사본을 반환 (호출 측에서 수정해도 캐시 오염 방지)"""
+    results = last_search_results.get(conversation_id)
+    if results is None:
+        return None
+    # 얕은 복사로 리스트/딕셔너리 원본 보호
+    return [dict(fac) for fac in results]
 
 def clear_conversation(conversation_id: str):
     """대화 히스토리 삭제"""
@@ -108,6 +112,10 @@ def clear_conversation(conversation_id: str):
         del conversation_history[conversation_id]
     if conversation_id in last_search_results:
         del last_search_results[conversation_id]
+    if conversation_id in shown_facilities_history:
+        del shown_facilities_history[conversation_id]
+    if conversation_id in current_status:
+        del current_status[conversation_id]
     logger.info(f"대화 삭제: {conversation_id}")
 
 def get_all_conversations() -> Dict:

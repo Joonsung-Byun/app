@@ -158,14 +158,23 @@ async def naver_cafe_search(query: str, conversation_id: str) -> str:
 
         # [Step 4] 반환
         if conversation_id:
-             save_data = [{"name": i['title'], "link": i['link']} for i in final_results]
-             save_search_results(conversation_id, save_data)
+            save_data = [
+                {
+                    "name": i.get("venue") or i.get("title"),
+                    "link": i.get("link"),
+                    "desc": i.get("summary", "")
+                }
+                for i in final_results
+            ]
+            save_search_results(conversation_id, save_data)
 
-        res_text = f"☕ **'{query}' 맘카페 찐후기**:\n\n"
+        res_text = f"☕ **'{query}' 맘카페 찐후기**\n"
         for i, item in enumerate(final_results, 1):
             icon = "👍" if item['sentiment'] == "긍정" else "💬"
             link = f'<a href="{item["link"]}" target="_blank">글 보기</a>'
-            res_text += f"{i}. {icon} **{item['title']}**\n   🗣️ {item['summary']}\n   🔗 {link}\n\n"
+            res_text += f"\n{i}. {icon} **{item['title']}**\n"
+            res_text += f"   📝 {item['summary']}\n"
+            res_text += f"   🔗 {link}\n"
             
         return res_text
 

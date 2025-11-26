@@ -1,20 +1,34 @@
 from fastapi import APIRouter, HTTPException
-from models.schemas import ChatRequest, ChatResponse
+from fastapi.responses import StreamingResponse
+from models.schemas import ChatRequest, ChatResponse, ChatStatusResponse
 from models.map_models import MapResponse, MapData, MapMarker, MapCenter 
 from agent import create_agent
 from utils.conversation_memory import (
     get_conversation_history,
     add_message,
-    save_search_results
+    save_search_results,
+    get_status,
+    set_status,
+    get_last_search_results,
 )
 import json
 import logging
 import uuid
+import asyncio
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 agent_executor = create_agent()
+
+
+@router.get("/chat/status/{conversation_id}", response_model=ChatStatusResponse)
+async def chat_status(conversation_id: str):
+    """대화 상태 조회 엔드포인트 (프론트 폴링용)"""
+    return ChatStatusResponse(
+        conversation_id=conversation_id,
+        status=get_status(conversation_id)
+    )
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
@@ -24,6 +38,8 @@ async def chat(request: ChatRequest):
     conversation_id = request.conversation_id
     if not conversation_id or conversation_id.strip() == "":
         conversation_id = str(uuid.uuid4())
+    # 신규 요청 시작 상태 초기화
+    set_status(conversation_id, "질문 분석 중...")
     
     user_message = request.message
 
@@ -55,6 +71,9 @@ async def chat(request: ChatRequest):
         # [Step Processing] 툴 실행 결과 후처리
         # -------------------------------------------------------
         map_response_from_tool = None
+        show_map_tool_executed = False
+        last_results = get_last_search_results(conversation_id)
+        last_results = get_last_search_results(conversation_id)
 
         for step in intermediate_steps:
             tool_name = getattr(step[0], 'tool', None)
@@ -63,7 +82,14 @@ async def chat(request: ChatRequest):
             # (A) search_facilities 결과 처리 (RAG)
             if tool_name == "search_facilities":
                 try:
-                    search_result = json.loads(tool_output)
+                    # 문자열이 JSON 구조가 아닐 수 있으므로 안전하게 파싱
+                    if isinstance(tool_output, str):
+                        stripped = tool_output.strip()
+                        if not (stripped.startswith("{") or stripped.startswith("[")):
+                            raise ValueError("non-json output")
+                        search_result = json.loads(stripped)
+                    else:
+                        search_result = json.loads(str(tool_output))
                     
                     if search_result.get("success"):
                         facilities_data = search_result.get("facilities", [])
@@ -85,24 +111,66 @@ async def chat(request: ChatRequest):
             # (B) search_map_by_address 결과가 MapResponse 객체로 온 경우 캐싱 (return_direct 실패 대비)
             if tool_name == "search_map_by_address" and isinstance(tool_output, MapResponse):
                 map_response_from_tool = tool_output
+            
+            if tool_name == "show_map_for_facilities":
+                show_map_tool_executed = True
 
         # -------------------------------------------------------
-        # [Response Type A] 신규 지오코딩 툴 결과 (MapResponse 객체 반환)
+        # [Response Type A] 지도 응답 처리 (MapResponse 객체 우선)
         # -------------------------------------------------------
-        if isinstance(output, MapResponse) or map_response_from_tool:
-            map_output = output if isinstance(output, MapResponse) else map_response_from_tool
-            logger.info("📍 지오코딩 툴에 의한 MapResponse 객체 반환")
+        map_output = None
+
+        # 1) 에이전트가 직접 MapResponse를 반환한 경우
+        if isinstance(output, MapResponse):
+            map_output = output
+        # 2) 직전 RAG 결과가 있고 show_map_for_facilities가 실행되지 않았다면 RAG 좌표 기반으로 지도 생성
+        elif last_results and not show_map_tool_executed:
+            markers = []
+            for fac in last_results:
+                try:
+                    lat = float(fac.get("lat", 0.0))
+                    lng = float(fac.get("lng", 0.0))
+                except (ValueError, TypeError):
+                    lat, lng = 0.0, 0.0
+                if lat == 0.0 and lng == 0.0:
+                    continue
+                markers.append(
+                    MapMarker(
+                        name=fac.get("name", "장소"),
+                        lat=lat,
+                        lng=lng,
+                        desc=fac.get("desc", "") or fac.get("address", "")
+                    )
+                )
+                if len(markers) >= 3:
+                    break
+            if markers:
+                map_output = MapResponse(
+                    link=f"https://map.kakao.com/link/to/{markers[0].name},{markers[0].lat},{markers[0].lng}",
+                    data=MapData(
+                        center=MapCenter(lat=markers[0].lat, lng=markers[0].lng),
+                        markers=markers
+                    ),
+                    content="지도에서 위치를 확인해보세요!"
+                )
+
+        # 3) RAG 좌표로 못 만들었고 search_map_by_address 결과가 있으면 사용
+        if map_output is None and map_response_from_tool:
+            map_output = map_response_from_tool
+
+        # 4) 최종 지도 응답 반환
+        if map_output:
+            logger.info("📍 지도 응답 반환")
             
-            # AI 응답 저장 (MapResponse는 add_message 내부에서 안전하게 처리됨)
             add_message(conversation_id, "ai", map_output)
             
             return ChatResponse(
                 conversation_id=conversation_id,
                 role="ai",
-                type=map_output.type,       # 'map'
-                content=map_output.content, # "지도를 보여드릴게요" 등
-                link=map_output.link,       # 카카오맵 링크
-                data=map_output.data        # MapData 객체 (center, markers)
+                type=map_output.type,
+                content=map_output.content,
+                link=map_output.link,
+                data=map_output.data
             )
 
         # -------------------------------------------------------
@@ -171,3 +239,29 @@ async def chat(request: ChatRequest):
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/chat/stream/{conversation_id}")
+async def chat_status_stream(conversation_id: str):
+    """
+    SSE 기반 진행 상태 스트리밍 엔드포인트.
+    tools에서 set_status가 호출되면 상태를 푸시합니다.
+    """
+
+    async def event_generator():
+        last_status = None
+        try:
+            while True:
+                status = get_status(conversation_id)
+                if status and status != last_status:
+                    payload = json.dumps(
+                        {"conversation_id": conversation_id, "status": status},
+                        ensure_ascii=False,
+                    )
+                    yield f"data: {payload}\n\n"
+                    last_status = status
+                await asyncio.sleep(1)
+        except asyncio.CancelledError:
+            return
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

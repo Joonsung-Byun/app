@@ -7,9 +7,17 @@ from typing import Optional
 import json
 import logging
 from utils.conversation_memory import get_shown_facility_names, set_status
+from utils.location_mapper import CITY_TO_PROVINCE_SIGNGU
 from .naver_search_tool import naver_web_search
 
 logger = logging.getLogger(__name__)
+
+def _safe_float(value, default=0.0) -> float:
+    """숫자 변환이 실패하면 기본값 반환"""
+    try:
+        return float(value)
+    except (TypeError, ValueError):
+        return default
 
 # 임계값 (엄격하게 적용)
 SIMILARITY_THRESHOLD = 1.1 
@@ -54,12 +62,49 @@ async def search_facilities(
         query_embedding = pca_embeddings.embed_query(original_query)
         shown_facilities = get_shown_facility_names(conversation_id) if conversation_id else []
 
-        # 쿼리 실행
+        # -------------------------------------------------------------------
+        # Pre-filtering: location 매핑 정보를 활용해 Chroma where 절 적용
+        # -------------------------------------------------------------------
+        where_clause = None
+        if location:
+            loc_info = CITY_TO_PROVINCE_SIGNGU.get(location)
+            if loc_info:
+                ctprvn_nm = loc_info[0]
+                if len(loc_info) > 1:
+                    signgu_nm = loc_info[1]
+                    where_clause = {
+                        "$and": [
+                            {"CTPRN_NM": {"$eq": ctprvn_nm}},
+                            {"SIGNGU_NM": {"$eq": signgu_nm}}
+                        ]
+                    }
+                    logger.info(f"⚡ 지역 정밀 필터(시도+시군구): {ctprvn_nm} {signgu_nm}")
+                else:
+                    where_clause = {"CTPRN_NM": {"$eq": ctprvn_nm}}
+                    logger.info(f"⚡ 지역 광역 필터(시도): {ctprvn_nm}")
+            else:
+                logger.warning(f"⚠️ 매핑되지 않은 지역명: {location} (사전 필터 미적용)")
+
+        # 쿼리 실행 (사전 필터 where_clause 적용)
         results = collection.query(
             query_embeddings=[query_embedding],
-            n_results=10, 
+            n_results=50,
+            where=where_clause,
             include=["metadatas", "documents", "distances"]
         )
+
+        # 지역 where 필터로 0건이면 필터 제거 후 재시도
+        if (
+            (not results)
+            or (not results.get("ids"))
+            or (not results["ids"][0])
+        ) and where_clause:
+            logger.warning("⚠️ 지역 where 필터 결과 0건 -> 필터 없이 재시도")
+            results = collection.query(
+                query_embeddings=[query_embedding],
+                n_results=50,
+                include=["metadatas", "documents", "distances"]
+            )
         
         facilities = []
         
@@ -118,15 +163,16 @@ async def search_facilities(
                 # 통과
                 category = metadata.get("Category3") or metadata.get("Category1")
                 desc = documents[i][:100] if i < len(documents) else address[:100]
-                
+                lat_val = _safe_float(metadata.get("LAT", 0.0))
+                lng_val = _safe_float(metadata.get("LON", 0.0))
+
                 facilities.append({
                     "name": name,
-                    "lat": float(metadata.get("LAT", 0.0)),
-                    "lng": float(metadata.get("LON", 0.0)),
+                    "lat": lat_val,
+                    "lng": lng_val,
                     "category": category,
                     "desc": desc,
-                    "in_out": db_in_out,
-                    "distance": current_dist
+                    "in_out": db_in_out
                 })
 
         facilities = facilities[:k]
@@ -136,8 +182,9 @@ async def search_facilities(
             logger.warning("🚫 RAG 검색 결과 0건. naver_web_search로 폴백 실행.")
             set_status(conversation_id, "RAG 결과 부족으로 웹 검색 폴백 실행 중...")
             
+            fallback_query = original_query if not location else f"{original_query} {location}"
             web_search_output = await naver_web_search.ainvoke({
-                "query": original_query, 
+                "query": fallback_query,
                 "conversation_id": conversation_id
             })
             return web_search_output 

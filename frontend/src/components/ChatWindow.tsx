@@ -14,12 +14,19 @@ interface Props {
 
 const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typingText }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
   // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
+    // DOM 업데이트 이후에 실행되도록 requestAnimationFrame 사용
+    const id = requestAnimationFrame(() => {
+      if (bottomRef.current) {
+        bottomRef.current.scrollIntoView({ block: "end" });
+      } else if (scrollRef.current) {
+        scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      }
+    });
+    return () => cancelAnimationFrame(id);
   }, [messages, isLoading]);
 
   return (
@@ -61,6 +68,7 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typin
               </div>
             </div>
           )}
+          <div ref={bottomRef} />
         </>
       )}
     </div>
