@@ -20,6 +20,19 @@ class OpenAIEmbeddingWrapper:
             logger.error(f"❌ OpenAI Embeddings 초기화 실패: {e}")
             raise
     
+    async def aembed_query(self, text: str) -> list[float]:
+        """
+        쿼리 텍스트를 비동기로 임베딩 변환
+        """
+        try:
+            # langchain_openai의 aembed_query 사용
+            embedding = await self.embeddings.aembed_query(text)
+            logger.info(f"✅ (Async) 쿼리 임베딩 생성 완료: {len(embedding)}차원")
+            return embedding
+        except Exception as e:
+            logger.error(f"❌ (Async) 쿼리 임베딩 생성 실패: {e}")
+            raise
+
     def embed_query(self, text: str) -> list[float]:
         """
         쿼리 텍스트를 임베딩으로 변환

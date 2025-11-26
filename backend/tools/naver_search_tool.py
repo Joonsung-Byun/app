@@ -189,56 +189,60 @@ async def naver_web_search(query: str, conversation_id: str) -> str:
         
         top_3_results = analysis['results']
 
-       # [Step 4] 2차 정밀 분석 
+        # [Step 4] 2차 정밀 분석 (병렬 처리)
         target_links = [item['link'] for item in top_3_results]
         
         # 3. 비동기 크롤링 실행 
         crawled_contents = await fetch_multiple_urls(target_links)
 
-        final_output_results = []
-        
-        for idx, item in enumerate(top_3_results):
-            full_text = crawled_contents[idx]
+        # 4. LLM 분석 병렬 실행을 위한 내부 함수
+        async def analyze_single_content(idx, item, content):
+            if not content:
+                return item
             
-            if full_text:
-                # 4. LLM에게 분석 요청 
-                refine_prompt = f"""
-                블로그 본문을 읽고 다음 두 가지 정보를 JSON 형식으로 추출해.
-                
-                [본문]: {full_text[:850]}...
-                
-                [미션]
-                1. venue: 행사가 열리는 **검색 가능한 건물명/시설명**만 추출해. 
-                   - [중요] 'OOO센터 3층', 'OO홀' 처럼 층수나 호수는 제발 빼줘. (지도 검색에 방해됨)
-                   - 예: "벡스코 제1전시장 2홀" (X) -> "벡스코 제1전시장" (O)
-                   - 장소가 없으면 '장소 불명'이라고 적어.
+            refine_prompt = f"""
+            블로그 본문을 읽고 다음 두 가지 정보를 JSON 형식으로 추출해.
+            
+            [본문]: {content[:850]}...
+            
+            [미션]
+            1. venue: 행사가 열리는 **검색 가능한 건물명/시설명**만 추출해. 
+               - [중요] 'OOO센터 3층', 'OO홀' 처럼 층수나 호수는 제발 빼줘. (지도 검색에 방해됨)
+               - 예: "벡스코 제1전시장 2홀" (X) -> "벡스코 제1전시장" (O)
+               - 장소가 없으면 '장소 불명'이라고 적어.
 
-                2. summary: 행사의 핵심 정보(일정, 시간, 입장료, 꿀팁 등)를 1~2문장으로 요약해.
-                
-                [출력 예시]
-                {{
-                    "venue": "성수동 에스팩토리 D동",
-                    "summary": "11월 25일까지 진행되며 입장료는 무료입니다. 대기 시간이 기니 오픈런을 추천합니다."
-                }}
-                """
-                
-                try:
-                    refined_result_msg = await llm.ainvoke(refine_prompt)
-                    refined_result = refined_result_msg.content.strip()
-                    
-                    refined_result = refined_result.replace("```json", "").replace("```", "")
-                    refined_data = json.loads(refined_result)
-                    
-                    if refined_data.get("venue") and "불명" not in refined_data["venue"]:
-                        item['venue'] = refined_data["venue"]
-                    
-                    if refined_data.get("summary"):
-                        item['description'] = "✨AI요약: " + refined_data["summary"]
-                        
-                except Exception as e:
-                    pass
+            2. summary: 행사의 핵심 정보(일정, 시간, 입장료, 꿀팁 등)를 1~2문장으로 요약해.
             
-            final_output_results.append(item)
+            [출력 예시]
+            {{
+                "venue": "성수동 에스팩토리 D동",
+                "summary": "11월 25일까지 진행되며 입장료는 무료입니다. 대기 시간이 기니 오픈런을 추천합니다."
+            }}
+            """
+            
+            try:
+                refined_result_msg = await llm.ainvoke(refine_prompt)
+                refined_result = refined_result_msg.content.strip()
+                
+                refined_result = refined_result.replace("```json", "").replace("```", "")
+                refined_data = json.loads(refined_result)
+                
+                if refined_data.get("venue") and "불명" not in refined_data["venue"]:
+                    item['venue'] = refined_data["venue"]
+                
+                if refined_data.get("summary"):
+                    item['description'] = "✨AI요약: " + refined_data["summary"]
+            except Exception as e:
+                pass
+            
+            return item
+
+        # 병렬 실행
+        analysis_tasks = []
+        for idx, item in enumerate(top_3_results):
+            analysis_tasks.append(analyze_single_content(idx, item, crawled_contents[idx]))
+        
+        final_output_results = await asyncio.gather(*analysis_tasks)
 
         # [Step 5] 결과 반환
         if conversation_id:

@@ -58,8 +58,8 @@ async def search_facilities(
         return json.dumps({"success": False, "facilities": []})
     
     try:
-        # 임베딩 생성 (동기 작업이지만 빠르므로 유지)
-        query_embedding = pca_embeddings.embed_query(original_query)
+        # 임베딩 생성 (비동기 전환)
+        query_embedding = await pca_embeddings.aembed_query(original_query)
         shown_facilities = get_shown_facility_names(conversation_id) if conversation_id else []
 
         # -------------------------------------------------------------------
