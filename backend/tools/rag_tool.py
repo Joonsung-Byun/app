@@ -19,7 +19,7 @@ def _safe_float(value, default=0.0) -> float:
     except (TypeError, ValueError):
         return default
 
-# 임계값 (엄격하게 적용)
+# 임계값
 SIMILARITY_THRESHOLD = 1.1 
 
 # 주소 필터링 시 무시할 일반 단어들
@@ -47,7 +47,7 @@ async def search_facilities(
 ) -> str:
     """
     사용자 질문과 가장 유사한 시설을 RAG(DB)에서 검색합니다.
-    지역명(시/군/구/동)과 실내외 여부를 정밀하게 필터링합니다.
+    지역명(시/군/구/동)과 실내외 여부("실내" 또는 "실외")를 정밀하게 필터링합니다.
     """
     logger.info(f"🔍 RAG 검색 | Q: {original_query} | Loc: {location} | InOut: {indoor_outdoor}")
     
@@ -61,6 +61,14 @@ async def search_facilities(
         # 임베딩 생성 (비동기 전환)
         query_embedding = await pca_embeddings.aembed_query(original_query)
         shown_facilities = get_shown_facility_names(conversation_id) if conversation_id else []
+
+        # [Normalization] indoor_outdoor 값 정규화 (indoor -> 실내, outdoor -> 실외)
+        if indoor_outdoor:
+            if indoor_outdoor.lower() in ["indoor", "inside"]:
+                indoor_outdoor = "실내"
+            elif indoor_outdoor.lower() in ["outdoor", "outside"]:
+                indoor_outdoor = "실외"
+            logger.info(f"🔄 실내외 필터 정규화: {indoor_outdoor}")
 
         # -------------------------------------------------------------------
         # Pre-filtering: location 매핑 정보를 활용해 Chroma where 절 적용
