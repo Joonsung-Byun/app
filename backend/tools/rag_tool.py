@@ -58,7 +58,8 @@ async def search_facilities(
         results = collection.query(
             query_embeddings=[query_embedding],
             n_results=10, 
-            include=["metadatas", "documents", "distances"]
+            include=["metadatas", "documents", "distances"],
+            
         )
         
         facilities = []
@@ -121,8 +122,8 @@ async def search_facilities(
                 
                 facilities.append({
                     "name": name,
-                    "lat": float(metadata.get("LAT", 0.0)),
-                    "lng": float(metadata.get("LON", 0.0)),
+                    "lat": metadata.get("LAT", 0.0),
+                    "lng": metadata.get("LON", 0.0),
                     "category": category,
                     "desc": desc,
                     "in_out": db_in_out,
