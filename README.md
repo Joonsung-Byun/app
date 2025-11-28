@@ -99,6 +99,7 @@ KAKAO_API_KEY=your_kakao_api_key
 OPENWEATHER_API_KEY=your_weather_api_key
 NAVER_CLIENT_ID=your_naver_client_id
 NAVER_CLIENT_SECRET=your_naver_client_secret
+PERPLEXITY_API_KEY=your_perplexity_api_key
 
 # LLM Backend 선택
 LLM_BACKEND=openai  # 또는 vllm
@@ -131,6 +132,20 @@ python test_rag.py
 cd evaluation
 python evaluate_rag.py  # 또는 다른 평가 스크립트
 ```
+
+### 임베딩 분산도 진단
+RAG 품질을 보장하려면 `backend/chroma_data`에 저장된 벡터가 충분히 퍼져 있는지 검증하세요.
+
+```bash
+cd evaluation
+python scripts/embedding_dispersion.py \
+  --sample-size 1000 \
+  --pairwise-samples 5000 \
+  --tsne  # 시각화용 CSV(pca/tsne) 생성
+```
+
+보고서는 `backend/embedding_reports/embedding_dispersion_report.json`과 `embedding_projection.csv`에 저장되며,
+평균 코사인 유사도, 최근접 거리, PCA/TSNE 샘플을 통해 벡터 붕괴 여부를 확인할 수 있습니다.
 
 ## 📦 주요 기능
 

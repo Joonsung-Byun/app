@@ -11,6 +11,7 @@ backend/pca_model.joblib
 backend/rag_data_integrated_final.csv
 backend/rag_data_integrated_final_rev_loc.csv
 backend/rag_data_integrated_final_rev_loc_inout_fixed.csv
+backend/rag_data_integrated_final_rev_loc_inout_fixed_final (2).csv
 
 
 # Model files
