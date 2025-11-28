@@ -1,0 +1,48 @@
+{
+  "collection": "kid_program_collection",
+  "total_vectors": 29380,
+  "sampled_vectors": 1000,
+  "analysis_settings": {
+    "sample_size": 1000,
+    "pairwise_samples": 5000,
+    "projection_sample": 800,
+    "tsne_enabled": true,
+    "collapse_threshold": 0.3
+  },
+  "pairwise_similarity": {
+    "stats": {
+      "count": 5000,
+      "mean": 0.42963892221450806,
+      "median": 0.4137837290763855,
+      "std": 0.09228561818599701,
+      "min": 0.16460615396499634,
+      "max": 0.9957996606826782,
+      "p10": 0.32539551258087157,
+      "p90": 0.5615987777709962
+    },
+    "collapse_risk": true
+  },
+  "nearest_neighbor": {
+    "distance": {
+      "count": 1000,
+      "mean": 0.2587830722332001,
+      "median": 0.2717413902282715,
+      "std": 0.10291974246501923,
+      "min": 0.0016357898712158203,
+      "max": 0.4737424850463867,
+      "p10": 0.09355507493019108,
+      "p90": 0.37374181151390073
+    },
+    "similarity": {
+      "count": 1000,
+      "mean": 0.7412168979644775,
+      "median": 0.7282586097717285,
+      "std": 0.10291974246501923,
+      "min": 0.5262575149536133,
+      "max": 0.9983642101287842,
+      "p10": 0.6262581884860993,
+      "p90": 0.9064449250698091
+    }
+  },
+  "projection_csv": "/Users/jangjihyeon/app/evaluation/embedding_reports/embedding_projection.csv"
+}

@@ -29,29 +29,28 @@ def classify_case(item: Dict[str, Any], meta: Dict[str, Any]) -> str:
     et = item.get("expected_tools") or []
     et_set = set(et)
     qid = item.get("id")
+    category = item.get("category")
 
-    # 메타에 정의된 케이스 ID 우선
-    if qid in get_case_ids(meta, "case3_fallback"):
-        return "case3_fallback"
-    if qid in get_case_ids(meta, "case2_review_rag_first"):
-        return "case2_review"
-    if qid in get_case_ids(meta, "case4_no_tools") or qid in get_case_ids(meta, "general_no_tools"):
-        return "no_tool"
+    # 메타에 정의된 케이스 ID가 있으면 우선 사용
+    if category and qid in get_case_ids(meta, category):
+        return category
 
-    if not et:
-        return "no_tool"
-    if "search_facilities" in et_set and "naver_web_search" in et_set:
-        return "case3_fallback"
-    if et == ["naver_web_search"]:
-        return "web"
-    if "get_weather_forecast" in et_set and "search_facilities" in et_set:
-        return "weather_places"
-    if "get_weather_forecast" in et_set:
+    if qid in get_case_ids(meta, "cafe_review") or "naver_cafe_search" in et_set:
+        return "cafe_review"
+    if qid in get_case_ids(meta, "fallback") or ({"search_facilities", "naver_web_search"} <= et_set):
+        return "fallback"
+    if qid in get_case_ids(meta, "weather_plus") or ({"get_weather_forecast", "search_facilities"} <= et_set):
+        return "weather_plus"
+    if qid in get_case_ids(meta, "weather") or et == ["get_weather_forecast"]:
         return "weather"
-    if "search_facilities" in et_set:
-        return "case2"
-    if "search_map_for_facilities" in et_set or "search_map_by_address" in et_set or "show_map_for_facilities" in et_set:
+    if qid in get_case_ids(meta, "rag") or et == ["search_facilities"]:
+        return "rag"
+    if qid in get_case_ids(meta, "web_event") or et == ["naver_web_search"]:
+        return "web_event"
+    if qid in get_case_ids(meta, "map") or any(t in et_set for t in ["search_map_by_address", "show_map_for_facilities", "search_map_for_facilities"]):
         return "map"
+    if not et or qid in get_case_ids(meta, "no_tool"):
+        return "no_tool"
     return "other"
 
 
@@ -62,4 +61,3 @@ def partition_by_case(questions: List[Dict[str, Any]], meta: Dict[str, Any]) -> 
         c = classify_case(q, meta)
         buckets.setdefault(c, []).append(q)
     return buckets
-
