@@ -38,7 +38,7 @@ const ChatPage: React.FC = () => {
   };
 
   const handleSend = async (userMessage: string) => {
-    let statusTimer: number | undefined;
+    let statusSource: EventSource | null = null;
 
     const userMsg: Message = { role: "user", content: userMessage, type: "text" };
     addMessage(userMsg);
@@ -49,24 +49,26 @@ const ChatPage: React.FC = () => {
       // conversation_id 가져오기 (없으면 빈 문자열)
       const conversationId = localStorage.getItem("conversation_id") || "";
 
-      // 진행 상태 폴링 (실제 백엔드 상태를 읽어옴)
+      // SSE로 진행 상태 스트리밍
       if (conversationId) {
-        const pollStatus = async () => {
+        const url = `http://localhost:8080/api/chat/stream/${conversationId}`;
+        statusSource = new EventSource(url);
+
+        statusSource.onmessage = (event) => {
           try {
-            const res = await fetch(`http://localhost:8080/api/chat/status/${conversationId}`);
-            if (!res.ok) return;
-            const data = await res.json();
+            const data = JSON.parse(event.data);
             if (data.status) {
               setTypingText(data.status);
             }
           } catch {
-            // 폴링 오류는 조용히 무시
+            // 파싱 에러는 무시
           }
         };
 
-        // 즉시 한 번 호출 후, 주기적으로 폴링
-        pollStatus();
-        statusTimer = window.setInterval(pollStatus, 1000);
+        statusSource.onerror = () => {
+          // 에러 시 스트림 종료
+          statusSource?.close();
+        };
       }
 
       // API 호출
@@ -123,8 +125,8 @@ const ChatPage: React.FC = () => {
       };
       addMessage(errorMsg);
     } finally {
-      if (statusTimer !== undefined) {
-        window.clearInterval(statusTimer);
+      if (statusSource) {
+        statusSource.close();
       }
       setIsLoading(false);
     }
