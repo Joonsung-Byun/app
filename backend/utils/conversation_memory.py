@@ -125,3 +125,9 @@ def set_status(conversation_id: str, status: str):
 def get_status(conversation_id: str) -> str:
     """저장된 진행 상태를 반환 (없으면 빈 문자열)"""
     return current_status.get(conversation_id, "")
+
+def clear_status(conversation_id: str):
+    """요청 처리가 끝났을 때 상태를 초기화"""
+    if conversation_id in current_status:
+        del current_status[conversation_id]
+        logger.info(f"[STATUS] {conversation_id}: 초기화")
