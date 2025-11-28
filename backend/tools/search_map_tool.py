@@ -1,7 +1,8 @@
 from langchain.tools import StructuredTool
 from pydantic import BaseModel, Field
 from .geocoding_tool import search_map_by_address_core
-
+from utils.conversation_memory import get_last_result_source
+import json
 # 1. 툴의 입력 스키마 정의 (LLM에게 노출되는 파라미터)
 class SearchMapInput(BaseModel):
     place_name_or_address: str = Field(
@@ -18,6 +19,19 @@ def _map_tool_wrapper(place_name_or_address: str, conversation_id: str = "") -> 
     LLM의 호출 규칙을 맞추기 위한 래퍼 함수. 
     conversation_id를 받지만, 실제 코어 함수에는 전달하지 않습니다.
     """
+    # ✅ 강제 규칙: 직전 출처가 RAG면 이 도구 금지
+    if conversation_id:
+        last_source = get_last_result_source(conversation_id)
+        if last_source == "rag":
+            print("[MAP TOOL] 최근 검색 출처가 'rag'이므로 search_map_by_address 도구 사용 금지")
+            return json.dumps({
+                "success": False,
+                "message": "[SYSTEM] 최근 검색 출처가 'rag'입니다. "
+                           "이 경우에는 search_map_by_address가 아니라 "
+                           "show_map_for_facilities 도구를 사용해야 합니다."
+            }, ensure_ascii=False)
+
+    # 그 외에는 원래대로 주소/장소명 지오코딩
     return search_map_by_address_core(place_name_or_address)
 
 

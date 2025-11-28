@@ -9,6 +9,7 @@ from utils.conversation_memory import (
     save_search_results,
     set_status,
     get_status,
+    get_last_result_source,
 )
 import json
 import logging
@@ -33,7 +34,7 @@ async def chat(request: ChatRequest):
     user_message = request.message
 
     # 진행 상태 초기화
-    set_status(conversation_id, "의도 파악 중..")
+    set_status(conversation_id, "요청 분석 중..")
 
     try:
         # 2. 대화 히스토리 로드 및 사용자 메시지 저장
@@ -45,6 +46,9 @@ async def chat(request: ChatRequest):
             f"[{msg.type.upper()}]\n{msg.content}" 
             for msg in chat_history
         ])
+
+        # 최근 검색 출처(rag/web/cafe)를 에이전트에 전달 (지도 도구 선택용)
+        last_source = get_last_result_source(conversation_id) or ""
         
         # 3. Agent 실행 (비동기 실행: async tools 지원)
         result = await agent_executor.ainvoke(
@@ -55,6 +59,7 @@ async def chat(request: ChatRequest):
                 "child_age": request.child_age,
                 "original_query": user_message,
                 "conversation_id": conversation_id,
+                "last_result_source": last_source,
             }
         )
         
@@ -79,7 +84,20 @@ async def chat(request: ChatRequest):
                         facilities_data = search_result.get("facilities", [])
                         
                         if facilities_data and len(facilities_data) > 0:
-                            save_search_results(conversation_id, facilities_data)
+                            # RAG 검색 결과이므로 source="rag"로 저장
+
+                            # facilities_data에 name, lat, lng만 추출하여 저장
+                            saving_facilities_data = [
+                                {
+                                    "name": fac.get("name", ""),
+                                    "lat": fac.get("lat", 0.0),
+                                    "lng": fac.get("lng", 0.0),
+                                    "address": fac.get("address", "")
+                                }
+                                for fac in facilities_data
+                            ]
+
+                            save_search_results(conversation_id, saving_facilities_data, source="rag")
                             add_message(
                                 conversation_id, 
                                 "search_result", 

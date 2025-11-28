@@ -1,5 +1,5 @@
 from langchain.tools import tool
-from utils.conversation_memory import get_last_search_results, set_status
+from utils.conversation_memory import get_last_search_results, set_status, get_last_result_source
 import json
 import logging
 
@@ -25,6 +25,10 @@ def show_map_for_facilities(
     
     # 1. 메모리에서 가장 최근 검색 결과 가져오기
     last_results = get_last_search_results(conversation_id)
+    print(f"🗂️ 메모리에서 로드된 최근 검색 결과: {last_results}")
+
+    last_tool_result = get_last_result_source(conversation_id)
+    print(f"🗂️ 메모리에서 로드된 최근 검색 툴: {last_tool_result}")
     
     if not last_results:
         logger.warning(f"⚠️ 저장된 검색 결과가 없음: {conversation_id}")
@@ -68,7 +72,7 @@ def show_map_for_facilities(
                 "name": fac.get('name', '장소'),
                 "lat": lat_float,
                 "lng": lng_float,
-                "desc": fac.get('desc', '') or fac.get('description', '') or fac.get('addr', '')
+                # "desc": fac.get('desc', '') or fac.get('description', '') or fac.get('addr', '')
             })
             
     # 3. 결과 반환

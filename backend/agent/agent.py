@@ -37,7 +37,8 @@ def create_agent():
     # 2. 프롬프트 정의
     prompt = ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT),
-        ("system", "현재 대화 ID: {conversation_id}"), 
+        ("system", "현재 대화 ID: {conversation_id}"),
+        ("system", "최근 검색 출처(last_result_source): {last_result_source}"),
         MessagesPlaceholder(variable_name="chat_history", optional=True),
         ("human", "{input}"),
         MessagesPlaceholder(variable_name="agent_scratchpad"),
