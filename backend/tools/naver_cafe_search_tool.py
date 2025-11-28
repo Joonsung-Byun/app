@@ -83,7 +83,7 @@ async def naver_cafe_search(query: str, conversation_id: str) -> str:
     
     try:
         if conversation_id:
-            set_status(conversation_id, "맘카페 후기 검색 중...")
+            set_status(conversation_id, "후기 검색 중...")
             
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers, params=params) as resp:
