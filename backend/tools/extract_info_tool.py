@@ -51,6 +51,7 @@ def extract_user_intent(user_message: str) -> str:
 5. **needs_weather_check**:
    - weather_mentioned가 false이면 true
    - weather_mentioned가 true이면 false
+   - 단순 시설 유무를 묻는 질문에는 무조건 false 예) "서울 탁구장 있어?" -> false
 
 **응답 형식 (JSON만):**
 {{

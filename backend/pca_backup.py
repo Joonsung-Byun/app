@@ -16,11 +16,12 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # ============================================
 # 설정
 # ============================================
-CHROMA_HOST = "kids-chatbot-chromadb"
+# CHROMA_HOST = "kids-chatbot-chromadb"
+CHROMA_HOST = "localhost"
 CHROMA_PORT = 8000
-COLLECTION_NAME = "kid_program_collection"
+COLLECTION_NAME = "kid_program_collection_v2"
 
-CSV_PATH = "./rag_data_integrated_final_rev_loc_inout_fixed.csv"
+CSV_PATH = "./rag_data_integrated_final_rev_loc_inout_fixed_final.csv"
 
 # OpenAI 임베딩 모델 선택
 EMB_MODEL = "text-embedding-3-large"    # 3072차원 (추천)

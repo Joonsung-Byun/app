@@ -1,20 +1,26 @@
 from fastapi import APIRouter, HTTPException
+from fastapi.responses import StreamingResponse
 from models.schemas import ChatRequest, ChatResponse
-from models.map_models import MapResponse, MapData, MapMarker, MapCenter 
+from models.map_models import MapResponse, MapData, MapMarker, MapCenter
 from agent import create_agent
 from utils.conversation_memory import (
     get_conversation_history,
     add_message,
-    save_search_results
+    save_search_results,
+    set_status,
+    get_status,
+    get_last_result_source,
 )
 import json
 import logging
 import uuid
+import asyncio
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
 agent_executor = create_agent()
+
 
 @router.post("/chat", response_model=ChatResponse)
 async def chat(request: ChatRequest):
@@ -27,6 +33,9 @@ async def chat(request: ChatRequest):
     
     user_message = request.message
 
+    # 진행 상태 초기화
+    set_status(conversation_id, "요청 분석 중..")
+
     try:
         # 2. 대화 히스토리 로드 및 사용자 메시지 저장
         chat_history = get_conversation_history(conversation_id)
@@ -37,16 +46,22 @@ async def chat(request: ChatRequest):
             f"[{msg.type.upper()}]\n{msg.content}" 
             for msg in chat_history
         ])
+
+        # 최근 검색 출처(rag/web/cafe)를 에이전트에 전달 (지도 도구 선택용)
+        last_source = get_last_result_source(conversation_id) or ""
         
-        # 3. Agent 실행 (⚡️ 완전 비동기 실행)
-        result = await agent_executor.ainvoke({
-            "input": user_message,
-            "chat_history": chat_history,
-            "conversation_history": history_str,
-            "child_age": request.child_age,
-            "original_query": user_message,
-            "conversation_id": conversation_id
-        })
+        # 3. Agent 실행 (비동기 실행: async tools 지원)
+        result = await agent_executor.ainvoke(
+            {
+                "input": user_message,
+                "chat_history": chat_history,
+                "conversation_history": history_str,
+                "child_age": request.child_age,
+                "original_query": user_message,
+                "conversation_id": conversation_id,
+                "last_result_source": last_source,
+            }
+        )
         
         output = result["output"]
         intermediate_steps = result.get("intermediate_steps", [])
@@ -69,7 +84,20 @@ async def chat(request: ChatRequest):
                         facilities_data = search_result.get("facilities", [])
                         
                         if facilities_data and len(facilities_data) > 0:
-                            save_search_results(conversation_id, facilities_data)
+                            # RAG 검색 결과이므로 source="rag"로 저장
+
+                            # facilities_data에 name, lat, lng만 추출하여 저장
+                            saving_facilities_data = [
+                                {
+                                    "name": fac.get("name", ""),
+                                    "lat": fac.get("lat", 0.0),
+                                    "lng": fac.get("lng", 0.0),
+                                    "address": fac.get("address", "")
+                                }
+                                for fac in facilities_data
+                            ]
+
+                            save_search_results(conversation_id, saving_facilities_data, source="rag")
                             add_message(
                                 conversation_id, 
                                 "search_result", 
@@ -171,3 +199,29 @@ async def chat(request: ChatRequest):
         import traceback
         logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/chat/stream/{conversation_id}")
+async def chat_status_stream(conversation_id: str):
+    """
+    SSE 기반 진행 상태 스트리밍 엔드포인트.
+    - tools에서 set_status(conversation_id, "...")가 호출될 때마다
+      상태가 변경되면 이벤트를 푸시합니다.
+    - 프론트에서는 EventSource로 구독해서 실시간 상태를 표시할 수 있습니다.
+    """
+
+    async def event_generator():
+        last_status = None
+        try:
+            while True:
+                status = get_status(conversation_id)
+                if status and status != last_status:
+                    payload = json.dumps({"conversation_id": conversation_id, "status": status}, ensure_ascii=False)
+                    yield f"data: {payload}\n\n"
+                    last_status = status
+                await asyncio.sleep(1)
+        except asyncio.CancelledError:
+            # 클라이언트가 연결을 끊으면 여기로 들어옴
+            return
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")

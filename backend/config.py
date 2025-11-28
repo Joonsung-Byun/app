@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # ChromaDB
     CHROMA_HOST: str = "localhost"
     CHROMA_PORT: int = 8000
-    CHROMA_COLLECTION: str = "kid_program_collection"
+    CHROMA_COLLECTION: str = "kid_program_collection_v2"
     
     # 새로운 LLM 백엔드 설정
     LLM_BACKEND: str = ""  # "auto" | "openai" | "vllm"

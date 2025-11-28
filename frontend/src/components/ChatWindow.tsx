@@ -25,7 +25,7 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typin
   return (
     <div 
       ref={scrollRef}
-      className=" max-w-6xl flex flex-col gap-3 h-[65vh] overflow-y-auto p-6 bg-white/70 rounded-2xl shadow-lg border border-green-100 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      className=" max-w-6xl flex flex-col gap-3 h-[70vh] overflow-y-auto p-6 bg-white/70 rounded-2xl shadow-lg border border-green-100 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
     >
       {messages.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center px-4">
