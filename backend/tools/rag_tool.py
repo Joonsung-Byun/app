@@ -24,7 +24,7 @@ try:
         port=settings.CHROMA_PORT,
         settings=ChromaSettings(anonymized_telemetry=False)
     )
-    collection = chroma_client.get_collection(name="kid_program_collection_v2")
+    collection = chroma_client.get_collection(name=settings.CHROMA_COLLECTION)
 except Exception as e:
     logger.error(f"❌ ChromaDB 연결 실패: {e}")
     collection = None
