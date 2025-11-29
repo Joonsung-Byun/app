@@ -21,7 +21,7 @@ CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
 CHROMA_PORT = int(os.getenv("CHROMA_PORT", 8000))
 COLLECTION_NAME = os.getenv("CHROMA_COLLECTION", "kid_program_collection_v2")
 
-CSV_PATH = "./rag_data_integrated_final_rev_loc_inout_fixed_final.csv"
+CSV_PATH = "./rag_data_integrated_final_rev_loc_inout_fixed_final (2).csv"
 
 # OpenAI 임베딩 모델 선택
 EMB_MODEL = "text-embedding-3-large"    # 3072차원 (추천)

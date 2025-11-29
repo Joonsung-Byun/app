@@ -111,6 +111,8 @@ CHROMA_HOST=chromadb  # Docker 사용 시, 로컬은 localhost
 CHROMA_PORT=8000
 CHROMA_COLLECTION=kid_program_collection
 ```
+- `PERPLEXITY_API_KEY`: Perplexity 기반 웹 검색(naver_web_search)에 필요합니다.  
+- `NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET`: 맘카페 검색(naver_cafe_search)에서 사용합니다.
 
 ### Frontend (.env.local)
 ```env
@@ -154,7 +156,7 @@ python scripts/embedding_dispersion.py \
 - 🗺️ **지도 통합**: 추천 장소를 카카오맵에 표시
 - 🌤️ **날씨 연동**: 날씨 정보를 고려한 실내/실외 활동 추천
 - 💾 **대화 기억**: 세션별 대화 히스토리 관리
-- 🖥 **웹 검색**: 최근 이벤트 및 행사 정보
+- 🖥 **웹 검색**: Perplexity 기반 최근 이벤트 및 행사 정보
 
 ## 📄 라이선스
 
