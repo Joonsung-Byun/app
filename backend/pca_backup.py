@@ -16,7 +16,6 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 # ============================================
 # 설정
 # ============================================
-<<<<<<< HEAD
 # 도커 내에서는 서비스명 chromadb, 호스트에서 직접 실행 시에는 localhost로 접근
 CHROMA_HOST = os.getenv("CHROMA_HOST", "localhost")
 CHROMA_PORT = int(os.getenv("CHROMA_PORT", 8000))
