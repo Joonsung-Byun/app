@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import FacilityModal from "../components/FacilityModal";
 import { fetchFacilities } from "../libs/fetchFacilities";
 import { fetchPrograms } from "../libs/fetchPrograms";
+import Navbar from "../components/Navbar";
 
 declare global {
   interface Window {
@@ -146,7 +147,9 @@ const renderMarkers = (items: any[]) => {
   }
 
   return (
-    <div className="relative w-full min-h-screen flex flex-col items-center gap-4 px-4 pt-20 pb-4 md:pt-20">
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="relative w-full flex-1 flex flex-col items-center gap-4 px-4 pt-4 pb-4 md:pt-6">
       {/* Header */}
       {/* <div className="flex justify-center items-center gap-5">
         <img
@@ -213,6 +216,7 @@ const renderMarkers = (items: any[]) => {
             isProgramsLoading={isProgramsLoading}
           />
         )}
+      </div>
       </div>
     </div>
   );

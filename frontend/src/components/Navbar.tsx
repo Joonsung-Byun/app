@@ -50,7 +50,7 @@ export default function Navbar() {
       {(location.pathname === "/" ||
         location.pathname === "/chat" ||
         location.pathname === "/map") && (
-        <div className="fixed left-0 right-0 top-4 z-30 flex justify-center md:hidden">
+        <div className="mt-4 mb-3 flex justify-center md:hidden">
           <div className="w-full max-w-6xl flex items-center justify-between px-4">
             <div className="flex items-center gap-2">
               <img
