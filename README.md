@@ -99,6 +99,7 @@ KAKAO_API_KEY=your_kakao_api_key
 OPENWEATHER_API_KEY=your_weather_api_key
 NAVER_CLIENT_ID=your_naver_client_id
 NAVER_CLIENT_SECRET=your_naver_client_secret
+PERPLEXITY_API_KEY=your_perplexity_api_key
 
 # LLM Backend 선택
 LLM_BACKEND=openai  # 또는 vllm
@@ -110,6 +111,8 @@ CHROMA_HOST=chromadb  # Docker 사용 시, 로컬은 localhost
 CHROMA_PORT=8000
 CHROMA_COLLECTION=kid_program_collection
 ```
+- `PERPLEXITY_API_KEY`: Perplexity 기반 웹 검색(naver_web_search)에 필요합니다.  
+- `NAVER_CLIENT_ID` / `NAVER_CLIENT_SECRET`: 맘카페 검색(naver_cafe_search)에서 사용합니다.
 
 ### Frontend (.env.local)
 ```env
@@ -132,6 +135,20 @@ cd evaluation
 python evaluate_rag.py  # 또는 다른 평가 스크립트
 ```
 
+### 임베딩 분산도 진단
+RAG 품질을 보장하려면 `backend/chroma_data`에 저장된 벡터가 충분히 퍼져 있는지 검증하세요.
+
+```bash
+cd evaluation
+python scripts/embedding_dispersion.py \
+  --sample-size 1000 \
+  --pairwise-samples 5000 \
+  --tsne  # 시각화용 CSV(pca/tsne) 생성
+```
+
+보고서는 `backend/embedding_reports/embedding_dispersion_report.json`과 `embedding_projection.csv`에 저장되며,
+평균 코사인 유사도, 최근접 거리, PCA/TSNE 샘플을 통해 벡터 붕괴 여부를 확인할 수 있습니다.
+
 ## 📦 주요 기능
 
 - 🤖 **AI 챗봇**: Qwen3-8B-instruction or OpenAI GPT-5 API를 활용한 대화형 장소 추천
@@ -139,7 +156,7 @@ python evaluate_rag.py  # 또는 다른 평가 스크립트
 - 🗺️ **지도 통합**: 추천 장소를 카카오맵에 표시
 - 🌤️ **날씨 연동**: 날씨 정보를 고려한 실내/실외 활동 추천
 - 💾 **대화 기억**: 세션별 대화 히스토리 관리
-- 🖥 **웹 검색**: 최근 이벤트 및 행사 정보
+- 🖥 **웹 검색**: Perplexity 기반 최근 이벤트 및 행사 정보
 
 ## 📄 라이선스
 

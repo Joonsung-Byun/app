@@ -6,10 +6,28 @@ from typing import Dict, Any, List
 
 _lock = threading.Lock()
 _records: List[Dict[str, Any]] = []
+_enabled = True
+
+
+def enable_tool_timing():
+    global _enabled
+    _enabled = True
+
+
+def disable_tool_timing():
+    global _enabled
+    _enabled = False
+
+
+def clear_tool_timings():
+    with _lock:
+        _records.clear()
 
 
 def record_tool_timing(tool: str, duration: float, conversation_id: str = None):
     """Store a single timing record."""
+    if not _enabled:
+        return
     with _lock:
         _records.append({
             "tool": tool,

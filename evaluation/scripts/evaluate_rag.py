@@ -190,7 +190,8 @@ def evaluate_rag_quality(
 
         results.append({
             "question": question,
-            "retrieved": retrieved_ids[:k_recall],
+            "retrieved_top_precision": retrieved_ids[:k_precision],
+            "retrieved_top_recall": retrieved_ids[:k_recall],
             "relevant": relevant_docs,
             "precision_at_k": p_at_k,
             "recall_at_k": r_at_k,

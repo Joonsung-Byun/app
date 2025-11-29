@@ -111,16 +111,25 @@ def evaluate_tool_accuracy(
         actual_calls_local = []
         actual_tools_local = []
         for step in steps:
-            # step은 (AgentAction, observation) 형태
-            if not step or len(step) < 1:
+            if not step:
                 continue
-            action = step[0]
-            tool_name = getattr(action, "tool", None)
-            tool_input = getattr(action, "tool_input", None)
+            if isinstance(step, dict):
+                tool_name = step.get("tool")
+                tool_input = step.get("tool_input")
+                observation = step.get("observation")
+            else:
+                if len(step) < 1:
+                    continue
+                action = step[0]
+                tool_name = getattr(action, "tool", None)
+                tool_input = getattr(action, "tool_input", None)
+                observation = step[1] if len(step) > 1 else None
             if not tool_name:
                 continue
-            tool_logger.log_tool_call(tool_name, tool_input if isinstance(tool_input, dict) else {"raw": tool_input})
-            actual_calls_local.append({"tool": tool_name, "input": tool_input if isinstance(tool_input, dict) else {"raw": tool_input}})
+            formatted_input = tool_input if isinstance(tool_input, dict) else {"raw": tool_input}
+            if tool_logger:
+                tool_logger.log_tool_call(tool_name, formatted_input)
+            actual_calls_local.append({"tool": tool_name, "input": formatted_input, "observation": observation})
             actual_tools_local.append(tool_name)
         return actual_tools_local, actual_calls_local
 
@@ -133,6 +142,8 @@ def evaluate_tool_accuracy(
     items = runs if runs is not None else test_data
 
     for i, item in enumerate(items):
+        if tool_logger:
+            tool_logger.reset()
         qobj = item.get("item", item)
         question = qobj["question"]
         expected_tools = qobj.get("expected_tools", [])
@@ -188,16 +199,19 @@ def evaluate_tool_accuracy(
         if ctype == "no_tool":
             success = len(actual_tools) == 0
             desc = "도구를 사용하지 않아야 함"
-        elif ctype == "case3_fallback":
+        elif ctype == "fallback":
             success = ("search_facilities" in actual_set and "naver_web_search" in actual_set)
-            desc = "RAG 0건 → web_search까지 호출"
-        elif ctype in ("case2", "case2_review"):
+            desc = "RAG 결과 부족 시 웹 검색 폴백"
+        elif ctype == "rag":
             success = "search_facilities" in actual_set
             desc = "시설 검색 호출"
-        elif ctype == "web":
+        elif ctype == "web_event":
             success = "naver_web_search" in actual_set
             desc = "웹 검색 호출"
-        elif ctype == "weather_places":
+        elif ctype == "cafe_review":
+            success = "naver_cafe_search" in actual_set
+            desc = "맘카페 후기 검색"
+        elif ctype == "weather_plus":
             success = ("get_weather_forecast" in actual_set and "search_facilities" in actual_set)
             desc = "날씨 확인 후 시설 검색 호출"
         elif ctype == "weather":

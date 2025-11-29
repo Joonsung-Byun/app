@@ -1,10 +1,10 @@
 {
-  "case2": 0.30,
-  "case2_review": 0.10,
-  "case3_fallback": 0.05,
-  "weather_places": 0.15,
+  "rag": 0.25,
+  "weather_plus": 0.15,
   "weather": 0.10,
-  "web": 0.10,
+  "web_event": 0.10,
+  "cafe_review": 0.10,
+  "fallback": 0.10,
   "map": 0.10,
   "no_tool": 0.10
 }

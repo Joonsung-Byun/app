@@ -402,7 +402,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="시스템 성능 평가")
     parser.add_argument("--sample", "-s", type=int, help="샘플 크기 (전체 대신 일부만)")
-    parser.add_argument("--case-weights", type=str, help="케이스별 가중치 JSON 경로(예: {'case2':0.3,'web':0.2,...})")
+    parser.add_argument("--case-weights", type=str, help="케이스별 가중치 JSON 경로(예: {'rag':0.3,'web_event':0.2,...})")
     args = parser.parse_args()
 
     # 테스트 데이터 로드
