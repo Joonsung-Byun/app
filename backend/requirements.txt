@@ -32,6 +32,7 @@ requests==2.32.3
 python-dotenv==1.0.1
 openai>=1.0.0
 psutil>=5.9.0
+perplexityai==0.20.1
 
 # Web Crawling
 beautifulsoup4==4.12.3
