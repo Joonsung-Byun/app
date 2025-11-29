@@ -14,6 +14,9 @@ shown_facilities_history: Dict[str, set] = {}
 # 마지막 검색 결과 저장 (conversation_id -> facilities)
 last_search_results: Dict[str, List[Dict]] = {}
 
+# 마지막 검색 결과의 출처 저장 (conversation_id -> "rag" / "web" / "cafe")
+last_result_source: Dict[str, str] = {}
+
 # 진행 상태 저장 (conversation_id -> status text)
 current_status: Dict[str, str] = {}
 
@@ -67,16 +70,25 @@ def add_message(conversation_id: str, role: str, content):
         f"메시지 추가: {conversation_id} - {role}: {safe_content[:100]}..."
     )
 
-def save_search_results(conversation_id: str, facilities: List[Dict]):
-    """검색 결과를 메모리에 저장 (지도 표시 및 중복 방지용)"""
+def save_search_results(conversation_id: str, facilities: List[Dict], source: str = "rag"):
+    """검색 결과를 메모리에 저장 (지도 표시 및 중복 방지용)
+
+    source: "rag" / "web" / "cafe" 등 검색 출처 태그
+    """
     
     if not facilities:
         logger.info(f"⚠️ 검색 결과 없음(0건) -> 메모리 저장 건너뜀: {conversation_id}")
         return
 
     # 1. 마지막 검색 결과 갱신 (지도 툴용)
-    # 항상 최신 검색 결과로 '교체'합니다. (사용자는 방금 검색한 걸 보고 싶어 하니까요)
     last_search_results[conversation_id] = facilities
+    last_result_source[conversation_id] = source
+
+    # 디버깅용 출력 (최소 정보만)
+    try:
+        print(f"[MEMORY] save_search_results: conv={conversation_id}, source={source}, count={len(facilities)}")
+    except Exception:
+        pass
     
     # 2. 중복 방지 히스토리 누적 (추천 제외용)
     if conversation_id not in shown_facilities_history:
@@ -88,7 +100,7 @@ def save_search_results(conversation_id: str, facilities: List[Dict]):
         if name:
             shown_facilities_history[conversation_id].add(name)
             
-    logger.info(f"✅ 검색 결과 메모리 저장 완료: {len(facilities)}개")
+    logger.info(f"✅ 검색 결과 메모리 저장 완료: {len(facilities)}개 (source={source})")
 
     
 
@@ -102,12 +114,18 @@ def get_last_search_results(conversation_id: str) -> Optional[List[Dict]]:
     """마지막 검색 결과 가져오기"""
     return last_search_results.get(conversation_id)
 
+def get_last_result_source(conversation_id: str) -> str:
+    """마지막 검색 결과의 출처 반환 ('rag' / 'web' / 'cafe' / '')"""
+    return last_result_source.get(conversation_id, "")
+
 def clear_conversation(conversation_id: str):
     """대화 히스토리 삭제"""
     if conversation_id in conversation_history:
         del conversation_history[conversation_id]
     if conversation_id in last_search_results:
         del last_search_results[conversation_id]
+    if conversation_id in last_result_source:
+        del last_result_source[conversation_id]
     logger.info(f"대화 삭제: {conversation_id}")
 
 def get_all_conversations() -> Dict:

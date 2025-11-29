@@ -8,14 +8,11 @@ import Map from "./pages/Map";
 const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 via-white to-green-50 text-slate-900">
-      <Navbar />
-      <main>
-        <Routes>
-          <Route path="/" element={<HeroPage />} />
-          <Route path="/chat" element={<ChatPage />} />
-          <Route path="/map" element={<Map />} />
-        </Routes>
-      </main>
+      <Routes>
+        <Route path="/" element={<HeroPage />} />
+        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/map" element={<Map />} />
+      </Routes>
     </div>
   );
 };

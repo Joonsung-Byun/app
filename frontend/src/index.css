@@ -17,6 +17,14 @@
   color: #2563eb;
   text-decoration: underline;
 }
+
+.ai_answer ul {
+  list-style-type: none;
+}
+
+.ai_answer ul li {
+  margin-bottom: 0.7rem;
+}
 /* Optional: custom components or utilities can go here */
 
 /* Hide scrollbars but keep scroll functionality inside modals */

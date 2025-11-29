@@ -14,18 +14,25 @@ interface Props {
 
 const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typingText }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const bottomRef = useRef<HTMLDivElement | null>(null);
 
-  // 메시지가 추가될 때마다 스크롤을 맨 아래로 이동
+  // 메시지가 추가되거나 로딩 상태가 바뀔 때마다 컨테이너 맨 아래로 스크롤
   useEffect(() => {
-    if (scrollRef.current) {
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
+    } else if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
+
+    console.log("new messages", messages)
   }, [messages, isLoading]);
 
   return (
     <div 
       ref={scrollRef}
-      className=" max-w-6xl flex flex-col gap-3 h-[65vh] overflow-y-auto p-6 bg-white/70 rounded-2xl shadow-lg border border-green-100 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+      className="max-w-6xl flex flex-col gap-3 h-[70vh] overflow-y-auto p-6 bg-white/70 rounded-2xl shadow-lg border border-green-100 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
     >
       {messages.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center px-4">
@@ -61,6 +68,10 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typin
               </div>
             </div>
           )}
+
+          {/* 항상 맨 아래에 위치하는 앵커 요소 */}
+          <div ref={bottomRef} />
+          
         </>
       )}
     </div>

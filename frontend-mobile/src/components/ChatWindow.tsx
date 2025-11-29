@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { View, ScrollView, StyleSheet } from "react-native";
+import { View, ScrollView, StyleSheet, Dimensions } from "react-native";
 import type { Message } from "../types";
 import MessageBubble from "./MessageBubble";
 import KakaoMapView from "./KakaoMapView";
@@ -68,7 +68,7 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading }) => 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    maxHeight: "100%",
+    maxHeight: Dimensions.get("window").height * 0.6,
     backgroundColor: "rgba(255, 255, 255, 0.7)",
     borderRadius: 16,
     borderWidth: 1,

@@ -83,7 +83,7 @@ async def naver_cafe_search(query: str, conversation_id: str) -> str:
     
     try:
         if conversation_id:
-            set_status(conversation_id, "맘카페 후기 검색 중...")
+            set_status(conversation_id, "후기 검색 중...")
             
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers, params=params) as resp:
@@ -159,7 +159,8 @@ async def naver_cafe_search(query: str, conversation_id: str) -> str:
         # [Step 4] 반환
         if conversation_id:
              save_data = [{"name": i['title'], "link": i['link']} for i in final_results]
-             save_search_results(conversation_id, save_data)
+             # 맘카페 검색 결과이므로 source="cafe"로 저장
+             save_search_results(conversation_id, save_data, source="cafe")
 
         res_text = f"☕ **'{query}' 맘카페 찐후기**:\n\n"
         for i, item in enumerate(final_results, 1):

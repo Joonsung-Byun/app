@@ -6,12 +6,22 @@ interface Props {
   setMessage: (value: string) => void;
   onSend: (message: string) => void;
   variant?: "hero" | "chat";
+  isSending?: boolean;
 }
 
-const InputBox: React.FC<Props> = ({ message, setMessage, onSend, variant = "chat" }) => {
+const InputBox: React.FC<Props> = ({
+  message,
+  setMessage,
+  onSend,
+  variant = "chat",
+  isSending = false,
+}) => {
+  const isEmpty = !message.trim();
+  const isDisabled = isEmpty || isSending;
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (isDisabled) return;
     onSend(message);
     setMessage("");
   };
@@ -35,9 +45,28 @@ const InputBox: React.FC<Props> = ({ message, setMessage, onSend, variant = "cha
       />
       <button
         type="submit"
-        className="bg-[#e79f85] text-white font-medium px-5 rounded-lg hover:bg-[#d58769] transition hover:cursor-pointer"
+        disabled={isDisabled}
+        className={`flex justify-center items-center gap-1 text-white font-medium px-4 rounded-lg transition ${
+          isDisabled
+            ? "bg-[#fcc5ae] cursor-not-allowed"
+            : "bg-[#ec9676] hover:bg-[#d58769] hover:cursor-pointer"
+        }`}
       >
-        보내기
+        <span className="">보내기</span> 
+        <svg
+				  xmlns="http://www.w3.org/2000/svg"
+				  width="16"
+				  height="16"
+				  viewBox="0 0 24 24"
+				  fill="none"
+				  stroke="currentColor"
+				  stroke-width="2"
+				  stroke-linecap="round"
+				  stroke-linejoin="round"
+				>
+				  <line x1="22" y1="2" x2="11" y2="13" />
+				  <polygon points="22 2 15 22 11 13 2 9 22 2" />
+				</svg>
       </button>
     </form>
   );

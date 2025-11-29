@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import ChatWindow from "../components/ChatWindow";
 import InputBox from "../components/InputBox";
+import Navbar from "../components/Navbar";
 import { useChatStorage } from "../hooks/useChatStorage";
 import type { Message } from "../types";
 
@@ -140,35 +141,35 @@ const ChatPage: React.FC = () => {
   });
 
   return (
-    <div className="min-h-screen flex justify-center px-4 pt-20 pb-6 md:pt-20 bg-linear-to-b from-green-50 via-white to-green-50">
-      <div className="w-full max-w-6xl">
-        {/* <div className="flex justify-center items-center gap-5 mb-3">
-          <img src="/logo2_copy.webp" alt="" className="w-36 md:w-52 h-auto block"/>
-        </div> */}
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <div className="flex-1 flex justify-center px-4 pb-6 pt-4 md:pt-6">
+        <div className="flex flex-col w-full max-w-6xl">
+          <div className="flex-1 min-h-0 mb-4 min-w-0">
+            <ChatWindow
+              messages={messages}
+              onPromptClick={handlePromptClick}
+              isLoading={isLoading}
+              typingText={typingText}
+            />
+          </div>
 
-        <div className="mb-4 min-w-0">
-          <ChatWindow 
-            messages={messages} 
-            onPromptClick={handlePromptClick}
-            isLoading={isLoading}
-            typingText={typingText}
+          <InputBox
+            variant="chat"
+            message={message}
+            setMessage={setMessage}
+            onSend={handleSend}
+            isSending={isLoading}
           />
+          <button
+            onClick={() => {
+              clearMessages();
+            }}
+            className="text-s text-gray-400 mt-2 hover:underline block mx-auto"
+          >
+            대화 초기화
+          </button>
         </div>
-
-        <InputBox
-          variant="chat"
-          message={message}
-          setMessage={setMessage}
-          onSend={handleSend}
-        />
-        <button
-          onClick={() => {
-            clearMessages();
-          }}
-          className="text-xs text-gray-400 mt-2 hover:underline block mx-auto"
-        >
-          대화 초기화
-        </button>
       </div>
     </div>
   );
