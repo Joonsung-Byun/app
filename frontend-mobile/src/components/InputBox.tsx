@@ -12,6 +12,7 @@ interface Props {
   setMessage: (value: string) => void;
   onSend: (message: string) => void;
   variant?: "hero" | "chat";
+  isSending?: boolean;
 }
 
 const InputBox: React.FC<Props> = ({
@@ -19,9 +20,13 @@ const InputBox: React.FC<Props> = ({
   setMessage,
   onSend,
   variant = "chat",
+  isSending = false,
 }) => {
+  const isEmpty = !message.trim();
+  const isDisabled = isEmpty || isSending;
+
   const handleSubmit = () => {
-    if (!message.trim()) return;
+    if (isDisabled) return;
     onSend(message);
     setMessage("");
   };
@@ -44,8 +49,9 @@ const InputBox: React.FC<Props> = ({
       />
       <TouchableOpacity
         onPress={handleSubmit}
-        style={styles.button}
-        activeOpacity={0.8}
+        style={[styles.button, isDisabled && styles.buttonDisabled]}
+        activeOpacity={isDisabled ? 1 : 0.8}
+        disabled={isDisabled}
       >
         <Text style={styles.buttonText}>보내기</Text>
       </TouchableOpacity>
@@ -91,6 +97,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     justifyContent: "center",
     alignItems: "center",
+  },
+  buttonDisabled: {
+    backgroundColor: "#f3c9b7",
   },
   buttonText: {
     color: "#ffffff",

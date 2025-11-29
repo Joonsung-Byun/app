@@ -160,12 +160,13 @@ const ChatPage: React.FC = () => {
           message={message}
           setMessage={setMessage}
           onSend={handleSend}
+          isSending={isLoading}
         />
         <button
           onClick={() => {
             clearMessages();
           }}
-          className="text-xs text-gray-400 mt-2 hover:underline block mx-auto"
+          className="text-s text-gray-400 mt-2 hover:underline block mx-auto"
         >
           대화 초기화
         </button>

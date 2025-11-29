@@ -6,7 +6,6 @@ from models.pca_embeddings import pca_embeddings
 from typing import Optional
 import json
 import logging
-import re
 from utils.conversation_memory import get_shown_facility_names, set_status
 from utils.location_mapper import CITY_TO_PROVINCE_SIGNGU, extract_location
 
@@ -30,46 +29,6 @@ except Exception as e:
     logger.error(f"❌ ChromaDB 연결 실패: {e}")
     collection = None
 
-
-def _extract_requested_k_from_query(original_query: str, default_k: int) -> int:
-    """
-    사용자 질문에서 '2곳', '3개', '두 곳' 같은 패턴이 있으면
-    거기서 요청한 개수를 추출해서 k로 사용한다.
-    없으면 default_k를 그대로 반환한다.
-    """
-    try:
-        if not original_query:
-            return default_k
-
-        text = original_query.strip()
-
-        # 1) 숫자 + (곳/개/군데)
-        m = re.search(r"(\d+)\s*(?:곳|개|군데)", text)
-        if m:
-            value = int(m.group(1))
-            # 너무 큰 값 방지용 상한 (예: 10)
-            if 1 <= value <= 10:
-                return value
-
-        # 2) 한글 수사 + (곳/개/군데)  (한/두/세/네/다섯)
-        num_map = {
-            "한": 1,
-            "두": 2,
-            "세": 3,
-            "네": 4,
-            "다섯": 5,
-        }
-        pattern = r"(" + "|".join(num_map.keys()) + r")\s*(?:곳|개|군데)"
-        m2 = re.search(pattern, text)
-        if m2:
-            return num_map[m2.group(1)]
-
-    except Exception:
-        # 파싱 중 문제 생겨도 기본값 사용
-        return default_k
-
-    return default_k
-
 @tool
 async def search_facilities(
     original_query: str,
@@ -81,14 +40,7 @@ async def search_facilities(
     """
     사용자 질문과 가장 유사한 시설을 RAG(DB)에서 검색합니다.
     지역명(시/군/구/동)과 실내외 여부("실내" 또는 "실외")를 정밀하게 필터링합니다.
-
-    k: 사용자가 "2곳", "3개"처럼 명시한 개수가 있으면
-       그 숫자에 맞춰 설정하고, 명시하지 않으면 기본값 3을 사용합니다.
     """
-    # 사용자가 "수원 공원 2곳 추천해줘"처럼 개수를 명시한 경우,
-    # LLM이 넘겨준 k 값 대신 질문에서 추출한 개수를 우선 사용
-    k = _extract_requested_k_from_query(original_query, k)
-
     print(f"🔍 RAG 검색 | Q: {original_query} | Loc: {location} | InOut: {indoor_outdoor} | 유저가 부탁한 수: {k},"  )
     
     if conversation_id:

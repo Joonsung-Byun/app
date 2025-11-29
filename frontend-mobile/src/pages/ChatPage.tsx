@@ -193,6 +193,7 @@ const ChatPage: React.FC = () => {
               message={message}
               setMessage={setMessage}
               onSend={handleSend}
+              isSending={isLoading}
             />
 
             <TouchableOpacity onPress={() => {

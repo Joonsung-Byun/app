@@ -25,6 +25,8 @@ const ChatWindow: React.FC<Props> = ({ messages, onPromptClick, isLoading, typin
     } else if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
+
+    console.log("new messages", messages)
   }, [messages, isLoading]);
 
   return (
