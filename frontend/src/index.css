@@ -18,11 +18,15 @@
   text-decoration: underline;
 }
 
-.ai_answer ul {
+.ai_answer ul, ol {
   list-style-type: none;
 }
 
-.ai_answer ul li {
+.ai_answer > ul > li {
+  margin-bottom: 0.7rem;
+}
+
+.ai_answer > ol > li {
   margin-bottom: 0.7rem;
 }
 /* Optional: custom components or utilities can go here */

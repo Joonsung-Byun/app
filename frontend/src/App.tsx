@@ -1,6 +1,5 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import Navbar from "./components/Navbar";
 import HeroPage from "./pages/HeroPage";
 import ChatPage from "./pages/ChatPage";
 import Map from "./pages/Map";

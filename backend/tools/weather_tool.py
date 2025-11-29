@@ -4,6 +4,7 @@ from config import settings  # 수정
 from datetime import datetime, timedelta
 import json
 from utils.conversation_memory import set_status
+from utils.location_mapper import city_mapping
 
 def get_target_datetime(date_str: str) -> datetime:
     """날짜 문자열을 datetime으로 변환"""
@@ -39,69 +40,69 @@ def get_weather_forecast(city_name: str, date: str = "today", conversation_id: s
     if conversation_id:
         set_status(conversation_id, f"{city_name}의 날씨 정보 확인 중..")
 
-    city_mapping = {
-        "서울": "Seoul",
-        "부산": "Busan",
-        "대구": "Daegu",
-        "인천": "Incheon",
-        "광주": "Gwangju",
-        "대전": "Daejeon",
-        "울산": "Ulsan",
-        "경기": "Gyeonggi",
-        "수원": "Suwon",
-        "순천": "Suncheon",
-        "제주": "Jeju",
-        "강릉": "Gangneung",
-        "전주": "Jeonju",
-        "창원": "Changwon",
-        "포항": "Pohang",
-        "여수": "Yeosu",
-        "천안": "Cheonan",
-        "안동": "Andong",
-        "김해": "Gimhae",
+    # city_mapping = {
+    #     "서울": "Seoul",
+    #     "부산": "Busan",
+    #     "대구": "Daegu",
+    #     "인천": "Incheon",
+    #     "광주": "Gwangju",
+    #     "대전": "Daejeon",
+    #     "울산": "Ulsan",
+    #     "경기": "Gyeonggi",
+    #     "수원": "Suwon",
+    #     "순천": "Suncheon",
+    #     "제주": "Jeju",
+    #     "강릉": "Gangneung",
+    #     "전주": "Jeonju",
+    #     "창원": "Changwon",
+    #     "포항": "Pohang",
+    #     "여수": "Yeosu",
+    #     "천안": "Cheonan",
+    #     "안동": "Andong",
+    #     "김해": "Gimhae",
 
-        "청주": "Cheongju",
-        "충주": "Chungju",
+    #     "청주": "Cheongju",
+    #     "충주": "Chungju",
 
-        "경주": "Gyeongju",
-        "양산": "Yangsan",
-        "진주": "Jinju",
-        "구미": "Gumi",
-        "목포": "Mokpo",
-        "군산": "Gunsan",
-        "익산": "Iksan",
-        "광양": "Gwangyang",
-        "김포": "Gimpo",
-        "오산": "Osan",
-        "의정부": "Uijeongbu",
-        "평택": "Pyeongtaek",
-        "포천": "Pocheon",
-        "이천": "Icheon",
-        "여주": "Yeoju",
+    #     "경주": "Gyeongju",
+    #     "양산": "Yangsan",
+    #     "진주": "Jinju",
+    #     "구미": "Gumi",
+    #     "목포": "Mokpo",
+    #     "군산": "Gunsan",
+    #     "익산": "Iksan",
+    #     "광양": "Gwangyang",
+    #     "김포": "Gimpo",
+    #     "오산": "Osan",
+    #     "의정부": "Uijeongbu",
+    #     "평택": "Pyeongtaek",
+    #     "포천": "Pocheon",
+    #     "이천": "Icheon",
+    #     "여주": "Yeoju",
 
-        "양평": "Yangpyeong",
-        "홍천": "Hongcheon",
-        "횡성": "Hoengseong",
-        "태백": "Taebaek",
-        "속초": "Sokcho",
-        "동해": "Donghae",
-        "삼척": "Samcheok",
-        "정선": "Jeongseon",
-        "고성": "Goseong",
-        "인제": "Inje",
-        "철원": "Cheorwon",
+    #     "양평": "Yangpyeong",
+    #     "홍천": "Hongcheon",
+    #     "횡성": "Hoengseong",
+    #     "태백": "Taebaek",
+    #     "속초": "Sokcho",
+    #     "동해": "Donghae",
+    #     "삼척": "Samcheok",
+    #     "정선": "Jeongseon",
+    #     "고성": "Goseong",
+    #     "인제": "Inje",
+    #     "철원": "Cheorwon",
 
-        "화천": "Hwacheon",
-        "양구": "Yanggu",
-        "춘천": "Chuncheon",
+    #     "화천": "Hwacheon",
+    #     "양구": "Yanggu",
+    #     "춘천": "Chuncheon",
 
-        "원주": "Wonju",
-        "강화": "Ganghwa",
+    #     "원주": "Wonju",
+    #     "강화": "Ganghwa",
 
-        "남양주": "Namyangju",
-        "파주": "Paju",
+    #     "남양주": "Namyangju",
+    #     "파주": "Paju",
         
-    }
+    # }
     
     english_city = city_mapping.get(city_name, city_name)
     

@@ -52,7 +52,7 @@ const InputBox: React.FC<Props> = ({
             : "bg-[#ec9676] hover:bg-[#d58769] hover:cursor-pointer"
         }`}
       >
-        <span className="">보내기</span> 
+        <span className="sr-only">보내기</span> 
         <svg
 				  xmlns="http://www.w3.org/2000/svg"
 				  width="16"
