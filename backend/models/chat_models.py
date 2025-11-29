@@ -26,6 +26,6 @@ def get_llm():
     # OpenAI 사용 (auto 실패 시 또는 openai 모드)
     return ChatOpenAI(
         model="gpt-4o-mini",
-        temperature=0.7,
+        temperature=0.3,
         openai_api_key=settings.OPENAI_API_KEY
     )

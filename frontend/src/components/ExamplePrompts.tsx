@@ -5,9 +5,9 @@ interface Props {
 }
 
 const prompts = [
-  "🌳 주말에 아이랑 갈만한 부산 공원 추천",
-  "🎨 비 오는 날 서울 실내 체험장 알려줘",
-  "🚴 성수동 근처 자전거 탈 수 있는 곳",
+  "🌳 서울 공원 추천해줘",
+  "🎨 12월 부산 행사 알려줘",
+  "🚴 제주 해수욕장 추천해줘",
 ];
 
 const ExamplePrompts: React.FC<Props> = ({ onPromptClick }) => {
