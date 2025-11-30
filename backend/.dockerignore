@@ -1,0 +1,29 @@
+# Git metadata
+.git
+.gitignore
+
+# Python caches & virtual envs
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+venv/
+.venv/
+
+# Editor & tooling configs
+.vscode/
+.idea/
+
+# Environment files
+.env
+*.env
+.env.*
+
+# Local data / artifacts not needed in the image
+chroma_data/
+rag_data*
+*.sqlite3
+*.log

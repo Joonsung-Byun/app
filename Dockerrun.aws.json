@@ -1,0 +1,65 @@
+{
+  "AWSEBDockerrunVersion": 2,
+  "volumes": [
+    {
+      "name": "chroma-data",
+      "host": {
+        "sourcePath": "/var/app/chroma_data"
+      }
+    }
+  ],
+  "containerDefinitions": [
+    {
+      "name": "backend",
+      "image": "jangjihyeon/kids-chatbot-backend:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 8080
+        }
+      ],
+      "environment": [
+        {
+          "name": "CHROMA_HOST",
+          "value": "chromadb"
+        },
+        {
+          "name": "CHROMA_PORT",
+          "value": "8000"
+        },
+        {
+          "name": "CHROMA_COLLECTION",
+          "value": "kid_program_collection_v2"
+        }
+      ]
+    },
+    {
+      "name": "chromadb",
+      "image": "chromadb/chroma:latest",
+      "essential": true,
+      "memory": 512,
+      "portMappings": [
+        {
+          "containerPort": 8000
+        }
+      ],
+      "mountPoints": [
+        {
+          "sourceVolume": "chroma-data",
+          "containerPath": "/data"
+        }
+      ],
+      "environment": [
+        {
+          "name": "IS_PERSISTENT",
+          "value": "TRUE"
+        },
+        {
+          "name": "ANONYMIZED_TELEMETRY",
+          "value": "FALSE"
+        }
+      ]
+    }
+  ]
+}

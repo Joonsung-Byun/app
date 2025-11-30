@@ -14,7 +14,7 @@ const ChatPage: React.FC = () => {
   useEffect(() => {
     const conversationId = localStorage.getItem("conversation_id");
     if (!conversationId) {
-      const uuid = crypto.randomUUID();
+      const uuid = generateUUID();
       localStorage.setItem("conversation_id", uuid);
     }
   }, []);
@@ -25,6 +25,15 @@ const ChatPage: React.FC = () => {
   const [typingText, setTypingText] = useState("요청 분석 중...");
 
   // HeroPage에서 전달된 초기 메시지 처리
+
+  function generateUUID() {
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
+
+
   useEffect(() => {
     const initialMessage = location.state?.initialMessage;
     if (initialMessage) {
@@ -136,7 +145,7 @@ const ChatPage: React.FC = () => {
   window.addEventListener("beforeunload", () => {
     // localStorage.removeItem("chatMessages");
     // conversation_id 삭제 후 새로 생성
-    const uuid = crypto.randomUUID();
+    const uuid = generateUUID();
     localStorage.setItem("conversation_id", uuid);
   });
 
